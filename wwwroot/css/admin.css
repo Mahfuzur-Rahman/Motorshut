@@ -1,0 +1,436 @@
+:root {
+    --admin-bg: #f4f6fb;
+    --admin-surface: #ffffff;
+    --admin-sidebar: #0f172a;
+    --admin-sidebar-soft: #1e293b;
+    --admin-primary: #0ea5e9;
+    --admin-text: #111827;
+    --admin-muted: #64748b;
+    --admin-border: #e5e7eb;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: linear-gradient(180deg, #eef2ff 0%, var(--admin-bg) 35%, #f8fafc 100%);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--admin-text);
+}
+
+.admin-shell {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 270px 1fr;
+}
+
+.admin-sidebar {
+    background: radial-gradient(circle at top, #1e293b 0%, var(--admin-sidebar) 60%);
+    color: #e2e8f0;
+    padding: 1.5rem 1.1rem;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brand-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.6rem;
+}
+
+.brand-mark {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    color: #fff;
+    font-weight: 700;
+}
+
+.brand-car-icon {
+    width: 22px;
+    height: 22px;
+}
+
+.brand-title {
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.brand-sub {
+    color: #94a3b8;
+    font-size: 0.82rem;
+}
+
+.admin-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.admin-nav-link {
+    padding: 0.7rem 0.85rem;
+    border-radius: 10px;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.2s ease;
+}
+
+.admin-nav-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.admin-nav-link.active {
+    color: #fff;
+    background: linear-gradient(135deg, var(--admin-primary), #2563eb);
+}
+
+.admin-nav-form {
+    margin: 0;
+}
+
+.admin-nav-button {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+}
+
+.admin-main {
+    display: grid;
+    grid-template-rows: auto 1fr;
+}
+
+.admin-topbar {
+    padding: 1.1rem 1.5rem;
+    border-bottom: 1px solid var(--admin-border);
+    background-color: rgba(255, 255, 255, 0.76);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.admin-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.topbar-car-icon {
+    width: 20px;
+    height: 20px;
+    color: #0f172a;
+}
+
+.admin-user {
+    color: var(--admin-muted);
+    font-size: 0.9rem;
+}
+
+.admin-content {
+    padding: 1.5rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.stat-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: 14px;
+    padding: 1rem;
+    box-shadow: 0 10px 30px rgba(2, 6, 23, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    border-color: #c7d2fe;
+    box-shadow: 0 16px 34px rgba(2, 6, 23, 0.1);
+}
+
+.stat-label {
+    color: var(--admin-muted);
+    font-size: 0.86rem;
+}
+
+.stat-value {
+    margin-top: 0.5rem;
+    font-size: 1.7rem;
+    font-weight: 700;
+}
+
+.stat-foot {
+    margin-top: 0.45rem;
+    font-size: 0.8rem;
+    color: #0f766e;
+}
+
+.panel-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.insights-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.admin-panel {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: 14px;
+    padding: 1rem;
+    box-shadow: 0 10px 30px rgba(2, 6, 23, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-panel:hover {
+    transform: translateY(-3px);
+    border-color: #dbeafe;
+    box-shadow: 0 15px 32px rgba(2, 6, 23, 0.1);
+}
+
+.admin-panel h3 {
+    margin: 0 0 0.9rem;
+    font-size: 1rem;
+}
+
+.activity-list {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: #334155;
+}
+
+.activity-list li {
+    margin-bottom: 0.55rem;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.activity-list li:hover {
+    color: #0f172a;
+    transform: translateX(4px);
+}
+
+.quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.quick-actions .btn {
+    transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.quick-actions .btn:hover,
+.quick-actions .btn:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14);
+    filter: saturate(1.06);
+}
+
+.visit-chart {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.visit-bars {
+    height: 220px;
+    padding: 0.8rem 0.6rem 0.4rem;
+    border-radius: 12px;
+    border: 1px solid var(--admin-border);
+    background:
+        linear-gradient(to top, rgba(14, 165, 233, 0.08), rgba(14, 165, 233, 0.01)),
+        repeating-linear-gradient(to top, transparent 0 42px, rgba(100, 116, 139, 0.12) 42px 43px);
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    align-items: end;
+    gap: 0.45rem;
+}
+
+.visit-bar-wrap {
+    display: grid;
+    align-items: end;
+    justify-items: center;
+    gap: 0.35rem;
+    height: 100%;
+}
+
+.visit-bar {
+    width: 100%;
+    max-width: 28px;
+    border-radius: 8px 8px 4px 4px;
+    background: linear-gradient(180deg, #38bdf8, #2563eb);
+    box-shadow: 0 8px 16px rgba(37, 99, 235, 0.25);
+    transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+.visit-bar-wrap:hover .visit-bar {
+    transform: translateY(-5px);
+    filter: brightness(1.08);
+    box-shadow: 0 12px 20px rgba(37, 99, 235, 0.35);
+}
+
+.visit-bar-wrap span {
+    font-size: 0.76rem;
+    color: var(--admin-muted);
+}
+
+.visit-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    color: var(--admin-muted);
+    font-size: 0.88rem;
+}
+
+.visit-meta strong {
+    color: var(--admin-text);
+    font-size: 0.96rem;
+}
+
+.car-image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.9rem;
+}
+
+.car-image-card {
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    padding: 0.6rem;
+    background: #fff;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.car-image-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(2, 6, 23, 0.1);
+}
+
+.car-image-card.marked-delete {
+    opacity: 0.48;
+    border-color: #fca5a5;
+    box-shadow: none;
+}
+
+.car-image-thumb {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.car-image-meta {
+    margin-top: 0.55rem;
+    min-height: 1.5rem;
+}
+
+.car-image-actions {
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+}
+
+.upload-rows-toolbar {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.upload-rows-table {
+    display: grid;
+    gap: 0.6rem;
+}
+
+.upload-row {
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    background: #fff;
+    padding: 0.55rem;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr auto;
+    gap: 0.6rem;
+    align-items: center;
+}
+
+.upload-row-preview {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 0;
+}
+
+.upload-row-thumb {
+    width: 64px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    flex: 0 0 auto;
+}
+
+.upload-row-file {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.upload-row-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+@media (max-width: 991px) {
+    .admin-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-sidebar {
+        padding: 1rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .insights-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .panel-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .upload-row {
+        grid-template-columns: 1fr;
+    }
+
+    .upload-row-actions {
+        justify-content: flex-start;
+    }
+}

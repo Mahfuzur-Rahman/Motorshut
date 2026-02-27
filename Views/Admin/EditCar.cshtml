@@ -1,0 +1,216 @@
+@model MotorsHut.Models.Admin.CarFormViewModel
+@{
+    ViewData["Title"] = "Edit Car";
+    Layout = "_AdminLayout";
+}
+
+<article class="admin-panel">
+    <h3 class="mb-3">Edit Car Details</h3>
+
+    <form asp-controller="Admin" asp-action="EditCar" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data" novalidate>
+        <partial name="_CarForm" model="Model" />
+
+        <div class="mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Update Car</button>
+            <a asp-controller="Admin" asp-action="Cars" class="btn btn-outline-secondary">Back to list</a>
+        </div>
+    </form>
+
+    @if (Model.ExistingImages.Count > 0)
+    {
+        <hr class="my-4" />
+        <h5 class="mb-3">Current Images (side by side)</h5>
+        <div id="deleteImageIdsHost"></div>
+        <div class="car-image-grid" id="existingImageGrid">
+            @foreach (var image in Model.ExistingImages)
+            {
+                <article class="car-image-card" data-image-id="@image.Id">
+                    <img src="@image.ImageUrl" alt="Car image" class="car-image-thumb" />
+                    <div class="car-image-meta">
+                        <div class="form-check">
+                            <input class="form-check-input existing-primary-radio"
+                                   type="radio"
+                                   name="SelectedPrimaryImageId"
+                                   value="@image.Id"
+                                   @(Model.SelectedPrimaryImageId == image.Id ? "checked" : string.Empty) />
+                            <label class="form-check-label">Primary Image</label>
+                        </div>
+                    </div>
+                    <div class="car-image-actions">
+                        <button type="button"
+                                class="btn btn-sm btn-outline-danger existing-remove-btn"
+                                data-image-id="@image.Id">
+                            Remove
+                        </button>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</article>
+
+    @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const addRowButton = document.getElementById("addImageRowBtn");
+            const rowsHost = document.getElementById("imageUploadRows");
+            const rowTemplate = document.getElementById("imageUploadRowTemplate");
+            const existingGrid = document.getElementById("existingImageGrid");
+            const deleteHost = document.getElementById("deleteImageIdsHost");
+
+            if (addRowButton && rowsHost && rowTemplate) {
+                const maxRows = 10;
+
+                addRowButton.addEventListener("click", function () {
+                    addRow();
+                });
+
+                rowsHost.addEventListener("change", function (event) {
+                    const input = event.target.closest(".js-image-input");
+                    if (!input) {
+                        return;
+                    }
+
+                    const row = input.closest(".upload-row");
+                    if (!row) {
+                        return;
+                    }
+
+                    updateRowPreview(row, input.files && input.files[0] ? input.files[0] : null);
+                });
+
+                rowsHost.addEventListener("click", function (event) {
+                    const removeButton = event.target.closest(".js-remove-row");
+                    if (!removeButton) {
+                        return;
+                    }
+
+                    const row = removeButton.closest(".upload-row");
+                    if (!row) {
+                        return;
+                    }
+
+                    row.remove();
+                    ensureAtLeastOneRow();
+                    syncAddButtonState();
+                });
+
+                function addRow() {
+                    if (rowsHost.querySelectorAll(".upload-row").length >= maxRows) {
+                        return;
+                    }
+
+                    const node = rowTemplate.content.firstElementChild.cloneNode(true);
+                    rowsHost.appendChild(node);
+                    syncAddButtonState();
+                }
+
+                function ensureAtLeastOneRow() {
+                    if (rowsHost.querySelectorAll(".upload-row").length === 0) {
+                        addRow();
+                    }
+                }
+
+                function syncAddButtonState() {
+                    addRowButton.disabled = rowsHost.querySelectorAll(".upload-row").length >= maxRows;
+                }
+
+                function updateRowPreview(row, file) {
+                    const thumb = row.querySelector(".upload-row-thumb");
+                    const name = row.querySelector(".upload-row-file");
+                    if (!thumb || !name) {
+                        return;
+                    }
+
+                    if (!file) {
+                        thumb.classList.add("d-none");
+                        thumb.removeAttribute("src");
+                        name.textContent = "No image selected";
+                        return;
+                    }
+
+                    const objectUrl = URL.createObjectURL(file);
+                    thumb.src = objectUrl;
+                    thumb.classList.remove("d-none");
+                    name.textContent = file.name;
+                }
+
+                ensureAtLeastOneRow();
+                syncAddButtonState();
+            }
+
+            if (existingGrid && deleteHost) {
+                const deletedIds = new Set();
+
+                existingGrid.addEventListener("click", function (event) {
+                    const button = event.target.closest(".existing-remove-btn");
+                    if (!button) {
+                        return;
+                    }
+
+                    const imageId = button.getAttribute("data-image-id");
+                    if (!imageId) {
+                        return;
+                    }
+
+                    const card = existingGrid.querySelector(`.car-image-card[data-image-id="${imageId}"]`);
+                    if (!card) {
+                        return;
+                    }
+
+                    if (deletedIds.has(imageId)) {
+                        deletedIds.delete(imageId);
+                        card.classList.remove("marked-delete");
+                        button.textContent = "Remove";
+                        button.classList.add("btn-outline-danger");
+                        button.classList.remove("btn-outline-secondary");
+                    } else {
+                        deletedIds.add(imageId);
+                        card.classList.add("marked-delete");
+                        button.textContent = "Undo";
+                        button.classList.remove("btn-outline-danger");
+                        button.classList.add("btn-outline-secondary");
+                    }
+
+                    ensurePrimarySelection();
+                    syncDeleteInputs();
+                });
+
+                function ensurePrimarySelection() {
+                    const radios = Array.from(existingGrid.querySelectorAll(".existing-primary-radio"));
+                    radios.forEach(radio => {
+                        const card = radio.closest(".car-image-card");
+                        const removed = card && card.classList.contains("marked-delete");
+                        radio.disabled = !!removed;
+                        if (removed) {
+                            radio.checked = false;
+                        }
+                    });
+
+                    const hasSelected = radios.some(r => r.checked && !r.disabled);
+                    if (!hasSelected) {
+                        const firstAvailable = radios.find(r => !r.disabled);
+                        if (firstAvailable) {
+                            firstAvailable.checked = true;
+                        }
+                    }
+                }
+
+                function syncDeleteInputs() {
+                    deleteHost.innerHTML = "";
+                    deletedIds.forEach(id => {
+                        const input = document.createElement("input");
+                        input.type = "hidden";
+                        input.name = "DeleteImageIds";
+                        input.value = id;
+                        deleteHost.appendChild(input);
+                    });
+                }
+
+                ensurePrimarySelection();
+                syncDeleteInputs();
+            }
+        })();
+    </script>
+}

@@ -1,0 +1,598 @@
+@{
+    ViewData["Title"] = "MotorsHut - Premium Car Marketplace";
+    ViewData["FullPage"] = true;
+    ViewData["HideGlobalFooter"] = true;
+}
+
+<div class="mh-page">
+    <section id="home" class="mh-hero">
+        <div class="mh-hero-bg"></div>
+        <div class="mh-hero-content">
+            <span class="mh-badge">2026 Collection Live</span>
+            <h1>Where Performance Meets Personality</h1>
+            <p>Explore curated luxury, electric, sport, and family cars with verified history, instant financing options, and trusted sellers.</p>
+            <div class="mh-hero-actions">
+                <a href="#featured" class="btn btn-lg mh-btn-primary">Explore Cars</a>
+            </div>
+            <div class="mh-kpis">
+                <div class="mh-kpi">
+                    <strong class="mh-counter" data-target="2200">0</strong>
+                    <span>Verified Listings</span>
+                </div>
+                <div class="mh-kpi">
+                    <strong class="mh-counter" data-target="1750">0</strong>
+                    <span>Cars Sold</span>
+                </div>
+                <div class="mh-kpi">
+                    <strong class="mh-counter" data-target="98">0</strong>
+                    <span>Client Satisfaction</span>
+                </div>
+            </div>
+        </div>
+        <div class="mh-hero-floating">
+            <div class="float-card">EV Deals from $19,999</div>
+            <div class="float-card">Same-Day Financing</div>
+            <div class="float-card">Free Vehicle History</div>
+        </div>
+    </section>
+
+    <section id="featured" class="mh-section">
+        <div class="mh-section-head">
+            <span>Featured Inventory</span>
+            <h2>Cars That Turn Heads</h2>
+        </div>
+        <div class="mh-car-grid">
+            <article class="mh-car-card reveal">
+                <img src="https://images.unsplash.com/photo-1494905998402-395d579af36f?auto=format&fit=crop&w=900&q=80" alt="Orange sports car" />
+                <div class="mh-car-body">
+                    <h3>Apex GT Turbo</h3>
+                    <p>420hp performance coupe with track mode and adaptive suspension.</p>
+                    <div class="mh-car-meta"><span>Petrol</span><span>Auto</span><span>12k miles</span></div>
+                    <div class="mh-car-price">$54,900</div>
+                </div>
+            </article>
+            <article class="mh-car-card reveal">
+                <img src="https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=900&q=80" alt="Blue electric car" />
+                <div class="mh-car-body">
+                    <h3>Volterra E-Line</h3>
+                    <p>Long-range EV with autonomous assist and ultra-fast charging.</p>
+                    <div class="mh-car-meta"><span>Electric</span><span>Auto</span><span>8k miles</span></div>
+                    <div class="mh-car-price">$47,300</div>
+                </div>
+            </article>
+            <article class="mh-car-card reveal">
+                <img src="https://images.unsplash.com/photo-1504215680853-026ed2a45def?auto=format&fit=crop&w=900&q=80" alt="Black SUV" />
+                <div class="mh-car-body">
+                    <h3>UrbanX 7 Seater</h3>
+                    <p>Premium family SUV with panoramic roof and 360 safety suite.</p>
+                    <div class="mh-car-meta"><span>Hybrid</span><span>Auto</span><span>17k miles</span></div>
+                    <div class="mh-car-price">$39,800</div>
+                </div>
+            </article>
+            <article class="mh-car-card reveal">
+                <img src="https://images.unsplash.com/photo-1469285994282-454ceb49e63a?auto=format&fit=crop&w=900&q=80" alt="Silver sedan" />
+                <div class="mh-car-body">
+                    <h3>Executive S-Class</h3>
+                    <p>Elegant comfort sedan with premium interior and smart cockpit.</p>
+                    <div class="mh-car-meta"><span>Diesel</span><span>Auto</span><span>10k miles</span></div>
+                    <div class="mh-car-price">$43,600</div>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section id="about" class="mh-section mh-about">
+        <div class="mh-about-text reveal">
+            <span>About MotorsHut</span>
+            <h2>Built For Buyers Who Want More Than Just A Car</h2>
+            <p>MotorsHut is a next-generation marketplace where people discover, compare, and close deals faster. We blend trust, tech, and premium support to simplify every step from first click to final key handover.</p>
+            <ul>
+                <li>Verified dealer and private listings</li>
+                <li>Transparent pricing with no hidden surprises</li>
+                <li>Integrated insurance and financing support</li>
+                <li>Real-time inventory updates</li>
+            </ul>
+        </div>
+        <div class="mh-about-visual reveal">
+            <div class="about-orb"></div>
+            <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1000&q=80" alt="Car interior" />
+        </div>
+    </section>
+
+    <section id="feedback" class="mh-section mh-feedback">
+        <div class="mh-section-head">
+            <span>Customer Feedback</span>
+            <h2>What Drivers Say</h2>
+        </div>
+        <div class="mh-feedback-row" id="feedbackRow">
+            <article class="mh-feedback-card reveal">
+                <p>"Smoothest car buying experience I have ever had. Transparent, fast and super premium service."</p>
+                <h4>R. Ahmed</h4>
+                <span>Purchased Volterra E-Line</span>
+            </article>
+            <article class="mh-feedback-card reveal">
+                <p>"I sold my SUV in 3 days. The listing tools and lead quality are excellent."</p>
+                <h4>N. Khan</h4>
+                <span>Verified Seller</span>
+            </article>
+            <article class="mh-feedback-card reveal">
+                <p>"MotorsHut support team helped me compare options and close financing quickly."</p>
+                <h4>J. Smith</h4>
+                <span>Purchased Apex GT Turbo</span>
+            </article>
+        </div>
+    </section>
+
+    <section id="contact" class="mh-footer-showcase">
+        <div class="footer-grid">
+            <div>
+                <h3>MotorsHut</h3>
+                <p>The modern destination for buying and selling premium cars with confidence.</p>
+            </div>
+            <div>
+                <h5>Explore</h5>
+                <a href="#featured">Inventory</a>
+                <a href="#">Sell Your Car</a>
+                <a href="#">Financing</a>
+            </div>
+            <div>
+                <h5>Company</h5>
+                <a href="#">About Us</a>
+                <a href="#">Support</a>
+                <a href="#">Contact</a>
+            </div>
+            <div>
+                <h5>Stay Updated</h5>
+                <p>Get weekly drops of top deals and fresh arrivals.</p>
+                <div class="footer-note">hello@motorshut.com</div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap');
+
+    .mh-page {
+        --mh-bg: #eef3f8;
+        --mh-paper: #ffffff;
+        --mh-ink: #0f172a;
+        --mh-muted: #475569;
+        --mh-line: #dbe3ef;
+        --mh-primary: #0f7ccf;
+        --mh-primary-deep: #0c4f8f;
+        --mh-teal: #059669;
+        color: var(--mh-ink);
+        scroll-behavior: smooth;
+        font-family: "Manrope", sans-serif;
+        background:
+            radial-gradient(circle at 12% 0%, rgba(15, 124, 207, 0.16), transparent 36%),
+            radial-gradient(circle at 90% 10%, rgba(5, 150, 105, 0.11), transparent 34%),
+            var(--mh-bg);
+        border-radius: 24px;
+        padding: 0.35rem 0.35rem 0;
+    }
+
+    .mh-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 28px;
+        min-height: 630px;
+        margin-top: 0.35rem;
+        background: #081120;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 30px 65px rgba(2, 6, 23, 0.32);
+    }
+
+    .mh-hero-bg {
+        position: absolute;
+        inset: 0;
+        background:
+            linear-gradient(112deg, rgba(7, 12, 27, 0.95), rgba(7, 12, 27, 0.38)),
+            radial-gradient(circle at 24% 20%, rgba(56, 189, 248, 0.36), transparent 42%),
+            radial-gradient(circle at 82% 84%, rgba(5, 150, 105, 0.28), transparent 44%),
+            url("https://images.unsplash.com/photo-1553440569-bcc63803a83d?auto=format&fit=crop&w=1800&q=80") center/cover no-repeat;
+        animation: mhZoom 18s ease-in-out infinite alternate;
+    }
+
+    .mh-hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 780px;
+        padding: 4.3rem 3.2rem;
+        color: #fff;
+    }
+
+    .mh-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.12);
+        padding: 0.38rem 0.95rem;
+        border-radius: 999px;
+        font-size: 0.79rem;
+        font-weight: 700;
+        margin-bottom: 1.15rem;
+        letter-spacing: 0.2px;
+    }
+
+    .mh-badge::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #34d399;
+        box-shadow: 0 0 0 6px rgba(52, 211, 153, 0.2);
+    }
+
+    .mh-hero h1 {
+        font-family: "Sora", sans-serif;
+        font-size: clamp(2.15rem, 4.6vw, 3.95rem);
+        line-height: 1.03;
+        margin-bottom: 1.05rem;
+        font-weight: 800;
+        letter-spacing: -0.8px;
+    }
+
+    .mh-hero p {
+        color: rgba(255, 255, 255, 0.9);
+        max-width: 640px;
+        font-size: 1.03rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.65;
+    }
+
+    .mh-hero-actions {
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+    }
+
+    .mh-btn-primary {
+        background: linear-gradient(135deg, #0ea5e9, #2563eb 72%);
+        color: #fff;
+        border: 0;
+        border-radius: 12px;
+        font-weight: 700;
+        padding: 0.7rem 1.2rem;
+        box-shadow: 0 12px 20px rgba(37, 99, 235, 0.28);
+    }
+
+    .mh-btn-outline {
+        border: 1px solid rgba(255, 255, 255, 0.55);
+        color: #fff;
+        border-radius: 12px;
+        backdrop-filter: blur(2px);
+        font-weight: 600;
+        padding: 0.7rem 1.2rem;
+    }
+
+    .mh-btn-outline:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.12);
+    }
+
+    .mh-kpis {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .mh-kpi {
+        min-width: 165px;
+        background: linear-gradient(160deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.03));
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 14px;
+        padding: 0.75rem 0.92rem;
+        backdrop-filter: blur(2px);
+    }
+
+    .mh-kpi strong {
+        font-family: "Sora", sans-serif;
+        font-size: 1.45rem;
+        display: block;
+    }
+
+    .mh-kpi span {
+        font-size: 0.82rem;
+        color: rgba(255, 255, 255, 0.84);
+    }
+
+    .mh-hero-floating {
+        position: absolute;
+        right: 1.3rem;
+        top: 1.35rem;
+        display: grid;
+        gap: 0.7rem;
+        z-index: 3;
+    }
+
+    .float-card {
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.83rem;
+        background: rgba(15, 23, 42, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 0.56rem 0.82rem;
+        border-radius: 999px;
+        backdrop-filter: blur(3px);
+        animation: floatUp 4s ease-in-out infinite;
+    }
+
+    .float-card:nth-child(2) { animation-delay: 0.8s; }
+    .float-card:nth-child(3) { animation-delay: 1.6s; }
+
+    .mh-section { padding: 4.4rem 0 1.2rem; }
+
+    .mh-section-head { margin-bottom: 1.6rem; }
+
+    .mh-section-head span {
+        color: var(--mh-primary-deep);
+        font-weight: 700;
+        font-size: 0.8rem;
+        letter-spacing: 0.7px;
+        text-transform: uppercase;
+        font-family: "Sora", sans-serif;
+    }
+
+    .mh-section-head h2 {
+        margin: 0.4rem 0 0;
+        font-size: clamp(1.7rem, 3vw, 2.55rem);
+        font-weight: 800;
+        font-family: "Sora", sans-serif;
+        letter-spacing: -0.4px;
+    }
+
+    .mh-car-grid {
+        display: grid;
+        gap: 1.1rem;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .mh-car-card {
+        border: 1px solid var(--mh-line);
+        border-radius: 18px;
+        overflow: hidden;
+        background: var(--mh-paper);
+        box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+        transition: transform 0.26s ease, box-shadow 0.26s ease, border-color 0.26s ease;
+    }
+
+    .mh-car-card:hover {
+        transform: translateY(-8px);
+        border-color: #bfdbfe;
+        box-shadow: 0 25px 42px rgba(15, 23, 42, 0.14);
+    }
+
+    .mh-car-card img {
+        width: 100%;
+        height: 214px;
+        object-fit: cover;
+    }
+
+    .mh-car-body { padding: 1rem; }
+
+    .mh-car-body h3 {
+        margin: 0 0 0.42rem;
+        font-size: 1.05rem;
+        font-family: "Sora", sans-serif;
+    }
+
+    .mh-car-body p {
+        margin: 0 0 0.75rem;
+        color: var(--mh-muted);
+        font-size: 0.9rem;
+        min-height: 42px;
+        line-height: 1.5;
+    }
+
+    .mh-car-meta { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.68rem; }
+
+    .mh-car-meta span {
+        font-size: 0.74rem;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: #1e40af;
+        padding: 0.24rem 0.58rem;
+        font-weight: 700;
+    }
+
+    .mh-car-price {
+        font-size: 1.2rem;
+        font-weight: 800;
+        font-family: "Sora", sans-serif;
+    }
+
+    .mh-about {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 1.5rem;
+        align-items: center;
+    }
+
+    .mh-about-text span {
+        color: var(--mh-primary-deep);
+        font-weight: 700;
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        font-family: "Sora", sans-serif;
+    }
+
+    .mh-about-text h2 {
+        margin: 0.48rem 0 0.8rem;
+        font-size: clamp(1.5rem, 3vw, 2.25rem);
+        font-weight: 800;
+        font-family: "Sora", sans-serif;
+    }
+
+    .mh-about-text p {
+        color: var(--mh-muted);
+        margin-bottom: 0.95rem;
+        line-height: 1.68;
+    }
+
+    .mh-about-text ul { margin: 0; padding-left: 1.1rem; color: #1e293b; }
+    .mh-about-text li { margin-bottom: 0.45rem; }
+
+    .mh-about-visual {
+        position: relative;
+        border-radius: 22px;
+        overflow: hidden;
+        min-height: 390px;
+        border: 1px solid #cdd9e8;
+        box-shadow: 0 20px 38px rgba(15, 23, 42, 0.12);
+    }
+
+    .mh-about-visual img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .about-orb {
+        position: absolute;
+        width: 230px;
+        height: 230px;
+        border-radius: 50%;
+        right: -70px;
+        top: -70px;
+        background: radial-gradient(circle, rgba(56, 189, 248, 0.65), rgba(59, 130, 246, 0.05));
+        z-index: 1;
+    }
+
+    .mh-feedback-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .mh-feedback-card {
+        border-radius: 18px;
+        background: linear-gradient(160deg, #ffffff, #f7fafc);
+        border: 1px solid var(--mh-line);
+        padding: 1.15rem;
+        box-shadow: 0 10px 22px rgba(15, 23, 42, 0.07);
+    }
+
+    .mh-feedback-card p {
+        color: #334155;
+        min-height: 90px;
+        font-style: italic;
+        line-height: 1.6;
+    }
+
+    .mh-feedback-card h4 {
+        margin: 0 0 0.2rem;
+        font-size: 1rem;
+        font-family: "Sora", sans-serif;
+    }
+
+    .mh-feedback-card span { color: #64748b; font-size: 0.83rem; }
+
+    .mh-footer-showcase {
+        margin-top: 4rem;
+        border-radius: 24px 24px 0 0;
+        background:
+            radial-gradient(circle at top right, rgba(14, 165, 233, 0.2), transparent 35%),
+            linear-gradient(145deg, #0a1326, #0f172a 58%, #1f2937);
+        color: #e2e8f0;
+        padding: 2.3rem 1.45rem;
+    }
+
+    .footer-grid {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+        gap: 1rem;
+    }
+
+    .footer-grid h3,
+    .footer-grid h5 {
+        color: #fff;
+        margin-top: 0;
+        font-family: "Sora", sans-serif;
+    }
+
+    .footer-grid p { color: #cbd5e1; margin-bottom: 0.55rem; }
+
+    .footer-grid a {
+        display: block;
+        color: #cbd5e1;
+        text-decoration: none;
+        margin-bottom: 0.36rem;
+    }
+
+    .footer-grid a:hover { color: #fff; }
+
+    .footer-note {
+        display: inline-block;
+        margin-top: 0.35rem;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 999px;
+        padding: 0.38rem 0.78rem;
+        font-size: 0.84rem;
+    }
+
+    .reveal {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity .7s ease, transform .7s ease;
+    }
+
+    .reveal.in { opacity: 1; transform: translateY(0); }
+
+    @@keyframes mhZoom { from { transform: scale(1); } to { transform: scale(1.08);} }
+    @@keyframes floatUp { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-6px);} }
+
+    @@media (max-width: 1199px) {
+        .mh-car-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @@media (max-width: 991px) {
+        .mh-page { padding: 0.2rem 0.2rem 0; }
+        .mh-hero { min-height: 570px; }
+        .mh-hero-content { padding: 3rem 1.2rem; }
+        .mh-hero-floating { display: none; }
+        .mh-about { grid-template-columns: 1fr; }
+        .mh-feedback-row { grid-template-columns: 1fr; }
+    }
+
+    @@media (max-width: 700px) {
+        .mh-car-grid { grid-template-columns: 1fr; }
+        .footer-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        (function () {
+            const counters = document.querySelectorAll('.mh-counter');
+            counters.forEach((el) => {
+                const target = Number(el.getAttribute('data-target') || '0');
+                let value = 0;
+                const step = Math.max(1, Math.ceil(target / 60));
+                const timer = setInterval(() => {
+                    value += step;
+                    if (value >= target) {
+                        value = target;
+                        clearInterval(timer);
+                    }
+                    el.textContent = value.toLocaleString();
+                }, 22);
+            });
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in');
+                    }
+                });
+            }, { threshold: 0.14 });
+
+            document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+        })();
+    </script>
+}

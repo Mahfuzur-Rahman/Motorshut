@@ -1,0 +1,112 @@
+@model MotorsHut.Models.Admin.CarFormViewModel
+@{
+    ViewData["Title"] = "Add Car";
+    Layout = "_AdminLayout";
+}
+
+<article class="admin-panel">
+    <h3 class="mb-3">Add New Car</h3>
+
+    <form asp-controller="Admin" asp-action="AddCar" method="post" enctype="multipart/form-data" novalidate>
+        <partial name="_CarForm" model="Model" />
+
+        <div class="mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Save Car</button>
+            <a asp-controller="Admin" asp-action="Cars" class="btn btn-outline-secondary">Back to list</a>
+        </div>
+    </form>
+</article>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const addRowButton = document.getElementById("addImageRowBtn");
+            const rowsHost = document.getElementById("imageUploadRows");
+            const rowTemplate = document.getElementById("imageUploadRowTemplate");
+
+            if (!addRowButton || !rowsHost || !rowTemplate) {
+                return;
+            }
+
+            const maxRows = 10;
+
+            addRowButton.addEventListener("click", function () {
+                addRow();
+            });
+
+            rowsHost.addEventListener("change", function (event) {
+                const input = event.target.closest(".js-image-input");
+                if (!input) {
+                    return;
+                }
+
+                const row = input.closest(".upload-row");
+                if (!row) {
+                    return;
+                }
+
+                updateRowPreview(row, input.files && input.files[0] ? input.files[0] : null);
+            });
+
+            rowsHost.addEventListener("click", function (event) {
+                const removeButton = event.target.closest(".js-remove-row");
+                if (!removeButton) {
+                    return;
+                }
+
+                const row = removeButton.closest(".upload-row");
+                if (!row) {
+                    return;
+                }
+
+                row.remove();
+                ensureAtLeastOneRow();
+                syncAddButtonState();
+            });
+
+            function addRow() {
+                if (rowsHost.querySelectorAll(".upload-row").length >= maxRows) {
+                    return;
+                }
+
+                const node = rowTemplate.content.firstElementChild.cloneNode(true);
+                rowsHost.appendChild(node);
+                syncAddButtonState();
+            }
+
+            function ensureAtLeastOneRow() {
+                if (rowsHost.querySelectorAll(".upload-row").length === 0) {
+                    addRow();
+                }
+            }
+
+            function syncAddButtonState() {
+                addRowButton.disabled = rowsHost.querySelectorAll(".upload-row").length >= maxRows;
+            }
+
+            function updateRowPreview(row, file) {
+                const thumb = row.querySelector(".upload-row-thumb");
+                const name = row.querySelector(".upload-row-file");
+                if (!thumb || !name) {
+                    return;
+                }
+
+                if (!file) {
+                    thumb.classList.add("d-none");
+                    thumb.removeAttribute("src");
+                    name.textContent = "No image selected";
+                    return;
+                }
+
+                const objectUrl = URL.createObjectURL(file);
+                thumb.src = objectUrl;
+                thumb.classList.remove("d-none");
+                name.textContent = file.name;
+            }
+
+            ensureAtLeastOneRow();
+            syncAddButtonState();
+        })();
+    </script>
+}

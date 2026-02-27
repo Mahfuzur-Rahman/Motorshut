@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MotorsHut Admin</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="admin-shell">
+        <aside class="admin-sidebar">
+            <div class="brand-wrap">
+                <div class="brand-mark" aria-hidden="true">
+                    <svg class="brand-car-icon" viewBox="0 0 24 24" fill="none">
+                        <path d="M4 14.5V16a1 1 0 0 0 1 1h1a2 2 0 1 0 4 0h4a2 2 0 1 0 4 0h1a1 1 0 0 0 1-1v-1.5l-1.2-4.1A2 2 0 0 0 16.9 9H7.1a2 2 0 0 0-1.9 1.4L4 14.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                        <path d="M7.5 9 9 6.8A1.5 1.5 0 0 1 10.2 6h3.6A1.5 1.5 0 0 1 15 6.8L16.5 9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                        <circle cx="8" cy="17" r="1.2" fill="currentColor" />
+                        <circle cx="16" cy="17" r="1.2" fill="currentColor" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="brand-title">MotorsHut</div>
+                    <div class="brand-sub">Admin Panel</div>
+                </div>
+            </div>
+
+            <nav class="admin-nav">
+                <a class="admin-nav-link @(Context.Request.Path.Value?.Contains("/admin/dashboard", StringComparison.OrdinalIgnoreCase) == true ? "active" : string.Empty)"
+                   asp-controller="Admin"
+                   asp-action="Dashboard">
+                    Dashboard
+                </a>
+                <a class="admin-nav-link @(Context.Request.Path.Value?.Contains("/admin/cars", StringComparison.OrdinalIgnoreCase) == true ? "active" : string.Empty)"
+                   asp-controller="Admin"
+                   asp-action="Cars">
+                    Cars
+                </a>
+                <a class="admin-nav-link @(Context.Request.Path.Value?.Contains("/admin/register-admin", StringComparison.OrdinalIgnoreCase) == true ? "active" : string.Empty)"
+                   asp-controller="Admin"
+                   asp-action="RegisterAdmin">
+                    Register Admin
+                </a>
+                <a class="admin-nav-link @(Context.Request.Path.Value?.Contains("/change-password", StringComparison.OrdinalIgnoreCase) == true ? "active" : string.Empty)"
+                   asp-controller="Account"
+                   asp-action="ChangePassword">
+                    Change Password
+                </a>
+                <a class="admin-nav-link" asp-controller="Home" asp-action="Index">Back To Site</a>
+                <form asp-controller="Account" asp-action="Logout" method="post" class="admin-nav-form">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="admin-nav-link admin-nav-button">Logout</button>
+                </form>
+            </nav>
+        </aside>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="admin-title">
+                    <svg class="topbar-car-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M4 14.5V16a1 1 0 0 0 1 1h1a2 2 0 1 0 4 0h4a2 2 0 1 0 4 0h1a1 1 0 0 0 1-1v-1.5l-1.2-4.1A2 2 0 0 0 16.9 9H7.1a2 2 0 0 0-1.9 1.4L4 14.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                        <path d="M7.5 9 9 6.8A1.5 1.5 0 0 1 10.2 6h3.6A1.5 1.5 0 0 1 15 6.8L16.5 9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                        <circle cx="8" cy="17" r="1.2" fill="currentColor" />
+                        <circle cx="16" cy="17" r="1.2" fill="currentColor" />
+                    </svg>
+                    <span>@ViewData["Title"]</span>
+                </div>
+                <div class="admin-user">Signed in as @User.Identity?.Name</div>
+            </header>
+            <main class="admin-content">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <script>
+            Swal.fire({
+                toast: true,
+                position: "top-end",
+                icon: "success",
+                title: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(successMessage)),
+                showConfirmButton: false,
+                timer: 2200,
+                timerProgressBar: true
+            });
+        </script>
+    }
+    @if (TempData["ErrorMessage"] is string errorMessage)
+    {
+        <script>
+            Swal.fire({
+                toast: true,
+                position: "top-end",
+                icon: "error",
+                title: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(errorMessage)),
+                showConfirmButton: false,
+                timer: 2600,
+                timerProgressBar: true
+            });
+        </script>
+    }
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

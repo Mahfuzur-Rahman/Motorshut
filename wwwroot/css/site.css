@@ -1,0 +1,93 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.mh-full-page {
+  margin-bottom: 0;
+}
+
+.mh-full-page .navbar {
+  margin-bottom: 0.65rem !important;
+}
+
+.mh-full-page header {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+}
+
+.mh-full-page .navbar {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(6px);
+}
+
+.mh-full-page [id] {
+  scroll-margin-top: 88px;
+}
+
+.mh-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #0f172a;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.mh-brand:hover {
+  color: #1d4ed8;
+}
+
+.mh-brand-text {
+  letter-spacing: 0.2px;
+}
+
+.mh-car-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.mh-nav-link {
+  color: #334155 !important;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 0.42rem 0.7rem !important;
+}
+
+.mh-nav-link:hover {
+  color: #0f172a !important;
+  background: #f1f5f9;
+}
+
+.mh-nav-cta {
+  border: 0;
+  border-radius: 10px;
+  padding: 0.48rem 0.8rem;
+  color: #fff;
+  font-weight: 700;
+  background: linear-gradient(135deg, #0891b2, #2563eb);
+}
+
+.mh-nav-cta:hover {
+  color: #fff;
+  filter: brightness(1.05);
+}

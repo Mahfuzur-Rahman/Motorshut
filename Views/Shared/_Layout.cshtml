@@ -1,0 +1,85 @@
+@{
+    var isFullPage = ViewData["FullPage"] as bool? == true;
+    var hideGlobalFooter = ViewData["HideGlobalFooter"] as bool? == true;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MotorsHut</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/MotorsHut.styles.css" asp-append-version="true" />
+</head>
+<body class="@(isFullPage ? "mh-full-page" : string.Empty)">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="mh-brand" asp-controller="Home" asp-action="Index" aria-label="MotorsHut Home">
+                    <svg class="mh-car-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M4 14.5V16a1 1 0 0 0 1 1h1a2 2 0 1 0 4 0h4a2 2 0 1 0 4 0h1a1 1 0 0 0 1-1v-1.5l-1.2-4.1A2 2 0 0 0 16.9 9H7.1a2 2 0 0 0-1.9 1.4L4 14.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                        <path d="M7.5 9 9 6.8A1.5 1.5 0 0 1 10.2 6h3.6A1.5 1.5 0 0 1 15 6.8L16.5 9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                        <circle cx="8" cy="17" r="1.2" fill="currentColor" />
+                        <circle cx="16" cy="17" r="1.2" fill="currentColor" />
+                    </svg>
+                    <span class="mh-brand-text">MotorsHut</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse">
+                    <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                        <li class="nav-item">
+                            <a class="nav-link mh-nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mh-nav-link" asp-controller="Home" asp-action="Index" asp-fragment="featured">Cars</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mh-nav-link" asp-controller="Home" asp-action="Index" asp-fragment="about">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mh-nav-link" asp-controller="Home" asp-action="Index" asp-fragment="contact">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="@(isFullPage ? "container-fluid px-2 px-lg-3" : "container")">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    @if (!hideGlobalFooter)
+    {
+        <footer class="border-top footer text-muted">
+            <div class="container">
+                &copy; 2026 - MotorsHut - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            </div>
+        </footer>
+    }
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <script>
+            Swal.fire({
+                toast: true,
+                position: "top-end",
+                icon: "success",
+                title: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(successMessage)),
+                showConfirmButton: false,
+                timer: 2200,
+                timerProgressBar: true
+            });
+        </script>
+    }
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

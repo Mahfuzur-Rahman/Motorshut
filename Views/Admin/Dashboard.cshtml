@@ -1,0 +1,75 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_AdminLayout";
+}
+
+<section class="stats-grid">
+    <article class="stat-card">
+        <div class="stat-label">Total Cars</div>
+        <div class="stat-value">1,248</div>
+        <div class="stat-foot">Across all listings</div>
+    </article>
+    <article class="stat-card">
+        <div class="stat-label">Total Sold</div>
+        <div class="stat-value">876</div>
+        <div class="stat-foot">+34 this month</div>
+    </article>
+    <article class="stat-card">
+        <div class="stat-label">In Stock</div>
+        <div class="stat-value">372</div>
+        <div class="stat-foot">Ready to sell</div>
+    </article>
+    <article class="stat-card">
+        <div class="stat-label">Cars Returned</div>
+        <div class="stat-value">19</div>
+        <div class="stat-foot">1.6% return rate</div>
+    </article>
+</section>
+
+<section class="insights-grid">
+    <article class="admin-panel">
+        <h3>Customer Visits (Last 7 Days)</h3>
+        <div class="visit-chart">
+            <div class="visit-bars">
+                <div class="visit-bar-wrap"><div class="visit-bar" style="height: 48%"></div><span>Mon</span></div>
+                <div class="visit-bar-wrap"><div class="visit-bar" style="height: 55%"></div><span>Tue</span></div>
+                <div class="visit-bar-wrap"><div class="visit-bar" style="height: 64%"></div><span>Wed</span></div>
+                <div class="visit-bar-wrap"><div class="visit-bar" style="height: 72%"></div><span>Thu</span></div>
+                <div class="visit-bar-wrap"><div class="visit-bar" style="height: 82%"></div><span>Fri</span></div>
+                <div class="visit-bar-wrap"><div class="visit-bar" style="height: 76%"></div><span>Sat</span></div>
+                <div class="visit-bar-wrap"><div class="visit-bar" style="height: 61%"></div><span>Sun</span></div>
+            </div>
+            <div class="visit-meta">
+                <strong>4,382 total visits</strong>
+                <span>+12% vs last week</span>
+            </div>
+        </div>
+    </article>
+
+    <article class="admin-panel">
+        <h3>Recent Activity</h3>
+        <ul class="activity-list">
+            <li>12 new cars added to inventory.</li>
+            <li>8 cars sold in the last 24 hours.</li>
+            <li>2 return requests need approval.</li>
+            <li>5 listings waiting for price review.</li>
+        </ul>
+    </article>
+</section>
+
+<section class="panel-row">
+    <article class="admin-panel">
+        <h3>Quick Actions</h3>
+        <div class="quick-actions">
+            <a class="btn btn-primary" asp-controller="Admin" asp-action="AddCar">Add New Car</a>
+            <a class="btn btn-outline-dark" asp-controller="Admin" asp-action="Cars">Manage Cars</a>
+            <a class="btn btn-outline-primary" asp-controller="Admin" asp-action="RegisterAdmin">Register Admin</a>
+            <button type="button" class="btn btn-outline-secondary">Export Report</button>
+            <a class="btn btn-outline-dark" asp-controller="Account" asp-action="ChangePassword">Change Password</a>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
+        </div>
+    </article>
+</section>

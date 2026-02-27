@@ -1,0 +1,83 @@
+@model MotorsHut.Models.Admin.CarFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="Make" class="form-label"></label>
+        <input asp-for="Make" class="form-control" />
+        <span asp-validation-for="Make" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Model" class="form-label"></label>
+        <input asp-for="Model" class="form-control" />
+        <span asp-validation-for="Model" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Variant" class="form-label"></label>
+        <input asp-for="Variant" class="form-control" />
+        <span asp-validation-for="Variant" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Year" class="form-label"></label>
+        <input asp-for="Year" class="form-control" />
+        <span asp-validation-for="Year" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Price" class="form-label"></label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="MileageKm" class="form-label"></label>
+        <input asp-for="MileageKm" class="form-control" />
+        <span asp-validation-for="MileageKm" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Color" class="form-label"></label>
+        <input asp-for="Color" class="form-control" />
+        <span asp-validation-for="Color" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Vin" class="form-label"></label>
+        <input asp-for="Vin" class="form-control" />
+        <span asp-validation-for="Vin" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <div class="form-check mt-4">
+            <input asp-for="IsSold" class="form-check-input" />
+            <label asp-for="IsSold" class="form-check-label"></label>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-check mt-4">
+            <input asp-for="IsReturned" class="form-check-input" />
+            <label asp-for="IsReturned" class="form-check-label"></label>
+        </div>
+    </div>
+    <div class="col-12">
+        <label asp-for="NewImages" class="form-label"></label>
+        <span asp-validation-for="NewImages" class="text-danger"></span>
+        <div class="form-text mb-2">Upload up to 10 images. Max size: 5 MB per image.</div>
+
+        <div class="upload-rows-toolbar">
+            <button type="button" id="addImageRowBtn" class="btn btn-sm btn-outline-primary">Add Image</button>
+        </div>
+        <div id="imageUploadRows" class="upload-rows-table mt-2"></div>
+
+        <template id="imageUploadRowTemplate">
+            <div class="upload-row">
+                <div class="upload-row-col upload-row-input">
+                    <input type="file" name="NewImages" class="form-control js-image-input" accept=".jpg,.jpeg,.png,.webp" />
+                </div>
+                <div class="upload-row-col upload-row-preview">
+                    <img class="upload-row-thumb d-none" alt="Selected image preview" />
+                    <span class="upload-row-file text-muted small">No image selected</span>
+                </div>
+                <div class="upload-row-col upload-row-actions">
+                    <button type="button" class="btn btn-sm btn-outline-danger js-remove-row">Remove</button>
+                </div>
+            </div>
+        </template>
+    </div>
+</div>
