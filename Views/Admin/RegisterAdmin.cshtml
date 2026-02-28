@@ -1,59 +1,796 @@
-@model MotorsHut.Models.Admin.RegisterAdminViewModel
+﻿@model MotorsHut.Models.Admin.RegisterAdminViewModel
 @{
     ViewData["Title"] = "Register Admin";
-    Layout = "_AdminLayout";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="row justify-content-center">
-    <div class="col-lg-7">
-        <article class="admin-panel">
-            <h3 class="mb-3">Create New Admin Account</h3>
+<style>
+    /* ── Tokens ─────────────────────────────────── */
+    :root {
+        --amber:      #f59e0b;
+        --amber-deep: #d97706;
+        --amber-glow: rgba(245,158,11,0.1);
+        --surface:    #0d1220;
+        --border:     rgba(255,255,255,0.065);
+        --text:       #e2e8f0;
+        --muted:      #64748b;
+        --muted2:     #94a3b8;
+        --red:        #f87171;
+    }
 
-            <form asp-controller="Admin" asp-action="RegisterAdmin" method="post" novalidate>
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+    /* ── Layout ─────────────────────────────────── */
+    .ra-layout {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 1.4rem;
+        max-width: 900px;
+        align-items: start;
+    }
 
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label asp-for="FirstName" class="form-label"></label>
-                        <input asp-for="FirstName" class="form-control" />
-                        <span asp-validation-for="FirstName" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-6">
-                        <label asp-for="LastName" class="form-label"></label>
-                        <input asp-for="LastName" class="form-control" />
-                        <span asp-validation-for="LastName" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-6">
-                        <label asp-for="UserName" class="form-label"></label>
-                        <input asp-for="UserName" class="form-control" />
-                        <span asp-validation-for="UserName" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-6">
-                        <label asp-for="Email" class="form-label"></label>
-                        <input asp-for="Email" class="form-control" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-6">
-                        <label asp-for="Password" class="form-label"></label>
-                        <input asp-for="Password" class="form-control" />
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-6">
-                        <label asp-for="ConfirmPassword" class="form-label"></label>
-                        <input asp-for="ConfirmPassword" class="form-control" />
-                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                    </div>
-                </div>
+    /* ── Page header ────────────────────────────── */
+    .ra-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.6rem;
+        max-width: 900px;
+    }
 
-                <div class="mt-4 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Register Admin</button>
-                    <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-outline-secondary">Cancel</a>
-                </div>
-            </form>
-        </article>
+    .ra-header__left { display: flex; align-items: center; gap: 0.85rem; }
+
+    .ra-header__icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 13px;
+        background: var(--amber-glow);
+        border: 1px solid rgba(245,158,11,0.22);
+        display: grid;
+        place-items: center;
+        color: var(--amber);
+        flex-shrink: 0;
+    }
+
+    .ra-header__title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 2rem;
+        letter-spacing: 0.04em;
+        color: var(--text);
+        line-height: 1;
+        margin: 0 0 0.2rem;
+    }
+
+    .ra-header__sub { font-size: 0.82rem; color: var(--muted); }
+
+    .ra-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: var(--muted2);
+        text-decoration: none;
+        padding: 0.45rem 0.9rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: rgba(255,255,255,0.03);
+        transition: color 0.18s, background 0.18s, border-color 0.18s;
+        white-space: nowrap;
+    }
+
+    .ra-back:hover {
+        color: var(--text);
+        background: rgba(255,255,255,0.06);
+        border-color: rgba(255,255,255,0.12);
+    }
+
+    /* ── Main card ──────────────────────────────── */
+    .ra-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .ra-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 10%;
+        right: 10%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(245,158,11,0.35), transparent);
+    }
+
+    .ra-card__head {
+        padding: 1rem 1.4rem;
+        border-bottom: 1px solid var(--border);
+        background: rgba(255,255,255,0.018);
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+    }
+
+    .ra-card__icon {
+        width: 30px;
+        height: 30px;
+        background: var(--amber-glow);
+        border: 1px solid rgba(245,158,11,0.2);
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        color: var(--amber);
+        flex-shrink: 0;
+    }
+
+    .ra-card__title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.1rem;
+        letter-spacing: 0.06em;
+        color: var(--text);
+        margin: 0;
+    }
+
+    .ra-card__body { padding: 1.6rem 1.4rem; }
+
+    /* ── Alert ──────────────────────────────────── */
+    .ra-alert {
+        background: rgba(248,113,113,0.08);
+        border: 1px solid rgba(248,113,113,0.2);
+        border-radius: 9px;
+        padding: 0.75rem 1rem;
+        color: var(--red);
+        font-size: 0.84rem;
+        margin-bottom: 1.3rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.55rem;
+    }
+
+    .ra-alert:empty { display: none; }
+
+    .ra-alert__icon { flex-shrink: 0; margin-top: 1px; }
+
+    /* ── Section label ──────────────────────────── */
+    .ra-section-label {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding-bottom: 0.6rem;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 1.1rem;
+        margin-top: 1.4rem;
+    }
+
+    .ra-section-label:first-child { margin-top: 0; }
+
+    /* ── Fields ─────────────────────────────────── */
+    .ra-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .ra-field { display: flex; flex-direction: column; gap: 0.35rem; }
+    .ra-field--full { grid-column: 1 / -1; }
+
+    .ra-label {
+        font-size: 0.73rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted2);
+    }
+
+    .ra-input-wrap { position: relative; }
+
+    .ra-input-icon {
+        position: absolute;
+        left: 0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--muted);
+        pointer-events: none;
+        transition: color 0.18s;
+    }
+
+    .ra-input {
+        width: 100%;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        padding: 0.68rem 1rem 0.68rem 2.5rem;
+        color: var(--text);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.9rem;
+        outline: none;
+        transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+    }
+
+    .ra-input::placeholder { color: #334155; }
+
+    .ra-input:focus {
+        border-color: rgba(245,158,11,0.4);
+        background: rgba(245,158,11,0.04);
+        box-shadow: 0 0 0 3px rgba(245,158,11,0.07);
+    }
+
+    .ra-input-wrap:focus-within .ra-input-icon { color: var(--amber); }
+
+    .ra-input.input-validation-error {
+        border-color: rgba(248,113,113,0.45);
+        background: rgba(248,113,113,0.04);
+    }
+
+    .ra-error {
+        font-size: 0.74rem;
+        color: var(--red);
+    }
+
+    /* Password toggle */
+    .ra-pw-toggle {
+        position: absolute;
+        right: 0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        padding: 2px;
+        transition: color 0.18s;
+    }
+
+    .ra-pw-toggle:hover { color: var(--muted2); }
+    .ra-input--pw { padding-right: 2.8rem; }
+
+    /* ── Strength meter ─────────────────────────── */
+    .ra-strength {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-top: 0.5rem;
+    }
+
+    .ra-strength__bars {
+        display: flex;
+        gap: 3px;
+        flex: 1;
+    }
+
+    .ra-strength__bar {
+        height: 3px;
+        flex: 1;
+        border-radius: 99px;
+        background: rgba(255,255,255,0.08);
+        transition: background 0.3s;
+    }
+
+    .ra-strength__bar.weak   { background: #f87171; }
+    .ra-strength__bar.fair   { background: #fbbf24; }
+    .ra-strength__bar.good   { background: #34d399; }
+    .ra-strength__bar.strong { background: #10b981; }
+
+    .ra-strength__label {
+        font-size: 0.71rem;
+        color: var(--muted);
+        min-width: 42px;
+        text-align: right;
+        font-weight: 600;
+        transition: color 0.3s;
+    }
+
+    /* ── Password match badge ───────────────────── */
+    .ra-match {
+        font-size: 0.73rem;
+        font-weight: 500;
+        margin-top: 0.4rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    .ra-match.visible  { opacity: 1; }
+    .ra-match.matched  { color: #34d399; }
+    .ra-match.mismatch { color: var(--red); }
+
+    /* ── Actions ────────────────────────────────── */
+    .ra-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        padding: 1.1rem 1.4rem;
+        border-top: 1px solid var(--border);
+        background: rgba(255,255,255,0.012);
+        flex-wrap: wrap;
+    }
+
+    .ra-btn-submit {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.88rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        padding: 0.68rem 1.5rem;
+        border-radius: 9px;
+        border: none;
+        background: linear-gradient(135deg, var(--amber-deep), var(--amber));
+        color: #0f1623;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        box-shadow: 0 4px 14px rgba(245,158,11,0.28);
+        transition: filter 0.18s, transform 0.15s, box-shadow 0.18s;
+    }
+
+    .ra-btn-submit:hover {
+        filter: brightness(1.08);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 22px rgba(245,158,11,0.36);
+    }
+
+    .ra-btn-cancel {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        padding: 0.65rem 1.1rem;
+        border-radius: 9px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.03);
+        color: var(--muted2);
+        text-decoration: none;
+        font-family: 'DM Sans', sans-serif;
+        transition: color 0.18s, background 0.18s, border-color 0.18s;
+    }
+
+    .ra-btn-cancel:hover {
+        color: var(--text);
+        background: rgba(255,255,255,0.06);
+        border-color: rgba(255,255,255,0.12);
+    }
+
+    /* ── Side panel ─────────────────────────────── */
+    .ra-side { display: flex; flex-direction: column; gap: 1rem; }
+
+    /* Avatar preview */
+    .ra-avatar-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.4rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.8rem;
+        text-align: center;
+    }
+
+    .ra-avatar {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--amber-deep), var(--amber));
+        display: grid;
+        place-items: center;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.9rem;
+        letter-spacing: 0.06em;
+        color: #0f1623;
+        box-shadow: 0 6px 24px rgba(245,158,11,0.3);
+        transition: all 0.25s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ra-avatar::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.2), transparent 60%);
+        border-radius: 50%;
+    }
+
+    .ra-avatar__initials {
+        position: relative;
+        z-index: 1;
+        letter-spacing: 0.04em;
+    }
+
+    .ra-avatar-name {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--text);
+        min-height: 1.2em;
+        transition: all 0.2s;
+    }
+
+    .ra-avatar-role {
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--amber);
+        background: var(--amber-glow);
+        border: 1px solid rgba(245,158,11,0.18);
+        border-radius: 99px;
+        padding: 0.2rem 0.7rem;
+    }
+
+    .ra-avatar-username {
+        font-size: 0.76rem;
+        color: var(--muted);
+        min-height: 1em;
+        transition: all 0.2s;
+    }
+
+    /* Info card */
+    .ra-info-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.2rem 1.3rem;
+    }
+
+    .ra-info-card__title {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 0.9rem;
+        padding-bottom: 0.6rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .ra-info-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .ra-info-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.55rem;
+        font-size: 0.8rem;
+        color: var(--muted2);
+        line-height: 1.5;
+    }
+
+    .ra-info-list__dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--amber);
+        flex-shrink: 0;
+        margin-top: 0.45em;
+    }
+
+    @@media (max-width: 750px) {
+        .ra-layout { grid-template-columns: 1fr; }
+        .ra-side { display: none; }
+        .ra-grid { grid-template-columns: 1fr; }
+        .ra-field--full { grid-column: 1; }
+    }
+</style>
+
+<!-- Page header -->
+<div class="ra-header">
+    <div class="ra-header__left">
+        <div class="ra-header__icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+                <line x1="19" y1="8" x2="19" y2="14"/>
+                <line x1="22" y1="11" x2="16" y2="11"/>
+            </svg>
+        </div>
+        <div>
+            <h1 class="ra-header__title">Register Admin</h1>
+            <div class="ra-header__sub">Create a new administrator account for the MotorsHut panel</div>
+        </div>
     </div>
+    <a asp-controller="Admin" asp-action="Dashboard" class="ra-back">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Dashboard
+    </a>
 </div>
+
+<!-- Two-column layout -->
+<div class="ra-layout">
+
+    <!-- ── Main form card ── -->
+    <div class="ra-card">
+        <div class="ra-card__head">
+            <div class="ra-card__icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+                    <line x1="19" y1="8" x2="19" y2="14"/>
+                    <line x1="22" y1="11" x2="16" y2="11"/>
+                </svg>
+            </div>
+            <h3 class="ra-card__title">New Admin Account</h3>
+        </div>
+
+        <form asp-controller="Admin" asp-action="RegisterAdmin" method="post" novalidate id="raForm">
+            <div class="ra-card__body">
+
+                <!-- Validation summary -->
+                <div asp-validation-summary="ModelOnly" class="ra-alert">
+                    <svg class="ra-alert__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    <span></span>
+                </div>
+
+                <!-- Personal info -->
+                <div class="ra-section-label">Personal Information</div>
+                <div class="ra-grid">
+                    <div class="ra-field">
+                        <label asp-for="FirstName" class="ra-label"></label>
+                        <div class="ra-input-wrap">
+                            <input asp-for="FirstName" class="ra-input" placeholder="First name"
+                                   autocomplete="given-name" id="raFirstName"
+                                   oninput="updatePreview()" />
+                            <svg class="ra-input-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </div>
+                        <span asp-validation-for="FirstName" class="ra-error"></span>
+                    </div>
+
+                    <div class="ra-field">
+                        <label asp-for="LastName" class="ra-label"></label>
+                        <div class="ra-input-wrap">
+                            <input asp-for="LastName" class="ra-input" placeholder="Last name"
+                                   autocomplete="family-name" id="raLastName"
+                                   oninput="updatePreview()" />
+                            <svg class="ra-input-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </div>
+                        <span asp-validation-for="LastName" class="ra-error"></span>
+                    </div>
+                </div>
+
+                <!-- Account info -->
+                <div class="ra-section-label">Account Details</div>
+                <div class="ra-grid">
+                    <div class="ra-field">
+                        <label asp-for="UserName" class="ra-label"></label>
+                        <div class="ra-input-wrap">
+                            <input asp-for="UserName" class="ra-input" placeholder="username"
+                                   autocomplete="username" id="raUsername"
+                                   oninput="updatePreview()" />
+                            <svg class="ra-input-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                            </svg>
+                        </div>
+                        <span asp-validation-for="UserName" class="ra-error"></span>
+                    </div>
+
+                    <div class="ra-field">
+                        <label asp-for="Email" class="ra-label"></label>
+                        <div class="ra-input-wrap">
+                            <input asp-for="Email" class="ra-input" placeholder="admin@example.com" autocomplete="email" />
+                            <svg class="ra-input-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 9l10 6 10-6"/>
+                            </svg>
+                        </div>
+                        <span asp-validation-for="Email" class="ra-error"></span>
+                    </div>
+                </div>
+
+                <!-- Security -->
+                <div class="ra-section-label">Security</div>
+                <div class="ra-grid">
+                    <div class="ra-field">
+                        <label asp-for="Password" class="ra-label"></label>
+                        <div class="ra-input-wrap">
+                            <input asp-for="Password" class="ra-input ra-input--pw" type="password"
+                                   placeholder="Create password" autocomplete="new-password"
+                                   id="raPwd" oninput="updateStrength(this.value); checkMatch()" />
+                            <svg class="ra-input-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                            <button type="button" class="ra-pw-toggle" onclick="togglePw(this)" tabindex="-1" aria-label="Toggle password">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <!-- Strength meter -->
+                        <div class="ra-strength" id="raStrength" style="display:none">
+                            <div class="ra-strength__bars">
+                                <div class="ra-strength__bar" id="rsb1"></div>
+                                <div class="ra-strength__bar" id="rsb2"></div>
+                                <div class="ra-strength__bar" id="rsb3"></div>
+                                <div class="ra-strength__bar" id="rsb4"></div>
+                            </div>
+                            <span class="ra-strength__label" id="raStrengthLabel"></span>
+                        </div>
+                        <span asp-validation-for="Password" class="ra-error"></span>
+                    </div>
+
+                    <div class="ra-field">
+                        <label asp-for="ConfirmPassword" class="ra-label"></label>
+                        <div class="ra-input-wrap">
+                            <input asp-for="ConfirmPassword" class="ra-input ra-input--pw" type="password"
+                                   placeholder="Confirm password" autocomplete="new-password"
+                                   id="raConfirm" oninput="checkMatch()" />
+                            <svg class="ra-input-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                            <button type="button" class="ra-pw-toggle" onclick="togglePw(this)" tabindex="-1" aria-label="Toggle password">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <!-- Match indicator -->
+                        <div class="ra-match" id="raMatch">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="raMatchIcon">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            <span id="raMatchText">Passwords match</span>
+                        </div>
+                        <span asp-validation-for="ConfirmPassword" class="ra-error"></span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Actions -->
+            <div class="ra-actions">
+                <button type="submit" class="ra-btn-submit">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+                        <line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
+                    </svg>
+                    Register Admin
+                </button>
+                <a asp-controller="Admin" asp-action="Dashboard" class="ra-btn-cancel">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- ── Side panel ── -->
+    <aside class="ra-side">
+
+        <!-- Live avatar preview -->
+        <div class="ra-avatar-card">
+            <div class="ra-avatar">
+                <span class="ra-avatar__initials" id="raAvatarInitials">AD</span>
+            </div>
+            <div class="ra-avatar-name" id="raAvatarName">New Administrator</div>
+            <div class="ra-avatar-role">Administrator</div>
+            <div class="ra-avatar-username" id="raAvatarUsername">@@username</div>
+        </div>
+
+        <!-- Password tips -->
+        <div class="ra-info-card">
+            <div class="ra-info-card__title">Password Requirements</div>
+            <ul class="ra-info-list">
+                <li><span class="ra-info-list__dot"></span>At least 8 characters long</li>
+                <li><span class="ra-info-list__dot"></span>One uppercase letter (A–Z)</li>
+                <li><span class="ra-info-list__dot"></span>One number (0–9)</li>
+                <li><span class="ra-info-list__dot"></span>One special character (!@@#$…)</li>
+            </ul>
+        </div>
+
+        <!-- Access note -->
+        <div class="ra-info-card">
+            <div class="ra-info-card__title">Admin Access</div>
+            <ul class="ra-info-list">
+                <li><span class="ra-info-list__dot"></span>Full dashboard access</li>
+                <li><span class="ra-info-list__dot"></span>Manage car listings</li>
+                <li><span class="ra-info-list__dot"></span>Register new admins</li>
+                <li><span class="ra-info-list__dot"></span>Credentials are sent to the provided email</li>
+            </ul>
+        </div>
+
+    </aside>
+
+</div><!-- /.ra-layout -->
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        // ── Toggle password visibility ──────────────
+        function togglePw(btn) {
+            const input = btn.closest('.ra-input-wrap').querySelector('input');
+            const isText = input.type === 'text';
+            input.type = isText ? 'password' : 'text';
+            btn.innerHTML = isText
+                ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
+                : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+        }
+
+        // ── Password strength ───────────────────────
+        function updateStrength(val) {
+            const wrap  = document.getElementById('raStrength');
+            const label = document.getElementById('raStrengthLabel');
+            const bars  = ['rsb1','rsb2','rsb3','rsb4'].map(id => document.getElementById(id));
+
+            if (!val) { wrap.style.display = 'none'; return; }
+            wrap.style.display = 'flex';
+
+            let score = 0;
+            if (val.length >= 8)            score++;
+            if (/[A-Z]/.test(val))          score++;
+            if (/[0-9]/.test(val))          score++;
+            if (/[^A-Za-z0-9]/.test(val))   score++;
+
+            const cls    = ['','weak','fair','good','strong'];
+            const labels = ['','Weak','Fair','Good','Strong'];
+            const colors = ['','#f87171','#fbbf24','#34d399','#10b981'];
+
+            bars.forEach((b, i) => {
+                b.className = 'ra-strength__bar' + (i < score ? ` ${cls[score]}` : '');
+            });
+            label.textContent = labels[score];
+            label.style.color = colors[score];
+        }
+
+        // ── Password match ──────────────────────────
+        function checkMatch() {
+            const pwd     = document.getElementById('raPwd').value;
+            const confirm = document.getElementById('raConfirm').value;
+            const el      = document.getElementById('raMatch');
+            const icon    = document.getElementById('raMatchIcon');
+            const text    = document.getElementById('raMatchText');
+
+            if (!confirm) { el.classList.remove('visible'); return; }
+
+            el.classList.add('visible');
+            if (pwd === confirm) {
+                el.className = 'ra-match visible matched';
+                icon.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+                text.textContent = 'Passwords match';
+            } else {
+                el.className = 'ra-match visible mismatch';
+                icon.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
+                text.textContent = 'Passwords do not match';
+            }
+        }
+
+        // ── Live avatar preview ─────────────────────
+        function updatePreview() {
+            const first    = document.getElementById('raFirstName').value.trim();
+            const last     = document.getElementById('raLastName').value.trim();
+            const username = document.getElementById('raUsername').value.trim();
+
+            // Initials
+            const initials = ((first[0] || '') + (last[0] || '')).toUpperCase() || 'AD';
+            document.getElementById('raAvatarInitials').textContent = initials;
+
+            // Full name
+            const fullName = [first, last].filter(Boolean).join(' ');
+            document.getElementById('raAvatarName').textContent = fullName || 'New Administrator';
+
+           
+            document.getElementById('raAvatarUsername').textContent = username ? ('@@' + username) : '@@username';
+        }
+    </script>
 }

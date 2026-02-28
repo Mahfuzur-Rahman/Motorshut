@@ -31,7 +31,11 @@ public sealed class AdminController : Controller
     {
         return View();
     }
-
+    [HttpGet("dashboard2")]
+    public IActionResult Dashboard2()
+    {
+        return View();
+    }
     [HttpGet("cars")]
     public async Task<IActionResult> Cars(string? search, CancellationToken cancellationToken)
     {

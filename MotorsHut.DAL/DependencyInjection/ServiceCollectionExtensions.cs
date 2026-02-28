@@ -14,22 +14,48 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddDal(this IServiceCollection services, IConfiguration configuration)
     {
-        var rawConnectionString = configuration.GetConnectionString("DefaultConnection")
-            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' was not found.");
-        var connectionString = NormalizeConnectionString(rawConnectionString);
-        var mySqlVersion = configuration["Database:MySqlVersion"] ?? "8.0.36";
-        var parsed = Version.TryParse(mySqlVersion, out var version);
-        var serverVersion = new MySqlServerVersion(parsed ? version! : new Version(8, 0, 36));
+        var provider = (configuration["Database:Provider"] ?? "mysql").Trim().ToLowerInvariant();
 
         services.AddDbContext<MotorsHutDbContext>(options =>
-            options.UseMySql(
-                connectionString,
-                serverVersion,
-                mySqlOptions =>
+        {
+            switch (provider)
+            {
+                case "mysql":
                 {
-                    mySqlOptions.MigrationsAssembly(typeof(MotorsHutDbContext).Assembly.FullName);
-                    mySqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-                }));
+                    var rawConnectionString = GetConnectionString(configuration, "MySqlConnection");
+                    var connectionString = NormalizeMySqlConnectionString(rawConnectionString);
+                    var mySqlVersion = configuration["Database:MySqlVersion"] ?? "8.0.36";
+                    var parsed = Version.TryParse(mySqlVersion, out var version);
+                    var serverVersion = new MySqlServerVersion(parsed ? version! : new Version(8, 0, 36));
+
+                    options.UseMySql(
+                        connectionString,
+                        serverVersion,
+                        mySqlOptions =>
+                        {
+                            mySqlOptions.MigrationsAssembly(typeof(MotorsHutDbContext).Assembly.FullName);
+                            mySqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+                        });
+                    break;
+                }
+                case "mssql":
+                case "sqlserver":
+                {
+                    var connectionString = GetConnectionString(configuration, "SqlServerConnection");
+                    options.UseSqlServer(
+                        connectionString,
+                        sqlOptions =>
+                        {
+                            sqlOptions.MigrationsAssembly(typeof(MotorsHutDbContext).Assembly.FullName);
+                            sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+                        });
+                    break;
+                }
+                default:
+                    throw new InvalidOperationException(
+                        "Unsupported Database:Provider value. Use 'mysql' or 'mssql'.");
+            }
+        });
 
         services
             .AddIdentity<ApplicationUser, ApplicationRole>(options =>
@@ -54,7 +80,18 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private static string NormalizeConnectionString(string connectionString)
+    private static string GetConnectionString(IConfiguration configuration, string preferredKey)
+    {
+        var value = configuration.GetConnectionString(preferredKey)
+            ?? configuration.GetConnectionString("DefaultConnection");
+
+        return !string.IsNullOrWhiteSpace(value)
+            ? value
+            : throw new InvalidOperationException(
+                $"Connection string '{preferredKey}' was not found. Configure it under ConnectionStrings.");
+    }
+
+    private static string NormalizeMySqlConnectionString(string connectionString)
     {
         // Keep app bootable when placeholder appsettings values are still present.
         return connectionString

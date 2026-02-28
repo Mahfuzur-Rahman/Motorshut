@@ -1,75 +1,620 @@
 @{
     ViewData["Title"] = "Dashboard";
-    Layout = "_AdminLayout";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<section class="stats-grid">
-    <article class="stat-card">
-        <div class="stat-label">Total Cars</div>
-        <div class="stat-value">1,248</div>
-        <div class="stat-foot">Across all listings</div>
-    </article>
-    <article class="stat-card">
-        <div class="stat-label">Total Sold</div>
-        <div class="stat-value">876</div>
-        <div class="stat-foot">+34 this month</div>
-    </article>
-    <article class="stat-card">
-        <div class="stat-label">In Stock</div>
-        <div class="stat-value">372</div>
-        <div class="stat-foot">Ready to sell</div>
-    </article>
-    <article class="stat-card">
-        <div class="stat-label">Cars Returned</div>
-        <div class="stat-value">19</div>
-        <div class="stat-foot">1.6% return rate</div>
-    </article>
-</section>
+<style>
+    :root {
+        --amber:      #f59e0b;
+        --amber-deep: #d97706;
+        --amber-glow: rgba(245,158,11,0.1);
+        --bg:         #06090f;
+        --surface:    #0d1220;
+        --surface2:   #111827;
+        --border:     rgba(255,255,255,0.065);
+        --text:       #e2e8f0;
+        --muted:      #64748b;
+        --muted2:     #94a3b8;
+        --green:      #10b981;
+        --red:        #f87171;
+    }
 
-<section class="insights-grid">
-    <article class="admin-panel">
-        <h3>Customer Visits (Last 7 Days)</h3>
-        <div class="visit-chart">
-            <div class="visit-bars">
-                <div class="visit-bar-wrap"><div class="visit-bar" style="height: 48%"></div><span>Mon</span></div>
-                <div class="visit-bar-wrap"><div class="visit-bar" style="height: 55%"></div><span>Tue</span></div>
-                <div class="visit-bar-wrap"><div class="visit-bar" style="height: 64%"></div><span>Wed</span></div>
-                <div class="visit-bar-wrap"><div class="visit-bar" style="height: 72%"></div><span>Thu</span></div>
-                <div class="visit-bar-wrap"><div class="visit-bar" style="height: 82%"></div><span>Fri</span></div>
-                <div class="visit-bar-wrap"><div class="visit-bar" style="height: 76%"></div><span>Sat</span></div>
-                <div class="visit-bar-wrap"><div class="visit-bar" style="height: 61%"></div><span>Sun</span></div>
+    .db-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.8rem;
+    }
+
+    .db-header__title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 2rem;
+        letter-spacing: 0.04em;
+        color: var(--text);
+        line-height: 1;
+        margin: 0 0 0.3rem;
+    }
+
+    .db-header__sub {
+        font-size: 0.83rem;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .db-header__sub .live-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 0 4px rgba(16,185,129,0.18);
+        animation: livePulse 2s ease infinite;
+    }
+
+    @@keyframes livePulse {
+        0%,100% { box-shadow: 0 0 0 4px rgba(16,185,129,0.18); }
+        50%      { box-shadow: 0 0 0 8px rgba(16,185,129,0.05); }
+    }
+
+    .db-header__date {
+        font-size: 0.78rem;
+        color: var(--muted);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.4rem 0.85rem;
+        white-space: nowrap;
+        align-self: flex-start;
+    }
+
+    /* Stat cards */
+    .db-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .db-stat {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.2rem 1.3rem;
+        position: relative;
+        overflow: hidden;
+        transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .db-stat:hover {
+        border-color: rgba(245,158,11,0.22);
+        transform: translateY(-2px);
+    }
+
+    .db-stat::before {
+        content: '';
+        position: absolute;
+        top: -30px; right: -30px;
+        width: 90px; height: 90px;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--stat-color, rgba(245,158,11,0.14)), transparent 70%);
+        pointer-events: none;
+    }
+
+    .db-stat--amber { --stat-color: rgba(245,158,11,0.16); }
+    .db-stat--green { --stat-color: rgba(16,185,129,0.14); }
+    .db-stat--blue  { --stat-color: rgba(59,130,246,0.14); }
+    .db-stat--red   { --stat-color: rgba(248,113,113,0.14); }
+
+    .db-stat__top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.9rem;
+    }
+
+    .db-stat__label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: var(--muted);
+    }
+
+    .db-stat__icon {
+        width: 34px; height: 34px;
+        border-radius: 9px;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+    }
+
+    .db-stat--amber .db-stat__icon { background: rgba(245,158,11,0.12); color: var(--amber); }
+    .db-stat--green .db-stat__icon { background: rgba(16,185,129,0.12); color: var(--green); }
+    .db-stat--blue  .db-stat__icon { background: rgba(59,130,246,0.12); color: #60a5fa; }
+    .db-stat--red   .db-stat__icon { background: rgba(248,113,113,0.12); color: var(--red); }
+
+    .db-stat__value {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 2.4rem;
+        letter-spacing: 0.04em;
+        color: var(--text);
+        line-height: 1;
+        margin-bottom: 0.4rem;
+    }
+
+    .db-stat__foot {
+        font-size: 0.78rem;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        flex-wrap: wrap;
+    }
+
+    .db-stat__trend {
+        font-size: 0.74rem;
+        font-weight: 700;
+        padding: 0.12rem 0.42rem;
+        border-radius: 5px;
+    }
+
+    .db-stat__trend--up   { background: rgba(16,185,129,0.12); color: var(--green); }
+    .db-stat__trend--down { background: rgba(248,113,113,0.12); color: var(--red); }
+
+    /* Middle */
+    .db-mid {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .db-panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.3rem 1.4rem;
+    }
+
+    .db-panel__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.2rem;
+    }
+
+    .db-panel__title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.1rem;
+        letter-spacing: 0.06em;
+        color: var(--text);
+        margin: 0;
+    }
+
+    .db-panel__badge {
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 0.22rem 0.6rem;
+        border-radius: 999px;
+        background: var(--amber-glow);
+        border: 1px solid rgba(245,158,11,0.2);
+        color: var(--amber);
+        letter-spacing: 0.05em;
+    }
+
+    /* Bar chart */
+    .db-chart { display: flex; flex-direction: column; gap: 0.9rem; }
+
+    .db-bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 0.5rem;
+        height: 130px;
+    }
+
+    .db-bar-col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4rem;
+        height: 100%;
+        justify-content: flex-end;
+    }
+
+    .db-bar {
+        width: 100%;
+        border-radius: 6px 6px 0 0;
+        background: linear-gradient(180deg, var(--amber) 0%, var(--amber-deep) 100%);
+        position: relative;
+        transition: filter 0.2s;
+        min-height: 4px;
+        cursor: pointer;
+    }
+
+    .db-bar:hover { filter: brightness(1.2); }
+
+    .db-bar::after {
+        content: attr(data-val);
+        position: absolute;
+        top: -22px; left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: var(--muted2);
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 0.2s;
+        background: var(--surface2);
+        padding: 2px 5px;
+        border-radius: 4px;
+    }
+
+    .db-bar:hover::after { opacity: 1; }
+
+    .db-bar-day {
+        font-size: 0.68rem;
+        color: var(--muted);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .db-chart__meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 0.7rem;
+        border-top: 1px solid var(--border);
+    }
+
+    .db-chart__total {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.3rem;
+        letter-spacing: 0.04em;
+        color: var(--text);
+    }
+
+    .db-chart__growth {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--green);
+        background: rgba(16,185,129,0.1);
+        padding: 0.22rem 0.6rem;
+        border-radius: 6px;
+    }
+
+    /* Activity */
+    .db-activity { display: flex; flex-direction: column; }
+
+    .db-activity__item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.8rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .db-activity__item:last-child { border-bottom: none; }
+
+    .db-activity__dot {
+        width: 28px; height: 28px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    .db-activity__dot--green { background: rgba(16,185,129,0.12); color: var(--green); }
+    .db-activity__dot--amber { background: rgba(245,158,11,0.12);  color: var(--amber); }
+    .db-activity__dot--red   { background: rgba(248,113,113,0.12); color: var(--red); }
+    .db-activity__dot--blue  { background: rgba(59,130,246,0.12);  color: #60a5fa; }
+
+    .db-activity__text { font-size: 0.85rem; color: var(--muted2); line-height: 1.45; flex: 1; }
+    .db-activity__text strong { color: var(--text); font-weight: 600; }
+
+    .db-activity__time { font-size: 0.72rem; color: var(--muted); white-space: nowrap; margin-top: 2px; }
+
+    /* Bottom */
+    .db-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .db-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+
+    .db-action {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.7rem 0.9rem;
+        border-radius: 10px;
+        font-size: 0.83rem;
+        font-weight: 600;
+        text-decoration: none;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.025);
+        color: var(--muted2);
+        transition: color 0.18s, background 0.18s, border-color 0.18s, transform 0.15s;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        width: 100%;
+        text-align: left;
+    }
+
+    .db-action:hover {
+        color: var(--text);
+        background: rgba(255,255,255,0.055);
+        border-color: rgba(255,255,255,0.12);
+        transform: translateY(-1px);
+    }
+
+    .db-action--primary {
+        background: linear-gradient(135deg, var(--amber-deep), var(--amber));
+        color: #0f1623;
+        border-color: transparent;
+        box-shadow: 0 4px 16px rgba(245,158,11,0.28);
+    }
+
+    .db-action--primary:hover { color: #0f1623; filter: brightness(1.06); border-color: transparent; transform: translateY(-1px); }
+    .db-action--danger { color: var(--red); border-color: rgba(248,113,113,0.15); }
+    .db-action--danger:hover { background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.25); color: var(--red); }
+
+    .db-action__icon {
+        width: 28px; height: 28px;
+        border-radius: 7px;
+        background: rgba(255,255,255,0.06);
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+    }
+
+    .db-action--primary .db-action__icon { background: rgba(0,0,0,0.15); }
+    .db-action-form { display: contents; }
+
+    /* Performance */
+    .db-perf { display: flex; flex-direction: column; gap: 0.85rem; }
+    .db-perf__row { display: flex; flex-direction: column; gap: 0.35rem; }
+    .db-perf__label-row { display: flex; justify-content: space-between; align-items: center; }
+    .db-perf__label { font-size: 0.8rem; color: var(--muted2); font-weight: 500; }
+    .db-perf__pct   { font-size: 0.78rem; font-weight: 700; color: var(--text); }
+
+    .db-perf__track {
+        height: 6px;
+        background: rgba(255,255,255,0.06);
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .db-perf__fill {
+        height: 100%;
+        border-radius: 999px;
+        transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+        width: 0;
+    }
+
+    .db-perf__fill--amber { background: linear-gradient(90deg, var(--amber-deep), var(--amber)); }
+    .db-perf__fill--green { background: linear-gradient(90deg, #059669, var(--green)); }
+    .db-perf__fill--blue  { background: linear-gradient(90deg, #2563eb, #60a5fa); }
+    .db-perf__fill--red   { background: linear-gradient(90deg, #dc2626, var(--red)); }
+
+    @@media (max-width: 1100px) { .db-stats { grid-template-columns: repeat(2, 1fr); } }
+    @@media (max-width: 900px)  { .db-mid { grid-template-columns: 1fr; } .db-bottom { grid-template-columns: 1fr; } }
+    @@media (max-width: 600px)  { .db-stats { grid-template-columns: 1fr 1fr; } .db-actions { grid-template-columns: 1fr; } }
+    @@media (max-width: 400px)  { .db-stats { grid-template-columns: 1fr; } }
+</style>
+
+<div class="db-header">
+    <div>
+        <h1 class="db-header__title">Dashboard</h1>
+        <div class="db-header__sub">
+            <span class="live-dot"></span>
+            Live overview &mdash; all systems operational
+        </div>
+    </div>
+    <div class="db-header__date" id="dbDate"></div>
+</div>
+
+<div class="db-stats">
+    <article class="db-stat db-stat--amber">
+        <div class="db-stat__top">
+            <span class="db-stat__label">Total Cars</span>
+            <div class="db-stat__icon">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 14.5V16a1 1 0 0 0 1 1h1a2 2 0 1 0 4 0h4a2 2 0 1 0 4 0h1a1 1 0 0 0 1-1v-1.5l-1.2-4.1A2 2 0 0 0 16.9 9H7.1a2 2 0 0 0-1.9 1.4L4 14.5Z"/>
+                    <path d="M7.5 9 9 6.8A1.5 1.5 0 0 1 10.2 6h3.6A1.5 1.5 0 0 1 15 6.8L16.5 9"/>
+                </svg>
             </div>
-            <div class="visit-meta">
-                <strong>4,382 total visits</strong>
-                <span>+12% vs last week</span>
+        </div>
+        <div class="db-stat__value">1,248</div>
+        <div class="db-stat__foot">Across all listings <span class="db-stat__trend db-stat__trend--up">↑ 4.2%</span></div>
+    </article>
+
+    <article class="db-stat db-stat--green">
+        <div class="db-stat__top">
+            <span class="db-stat__label">Total Sold</span>
+            <div class="db-stat__icon">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/>
+                </svg>
+            </div>
+        </div>
+        <div class="db-stat__value">876</div>
+        <div class="db-stat__foot">+34 this month <span class="db-stat__trend db-stat__trend--up">↑ 8.1%</span></div>
+    </article>
+
+    <article class="db-stat db-stat--blue">
+        <div class="db-stat__top">
+            <span class="db-stat__label">In Stock</span>
+            <div class="db-stat__icon">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                </svg>
+            </div>
+        </div>
+        <div class="db-stat__value">372</div>
+        <div class="db-stat__foot">Ready to sell <span class="db-stat__trend db-stat__trend--down">↓ 2.3%</span></div>
+    </article>
+
+    <article class="db-stat db-stat--red">
+        <div class="db-stat__top">
+            <span class="db-stat__label">Cars Returned</span>
+            <div class="db-stat__icon">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-5"/>
+                </svg>
+            </div>
+        </div>
+        <div class="db-stat__value">19</div>
+        <div class="db-stat__foot">1.6% return rate <span class="db-stat__trend db-stat__trend--up">↑ 0.2%</span></div>
+    </article>
+</div>
+
+<div class="db-mid">
+    <article class="db-panel">
+        <div class="db-panel__head">
+            <h3 class="db-panel__title">Customer Visits — Last 7 Days</h3>
+            <span class="db-panel__badge">This Week</span>
+        </div>
+        <div class="db-chart">
+            <div class="db-bars">
+                <div class="db-bar-col"><div class="db-bar" style="height:48%" data-val="620"></div><span class="db-bar-day">Mon</span></div>
+                <div class="db-bar-col"><div class="db-bar" style="height:55%" data-val="712"></div><span class="db-bar-day">Tue</span></div>
+                <div class="db-bar-col"><div class="db-bar" style="height:64%" data-val="828"></div><span class="db-bar-day">Wed</span></div>
+                <div class="db-bar-col"><div class="db-bar" style="height:72%" data-val="931"></div><span class="db-bar-day">Thu</span></div>
+                <div class="db-bar-col"><div class="db-bar" style="height:82%" data-val="1,061"></div><span class="db-bar-day">Fri</span></div>
+                <div class="db-bar-col"><div class="db-bar" style="height:76%" data-val="984"></div><span class="db-bar-day">Sat</span></div>
+                <div class="db-bar-col"><div class="db-bar" style="height:61%" data-val="788"></div><span class="db-bar-day">Sun</span></div>
+            </div>
+            <div class="db-chart__meta">
+                <div>
+                    <div class="db-chart__total">4,382 total visits</div>
+                    <div style="font-size:0.75rem;color:var(--muted);margin-top:2px">vs 3,909 last week</div>
+                </div>
+                <span class="db-chart__growth">↑ +12% vs last week</span>
             </div>
         </div>
     </article>
 
-    <article class="admin-panel">
-        <h3>Recent Activity</h3>
-        <ul class="activity-list">
-            <li>12 new cars added to inventory.</li>
-            <li>8 cars sold in the last 24 hours.</li>
-            <li>2 return requests need approval.</li>
-            <li>5 listings waiting for price review.</li>
-        </ul>
+    <article class="db-panel">
+        <div class="db-panel__head">
+            <h3 class="db-panel__title">Recent Activity</h3>
+            <span class="db-panel__badge">Live</span>
+        </div>
+        <div class="db-activity">
+            <div class="db-activity__item">
+                <div class="db-activity__dot db-activity__dot--green">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </div>
+                <div style="flex:1"><div class="db-activity__text"><strong>12 new cars</strong> added to inventory</div></div>
+                <span class="db-activity__time">2m ago</span>
+            </div>
+            <div class="db-activity__item">
+                <div class="db-activity__dot db-activity__dot--amber">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.5V16a1 1 0 0 0 1 1h1a2 2 0 1 0 4 0h4a2 2 0 1 0 4 0h1a1 1 0 0 0 1-1v-1.5l-1.2-4.1A2 2 0 0 0 16.9 9H7.1a2 2 0 0 0-1.9 1.4L4 14.5Z"/></svg>
+                </div>
+                <div style="flex:1"><div class="db-activity__text"><strong>8 cars sold</strong> in the last 24 hours</div></div>
+                <span class="db-activity__time">1h ago</span>
+            </div>
+            <div class="db-activity__item">
+                <div class="db-activity__dot db-activity__dot--red">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <div style="flex:1"><div class="db-activity__text"><strong>2 return requests</strong> need approval</div></div>
+                <span class="db-activity__time">3h ago</span>
+            </div>
+            <div class="db-activity__item">
+                <div class="db-activity__dot db-activity__dot--blue">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2h10v10"/><path d="M22 2L11 13"/><path d="M5 15H2v7h7v-3"/><path d="M15 22v-7h7"/></svg>
+                </div>
+                <div style="flex:1"><div class="db-activity__text"><strong>5 listings</strong> waiting for price review</div></div>
+                <span class="db-activity__time">5h ago</span>
+            </div>
+        </div>
     </article>
-</section>
+</div>
 
-<section class="panel-row">
-    <article class="admin-panel">
-        <h3>Quick Actions</h3>
-        <div class="quick-actions">
-            <a class="btn btn-primary" asp-controller="Admin" asp-action="AddCar">Add New Car</a>
-            <a class="btn btn-outline-dark" asp-controller="Admin" asp-action="Cars">Manage Cars</a>
-            <a class="btn btn-outline-primary" asp-controller="Admin" asp-action="RegisterAdmin">Register Admin</a>
-            <button type="button" class="btn btn-outline-secondary">Export Report</button>
-            <a class="btn btn-outline-dark" asp-controller="Account" asp-action="ChangePassword">Change Password</a>
-            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+<div class="db-bottom">
+    <article class="db-panel">
+        <div class="db-panel__head">
+            <h3 class="db-panel__title">Quick Actions</h3>
+        </div>
+        <div class="db-actions">
+            <a class="db-action db-action--primary" asp-controller="Admin" asp-action="AddCar">
+                <div class="db-action__icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+                Add New Car
+            </a>
+            <a class="db-action" asp-controller="Admin" asp-action="Cars">
+                <div class="db-action__icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.5V16a1 1 0 0 0 1 1h1a2 2 0 1 0 4 0h4a2 2 0 1 0 4 0h1a1 1 0 0 0 1-1v-1.5l-1.2-4.1A2 2 0 0 0 16.9 9H7.1a2 2 0 0 0-1.9 1.4Z"/></svg></div>
+                Manage Cars
+            </a>
+            <a class="db-action" asp-controller="Admin" asp-action="RegisterAdmin">
+                <div class="db-action__icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></div>
+                Register Admin
+            </a>
+            <button class="db-action" type="button" onclick="exportReport()">
+                <div class="db-action__icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+                Export Report
+            </button>
+            <a class="db-action" asp-controller="Account" asp-action="ChangePassword">
+                <div class="db-action__icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                Change Password
+            </a>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="db-action-form">
                 @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-danger">Logout</button>
+                <button type="submit" class="db-action db-action--danger">
+                    <div class="db-action__icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
+                    Logout
+                </button>
             </form>
         </div>
     </article>
-</section>
+
+    <article class="db-panel">
+        <div class="db-panel__head">
+            <h3 class="db-panel__title">Inventory Performance</h3>
+            <span class="db-panel__badge">This Month</span>
+        </div>
+        <div class="db-perf">
+            <div class="db-perf__row">
+                <div class="db-perf__label-row"><span class="db-perf__label">Sales Conversion Rate</span><span class="db-perf__pct">70.2%</span></div>
+                <div class="db-perf__track"><div class="db-perf__fill db-perf__fill--amber" data-width="70.2"></div></div>
+            </div>
+            <div class="db-perf__row">
+                <div class="db-perf__label-row"><span class="db-perf__label">Stock Utilisation</span><span class="db-perf__pct">85.4%</span></div>
+                <div class="db-perf__track"><div class="db-perf__fill db-perf__fill--green" data-width="85.4"></div></div>
+            </div>
+            <div class="db-perf__row">
+                <div class="db-perf__label-row"><span class="db-perf__label">New Listings (vs target)</span><span class="db-perf__pct">61.0%</span></div>
+                <div class="db-perf__track"><div class="db-perf__fill db-perf__fill--blue" data-width="61"></div></div>
+            </div>
+            <div class="db-perf__row">
+                <div class="db-perf__label-row"><span class="db-perf__label">Return Rate</span><span class="db-perf__pct">1.6%</span></div>
+                <div class="db-perf__track"><div class="db-perf__fill db-perf__fill--red" data-width="1.6"></div></div>
+            </div>
+        </div>
+    </article>
+</div>
+
+@section Scripts {
+<script>
+    document.getElementById('dbDate').textContent =
+        new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+
+    window.addEventListener('load', () => {
+        document.querySelectorAll('.db-perf__fill').forEach(el => {
+            setTimeout(() => el.style.width = el.dataset.width + '%', 200);
+        });
+    });
+
+    function exportReport() {
+        Swal.fire({
+            icon: 'info', title: 'Export Report',
+            text: 'Your report is being generated and will download shortly.',
+            background: '#0d1220', color: '#e2e8f0',
+            iconColor: '#f59e0b', confirmButtonColor: '#f59e0b', confirmButtonText: 'Got it'
+        });
+    }
+</script>
+}

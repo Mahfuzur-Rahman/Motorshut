@@ -81,15 +81,15 @@ body {
     transition: 0.2s ease;
 }
 
-.admin-nav-link:hover {
-    color: #fff;
-    background-color: rgba(255, 255, 255, 0.08);
-}
+    .admin-nav-link:hover {
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.08);
+    }
 
-.admin-nav-link.active {
-    color: #fff;
-    background: linear-gradient(135deg, var(--admin-primary), #2563eb);
-}
+    .admin-nav-link.active {
+        color: #fff;
+        background: linear-gradient(135deg, var(--admin-primary), #2563eb);
+    }
 
 .admin-nav-form {
     margin: 0;
@@ -157,11 +157,11 @@ body {
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.stat-card:hover {
-    transform: translateY(-4px);
-    border-color: #c7d2fe;
-    box-shadow: 0 16px 34px rgba(2, 6, 23, 0.1);
-}
+    .stat-card:hover {
+        transform: translateY(-4px);
+        border-color: #c7d2fe;
+        box-shadow: 0 16px 34px rgba(2, 6, 23, 0.1);
+    }
 
 .stat-label {
     color: var(--admin-muted);
@@ -202,16 +202,16 @@ body {
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.admin-panel:hover {
-    transform: translateY(-3px);
-    border-color: #dbeafe;
-    box-shadow: 0 15px 32px rgba(2, 6, 23, 0.1);
-}
+    .admin-panel:hover {
+        transform: translateY(-3px);
+        border-color: #dbeafe;
+        box-shadow: 0 15px 32px rgba(2, 6, 23, 0.1);
+    }
 
-.admin-panel h3 {
-    margin: 0 0 0.9rem;
-    font-size: 1rem;
-}
+    .admin-panel h3 {
+        margin: 0 0 0.9rem;
+        font-size: 1rem;
+    }
 
 .activity-list {
     margin: 0;
@@ -219,15 +219,15 @@ body {
     color: #334155;
 }
 
-.activity-list li {
-    margin-bottom: 0.55rem;
-    transition: color 0.2s ease, transform 0.2s ease;
-}
+    .activity-list li {
+        margin-bottom: 0.55rem;
+        transition: color 0.2s ease, transform 0.2s ease;
+    }
 
-.activity-list li:hover {
-    color: #0f172a;
-    transform: translateX(4px);
-}
+        .activity-list li:hover {
+            color: #0f172a;
+            transform: translateX(4px);
+        }
 
 .quick-actions {
     display: flex;
@@ -235,16 +235,16 @@ body {
     gap: 0.6rem;
 }
 
-.quick-actions .btn {
-    transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
-}
+    .quick-actions .btn {
+        transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+    }
 
-.quick-actions .btn:hover,
-.quick-actions .btn:focus-visible {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14);
-    filter: saturate(1.06);
-}
+        .quick-actions .btn:hover,
+        .quick-actions .btn:focus-visible {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14);
+            filter: saturate(1.06);
+        }
 
 .visit-chart {
     display: grid;
@@ -256,9 +256,7 @@ body {
     padding: 0.8rem 0.6rem 0.4rem;
     border-radius: 12px;
     border: 1px solid var(--admin-border);
-    background:
-        linear-gradient(to top, rgba(14, 165, 233, 0.08), rgba(14, 165, 233, 0.01)),
-        repeating-linear-gradient(to top, transparent 0 42px, rgba(100, 116, 139, 0.12) 42px 43px);
+    background: linear-gradient(to top, rgba(14, 165, 233, 0.08), rgba(14, 165, 233, 0.01)), repeating-linear-gradient(to top, transparent 0 42px, rgba(100, 116, 139, 0.12) 42px 43px);
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
     align-items: end;
@@ -301,10 +299,10 @@ body {
     font-size: 0.88rem;
 }
 
-.visit-meta strong {
-    color: var(--admin-text);
-    font-size: 0.96rem;
-}
+    .visit-meta strong {
+        color: var(--admin-text);
+        font-size: 0.96rem;
+    }
 
 .car-image-grid {
     display: grid;
@@ -320,16 +318,16 @@ body {
     transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-.car-image-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 22px rgba(2, 6, 23, 0.1);
-}
+    .car-image-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 22px rgba(2, 6, 23, 0.1);
+    }
 
-.car-image-card.marked-delete {
-    opacity: 0.48;
-    border-color: #fca5a5;
-    box-shadow: none;
-}
+    .car-image-card.marked-delete {
+        opacity: 0.48;
+        border-color: #fca5a5;
+        box-shadow: none;
+    }
 
 .car-image-thumb {
     width: 100%;

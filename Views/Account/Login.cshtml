@@ -1,165 +1,614 @@
 @model MotorsHut.Models.Auth.LoginViewModel
 @{
     ViewData["Title"] = "Login";
+    ViewData["FullPage"] = true;
 }
 
-<section class="login-shell">
-    <div class="login-scene">
-        <div class="scene-overlay"></div>
-        <div class="scene-copy">
-            <span class="scene-chip">Premium Auto Marketplace</span>
-            <h1>Shift Into Your Next Deal</h1>
-            <p>Buy and sell with confidence. Instant listing tools, verified history, and faster closing.</p>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+
+<div class="mh-login">
+    <!-- Left: Visual side -->
+    <div class="mh-visual">
+        <div class="mh-visual__bg"></div>
+        <div class="mh-visual__noise"></div>
+
+        <!-- Animated speed lines -->
+        <div class="mh-lines">
+            <span></span><span></span><span></span>
+            <span></span><span></span><span></span>
+        </div>
+
+        <!-- Logo -->
+        <div class="mh-logo">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                <path d="M4 20 L14 6 L24 20" stroke="#f59e0b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 20 L14 11 L20 20" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+            </svg>
+            <span>MotorsHut</span>
+        </div>
+
+        <!-- Hero copy -->
+        <div class="mh-hero">
+            <div class="mh-hero__eyebrow">
+                <span class="mh-dot"></span>
+                Premium Auto Marketplace
+            </div>
+            <h1 class="mh-hero__title">Shift Into<br><em>Your Next</em><br>Deal.</h1>
+            <p class="mh-hero__body">Buy and sell with confidence.<br>Verified history. Faster closing.</p>
+
+            <!-- Stats row -->
+            <div class="mh-stats">
+                <div class="mh-stat">
+                    <strong>48K+</strong>
+                    <span>Active Listings</span>
+                </div>
+                <div class="mh-divider"></div>
+                <div class="mh-stat">
+                    <strong>2.1M</strong>
+                    <span>Trusted Buyers</span>
+                </div>
+                <div class="mh-divider"></div>
+                <div class="mh-stat">
+                    <strong>99%</strong>
+                    <span>Verified Sellers</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom car silhouette strip -->
+        <div class="mh-car-strip">
+            <svg viewBox="0 0 900 120" fill="none" preserveAspectRatio="none">
+                <path d="M0 95 Q80 95 120 72 Q180 45 260 42 Q320 40 380 42 Q440 44 490 55 Q540 66 580 68 Q660 72 720 68 Q780 64 830 70 L900 75 L900 120 L0 120Z" fill="rgba(245,158,11,0.07)"/>
+                <path d="M0 105 Q100 103 160 82 Q220 60 300 54 Q370 48 440 52 Q510 56 570 66 Q630 76 700 76 Q760 76 820 78 L900 80 L900 120 L0 120Z" fill="rgba(245,158,11,0.12)"/>
+                <!-- Car silhouette -->
+                <path d="M260 80 Q275 58 310 52 L380 48 Q420 46 450 50 L500 52 Q530 54 550 62 Q575 72 590 80 L610 80 Q615 70 625 70 Q635 70 640 80 L660 80 L655 90 Q640 95 620 95 L280 95 Q262 95 256 88Z" fill="rgba(255,255,255,0.06)"/>
+                <ellipse cx="295" cy="94" rx="18" ry="8" fill="rgba(255,255,255,0.1)"/>
+                <ellipse cx="630" cy="94" rx="18" ry="8" fill="rgba(255,255,255,0.1)"/>
+            </svg>
         </div>
     </div>
-    <div class="login-panel">
-        <div class="login-card">
-            <h2>Welcome back</h2>
-            <p class="sub">Sign in to continue to MotorsHut.</p>
 
-            <form asp-action="Login" asp-controller="Account" method="post" novalidate>
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+    <!-- Right: Form side -->
+    <div class="mh-form-side">
+        <div class="mh-form-wrap">
+            <div class="mh-form-header">
+                <h2>Welcome back<span class="mh-accent">.</span></h2>
+                <p>Sign in to continue to MotorsHut</p>
+            </div>
 
-                <div class="mb-3">
-                    <label asp-for="Email" class="form-label"></label>
-                    <input asp-for="Email" class="form-control form-control-lg" placeholder="name@example.com" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
+            <form asp-action="Login" asp-controller="Account" method="post" novalidate class="mh-form">
+                <div asp-validation-summary="ModelOnly" class="mh-alert"></div>
+
+                <div class="mh-field">
+                    <label asp-for="Email">Email address</label>
+                    <div class="mh-input-wrap">
+                        <svg class="mh-field-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 9l10 6 10-6"/>
+                        </svg>
+                        <input asp-for="Email" class="mh-input" placeholder="name@example.com" autocomplete="email" />
+                    </div>
+                    <span asp-validation-for="Email" class="mh-error"></span>
                 </div>
 
-                <div class="mb-4">
-                    <label asp-for="Password" class="form-label"></label>
-                    <input asp-for="Password" class="form-control form-control-lg" placeholder="Enter password" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
+                <div class="mh-field">
+                    <label asp-for="Password">Password</label>
+                    <div class="mh-input-wrap">
+                        <svg class="mh-field-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                        <input asp-for="Password" class="mh-input" placeholder="Enter your password" autocomplete="current-password" />
+                        <button type="button" class="mh-toggle-pw" aria-label="Toggle password visibility" onclick="togglePw(this)">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="mh-error"></span>
                 </div>
 
-                <button type="submit" class="btn btn-login w-100">Login</button>
+                <div class="mh-form-actions">
+                    <a asp-action="ForgotPassword" asp-controller="Account" class="mh-forgot">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="mh-btn">
+                    <span class="mh-btn__text">Sign In</span>
+                    <span class="mh-btn__arrow">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </span>
+                </button>
             </form>
 
-            <p class="mt-3 mb-0 text-center">
-                <a asp-action="ForgotPassword" asp-controller="Account">Forgot password?</a>
-            </p>
+            <p class="mh-register">New to MotorsHut? <a href="#">Create an account</a></p>
         </div>
     </div>
-</section>
+</div>
 
 <style>
-    .login-shell {
-        min-height: calc(100vh - 170px);
-        border-radius: 22px;
-        overflow: hidden;
+    /* ── Reset & base ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Override layout's white background to match dark theme */
+    body { background: #070b14 !important; }
+    .navbar.bg-white { background: #070b14 !important; border-bottom-color: rgba(255,255,255,0.07) !important; }
+    .navbar .nav-link, .mh-nav-link { color: #94a3b8 !important; }
+    .navbar .nav-link:hover, .mh-nav-link:hover { color: #f1f5f9 !important; }
+    .mh-brand-text { color: #f1f5f9 !important; }
+    .mh-car-icon { color: #f59e0b !important; }
+    footer.footer { background: #070b14 !important; border-top-color: rgba(255,255,255,0.07) !important; color: #475569 !important; }
+    footer.footer a { color: #64748b !important; }
+
+    .mh-login {
+        font-family: 'DM Sans', sans-serif;
         display: grid;
-        grid-template-columns: 1.2fr 0.8fr;
-        background: #0f172a;
-        box-shadow: 0 24px 50px rgba(2, 6, 23, 0.22);
+        grid-template-columns: 1.15fr 0.85fr;
+        min-height: calc(100vh - 80px);
+        border-radius: 24px;
+        overflow: hidden;
+        background: #080c14;
+        box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
     }
 
-    .login-scene {
+    /* ── Visual side ───────────────────────────────── */
+    .mh-visual {
         position: relative;
-        background:
-            linear-gradient(125deg, rgba(6, 9, 24, 0.78), rgba(14, 165, 233, 0.28)),
-            url("https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1600&q=80") center/cover no-repeat;
+        overflow: hidden;
+        background: #060a14;
     }
 
-    .scene-overlay {
+    .mh-visual__bg {
         position: absolute;
         inset: 0;
         background:
-            radial-gradient(circle at 20% 22%, rgba(56, 189, 248, 0.42), transparent 52%),
-            radial-gradient(circle at 76% 80%, rgba(251, 191, 36, 0.26), transparent 54%);
+            url("https://images.unsplash.com/photo-1544636331-e26879cd4d9b?auto=format&fit=crop&w=1600&q=80")
+            center/cover no-repeat;
+        opacity: 0.28;
+        transform: scale(1.04);
+        animation: slowZoom 22s ease-in-out infinite alternate;
     }
 
-    .scene-copy {
+  @@keyframes slowZoom {
+        from { transform: scale(1.04); }
+        to   { transform: scale(1.12); }
+    }
+
+    .mh-visual__noise {
         position: absolute;
-        left: 2.2rem;
-        bottom: 2.2rem;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+        background-size: 180px;
+        opacity: 0.35;
+        pointer-events: none;
+    }
+
+    /* Gradient overlays */
+    .mh-visual::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            linear-gradient(160deg, rgba(6,10,20,0.92) 0%, rgba(6,10,20,0.55) 55%, rgba(6,10,20,0.88) 100%),
+            radial-gradient(ellipse at 15% 25%, rgba(245,158,11,0.18) 0%, transparent 50%),
+            radial-gradient(ellipse at 80% 80%, rgba(14,165,233,0.1) 0%, transparent 45%);
         z-index: 1;
+    }
+
+    .mh-visual > * { z-index: 2; position: relative; }
+
+    /* ── Speed lines ───────────────────────────────── */
+    .mh-lines {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .mh-lines span {
+        position: absolute;
+        left: -100%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(245,158,11,0.35), transparent);
+        animation: speedLine 4s ease-in-out infinite;
+        opacity: 0;
+    }
+
+    .mh-lines span:nth-child(1) { width: 45%; top: 18%; animation-delay: 0s; }
+    .mh-lines span:nth-child(2) { width: 60%; top: 30%; animation-delay: 0.9s; }
+    .mh-lines span:nth-child(3) { width: 30%; top: 45%; animation-delay: 1.8s; }
+    .mh-lines span:nth-child(4) { width: 55%; top: 58%; animation-delay: 0.4s; }
+    .mh-lines span:nth-child(5) { width: 40%; top: 70%; animation-delay: 2.2s; }
+    .mh-lines span:nth-child(6) { width: 65%; top: 82%; animation-delay: 1.3s; }
+
+  @@keyframes speedLine {
+        0%   { left: -100%; opacity: 0; }
+        15%  { opacity: 1; }
+        85%  { opacity: 0.6; }
+        100% { left: 110%; opacity: 0; }
+    }
+
+    /* ── Logo ──────────────────────────────────────── */
+    .mh-logo {
+        position: absolute;
+        top: 1.8rem;
+        left: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        z-index: 3;
+        animation: fadeUp 0.7s ease both;
+    }
+
+    .mh-logo span {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.35rem;
+        letter-spacing: 0.06em;
         color: #fff;
-        max-width: 520px;
     }
 
-    .scene-chip {
+    /* ── Hero copy ─────────────────────────────────── */
+    .mh-hero {
+        position: absolute;
+        bottom: 5.5rem;
+        left: 2rem;
+        right: 2rem;
+        animation: fadeUp 0.8s 0.15s ease both;
+    }
+
+    .mh-hero__eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.76rem;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.55);
+        margin-bottom: 1rem;
+    }
+
+    .mh-dot {
         display: inline-block;
-        padding: 0.35rem 0.85rem;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.18);
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        font-size: 0.8rem;
-        margin-bottom: 0.8rem;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #f59e0b;
+        box-shadow: 0 0 8px #f59e0b;
+        animation: pulse 2s ease infinite;
     }
 
-    .scene-copy h1 {
-        margin: 0 0 0.8rem;
-        font-size: clamp(2rem, 3.2vw, 3rem);
-        font-weight: 800;
-        line-height: 1.1;
+  @@keyframes pulse {
+        0%, 100% { box-shadow: 0 0 6px #f59e0b; }
+        50%       { box-shadow: 0 0 16px #f59e0b; }
     }
 
-    .scene-copy p {
-        margin: 0;
-        color: rgba(255, 255, 255, 0.88);
-        font-size: 1rem;
+    .mh-hero__title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: clamp(3.2rem, 5.5vw, 5rem);
+        line-height: 0.95;
+        letter-spacing: 0.02em;
+        color: #fff;
+        margin-bottom: 1rem;
     }
 
-    .login-panel {
-        background: linear-gradient(180deg, #f8fafc, #eef2ff);
+    .mh-hero__title em {
+        font-style: normal;
+        -webkit-text-stroke: 1.5px rgba(255,255,255,0.9);
+        color: transparent;
+        background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 60%, #fff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .mh-hero__body {
+        font-size: 0.92rem;
+        font-weight: 300;
+        color: rgba(255,255,255,0.62);
+        line-height: 1.65;
+        margin-bottom: 1.8rem;
+    }
+
+    /* ── Stats ─────────────────────────────────────── */
+    .mh-stats {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+    }
+
+    .mh-stat strong {
+        display: block;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.6rem;
+        letter-spacing: 0.04em;
+        color: #f59e0b;
+        line-height: 1;
+    }
+
+    .mh-stat span {
+        font-size: 0.72rem;
+        color: rgba(255,255,255,0.45);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-weight: 500;
+    }
+
+    .mh-divider {
+        width: 1px;
+        height: 32px;
+        background: rgba(255,255,255,0.15);
+    }
+
+    /* ── Car strip ─────────────────────────────────── */
+    .mh-car-strip {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 120px;
+        z-index: 2;
+    }
+
+    .mh-car-strip svg { width: 100%; height: 100%; }
+
+    /* ── Form side ─────────────────────────────────── */
+    .mh-form-side {
+        background: #0f1623;
         display: grid;
         place-items: center;
-        padding: 1.5rem;
+        padding: 2.5rem 2rem;
+        border-left: 1px solid rgba(255,255,255,0.05);
     }
 
-    .login-card {
+    .mh-form-wrap {
         width: 100%;
-        max-width: 420px;
-        border-radius: 20px;
-        padding: 2rem 1.7rem;
-        background: rgba(255, 255, 255, 0.72);
-        border: 1px solid rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 14px 36px rgba(15, 23, 42, 0.16);
+        max-width: 390px;
+        animation: fadeUp 0.8s 0.25s ease both;
     }
 
-    .login-card h2 {
-        margin: 0;
-        font-weight: 700;
-        color: #0f172a;
+    .mh-form-header {
+        margin-bottom: 2.2rem;
     }
 
-    .login-card .sub {
-        margin: 0.4rem 0 1.35rem;
+    .mh-form-header h2 {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 2.6rem;
+        letter-spacing: 0.03em;
+        color: #f1f5f9;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .mh-accent {
+        color: #f59e0b;
+    }
+
+    .mh-form-header p {
         color: #64748b;
-        font-size: 0.94rem;
+        font-size: 0.9rem;
+        font-weight: 300;
     }
 
-    .btn-login {
-        border-radius: 12px;
-        padding: 0.7rem 1rem;
+    /* ── Fields ────────────────────────────────────── */
+    .mh-form { display: flex; flex-direction: column; gap: 1.1rem; }
+
+    .mh-field label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #94a3b8;
+        margin-bottom: 0.45rem;
+    }
+
+    .mh-input-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .mh-field-icon {
+        position: absolute;
+        left: 0.9rem;
+        color: #475569;
+        pointer-events: none;
+        transition: color 0.2s;
+    }
+
+    .mh-input {
+        width: 100%;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.09);
+        border-radius: 10px;
+        padding: 0.78rem 1rem 0.78rem 2.7rem;
+        color: #e2e8f0;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 300;
+        transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+        outline: none;
+    }
+
+    .mh-input::placeholder { color: #334155; }
+
+    .mh-input:focus {
+        border-color: rgba(245,158,11,0.5);
+        background: rgba(245,158,11,0.04);
+        box-shadow: 0 0 0 3px rgba(245,158,11,0.08);
+    }
+
+    .mh-input:focus ~ .mh-field-icon,
+    .mh-input-wrap:focus-within .mh-field-icon {
+        color: #f59e0b;
+    }
+
+    .mh-toggle-pw {
+        position: absolute;
+        right: 0.9rem;
+        background: none;
+        border: none;
+        color: #475569;
+        cursor: pointer;
+        padding: 0.2rem;
+        transition: color 0.2s;
+        display: flex;
+    }
+
+    .mh-toggle-pw:hover { color: #94a3b8; }
+
+    .mh-error {
+        display: block;
+        font-size: 0.78rem;
+        color: #f87171;
+        margin-top: 0.3rem;
+    }
+
+    /* ── Forgot + actions ──────────────────────────── */
+    .mh-form-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: -0.2rem;
+    }
+
+    .mh-forgot {
+        font-size: 0.8rem;
+        color: #64748b;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .mh-forgot:hover { color: #f59e0b; }
+
+    /* ── Submit button ─────────────────────────────── */
+    .mh-btn {
+        margin-top: 0.4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        width: 100%;
+        padding: 0.88rem 1rem;
+        border-radius: 10px;
+        border: none;
+        background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%);
+        background-size: 200% 200%;
+        background-position: 0% 50%;
+        color: #0f1623;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.95rem;
         font-weight: 700;
-        color: #fff;
-        border: 0;
-        background: linear-gradient(135deg, #0284c7, #2563eb);
+        letter-spacing: 0.04em;
+        cursor: pointer;
+        transition: background-position 0.4s ease, box-shadow 0.3s, transform 0.15s;
+        box-shadow: 0 4px 18px rgba(245,158,11,0.28);
+        position: relative;
+        overflow: hidden;
     }
 
-    .btn-login:hover {
-        color: #fff;
-        filter: brightness(1.04);
+    .mh-btn::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(255,255,255,0);
+        transition: background 0.2s;
     }
 
-    @@media (max-width: 991px) {
-        .login-shell {
+    .mh-btn:hover {
+        background-position: 100% 50%;
+        box-shadow: 0 6px 28px rgba(245,158,11,0.45);
+        transform: translateY(-1px);
+    }
+
+    .mh-btn:hover::before { background: rgba(255,255,255,0.06); }
+
+    .mh-btn:active { transform: translateY(0px); }
+
+    .mh-btn__arrow {
+        display: flex;
+        align-items: center;
+        transition: transform 0.2s;
+    }
+
+    .mh-btn:hover .mh-btn__arrow { transform: translateX(3px); }
+
+    /* ── Register link ─────────────────────────────── */
+    .mh-register {
+        margin-top: 1.6rem;
+        text-align: center;
+        font-size: 0.85rem;
+        color: #475569;
+    }
+
+    .mh-register a {
+        color: #f59e0b;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+
+    .mh-register a:hover { color: #fbbf24; }
+
+    /* ── Alert ─────────────────────────────────────── */
+    .mh-alert:not(:empty) {
+        background: rgba(248,113,113,0.1);
+        border: 1px solid rgba(248,113,113,0.25);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        color: #fca5a5;
+        font-size: 0.85rem;
+        margin-bottom: 0.4rem;
+    }
+
+    /* ── Animation ─────────────────────────────────── */
+  @@keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Responsive ────────────────────────────────── */
+    @@media (max-width: 900px) {
+        .mh-login {
             grid-template-columns: 1fr;
+            border-radius: 18px;
         }
 
-        .login-scene {
-            min-height: 260px;
+        .mh-visual { min-height: 280px; }
+
+        .mh-hero {
+            bottom: 3.5rem;
+            left: 1.5rem;
+            right: 1.5rem;
         }
 
-        .scene-copy {
-            left: 1.2rem;
-            right: 1.2rem;
-            bottom: 1.2rem;
+        .mh-hero__title { font-size: 2.8rem; }
+
+        .mh-logo {
+            top: 1.3rem;
+            left: 1.5rem;
         }
+
+        .mh-form-side { padding: 2rem 1.5rem; }
+
+        .mh-stats { gap: 1rem; }
+    }
+
+    @@media (max-width: 480px) {
+        .mh-stats { display: none; }
+        .mh-hero { bottom: 2rem; }
     }
 </style>
+
+<script>
+    function togglePw(btn) {
+        const input = btn.closest('.mh-input-wrap').querySelector('input');
+        const isText = input.type === 'text';
+        input.type = isText ? 'password' : 'text';
+        btn.querySelector('svg').style.opacity = isText ? '1' : '0.5';
+    }
+</script>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
