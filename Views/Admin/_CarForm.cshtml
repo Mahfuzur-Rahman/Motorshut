@@ -59,6 +59,7 @@
         <label asp-for="NewImages" class="form-label"></label>
         <span asp-validation-for="NewImages" class="text-danger"></span>
         <div class="form-text mb-2">Upload up to 10 images. Max size: 5 MB per image.</div>
+        <input asp-for="NewImageOrdersCsv" type="hidden" />
 
         <div class="upload-rows-toolbar">
             <button type="button" id="addImageRowBtn" class="btn btn-sm btn-outline-primary">Add Image</button>
@@ -73,6 +74,9 @@
                 <div class="upload-row-col upload-row-preview">
                     <img class="upload-row-thumb d-none" alt="Selected image preview" />
                     <span class="upload-row-file text-muted small">No image selected</span>
+                </div>
+                <div class="upload-row-col upload-row-order">
+                    <input type="number" class="form-control js-image-order" min="1" value="1" />
                 </div>
                 <div class="upload-row-col upload-row-actions">
                     <button type="button" class="btn btn-sm btn-outline-danger js-remove-row">Remove</button>

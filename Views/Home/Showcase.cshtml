@@ -1,0 +1,506 @@
+@model MotorsHut.Models.Public.CarShowcaseViewModel
+@using System.Text.Json
+@{
+    ViewData["Title"] = "Car Showcase";
+    var carsJson = JsonSerializer.Serialize(Model.Cars, new JsonSerializerOptions
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    });
+}
+
+<section class="showcase">
+    <header class="showcase-head">
+        <div>
+            <p class="showcase-kicker">Public Inventory</p>
+            <h1>Cars Ready To Explore</h1>
+            <p class="showcase-sub">Browse all saved cars, open details in a popup, and move through every image with scroll or next/prev buttons.</p>
+        </div>
+    </header>
+
+    @if (Model.Cars.Count == 0)
+    {
+        <div class="showcase-empty">
+            <h2>No cars found</h2>
+            <p>There are no saved cars yet. Add cars from admin panel and they will appear here.</p>
+        </div>
+    }
+    else
+    {
+        <div class="showcase-grid">
+            @foreach (var car in Model.Cars)
+            {
+                <article class="car-card">
+                    <img src="@car.CardImageUrl" alt="@car.Title" loading="lazy" />
+                    <div class="car-card-body">
+                        <div class="car-card-title-row">
+                            <h3>@car.Title</h3>
+                            @if (car.IsSold)
+                            {
+                                <span class="car-badge sold">Sold</span>
+                            }
+                            else if (car.IsReturned)
+                            {
+                                <span class="car-badge returned">Returned</span>
+                            }
+                            else
+                            {
+                                <span class="car-badge available">Available</span>
+                            }
+                        </div>
+                        <p class="car-variant">@(string.IsNullOrWhiteSpace(car.Variant) ? "Standard" : car.Variant)</p>
+                        <div class="car-meta">
+                            <span>@car.Year</span>
+                            <span>@car.MileageKm.ToString("N0") km</span>
+                            <span>$@car.Price.ToString("N0")</span>
+                        </div>
+                        <button type="button" class="car-open-btn js-open-car" data-car-id="@car.Id">View Details</button>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</section>
+
+<div class="showcase-modal" id="showcaseModal" aria-hidden="true">
+    <div class="showcase-modal-backdrop js-modal-close"></div>
+    <div class="showcase-modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalCarTitle">
+        <button type="button" class="showcase-modal-close js-modal-close" aria-label="Close">&times;</button>
+
+        <div class="showcase-modal-gallery">
+            <button type="button" class="gallery-nav prev" id="galleryPrev" aria-label="Previous image">&#10094;</button>
+            <img id="modalMainImage" src="/uploads/cars/no-image.svg" alt="Car image" />
+            <button type="button" class="gallery-nav next" id="galleryNext" aria-label="Next image">&#10095;</button>
+        </div>
+
+        <div class="showcase-modal-content">
+            <h2 id="modalCarTitle"></h2>
+            <p id="modalCarVariant" class="modal-variant"></p>
+            <div class="modal-info">
+                <span id="modalYear"></span>
+                <span id="modalMileage"></span>
+                <span id="modalPrice"></span>
+                <span id="modalColor"></span>
+                <span id="modalVin"></span>
+                <span id="modalStatus"></span>
+            </div>
+            <div class="thumb-strip" id="thumbStrip"></div>
+        </div>
+    </div>
+</div>
+
+<script id="showcaseData" type="application/json">@Html.Raw(carsJson)</script>
+
+<style>
+    .showcase {
+        max-width: 1300px;
+        margin: 0 auto;
+    }
+
+    .showcase-head {
+        margin-bottom: 1.4rem;
+    }
+
+    .showcase-kicker {
+        margin: 0 0 0.25rem;
+        color: #f59e0b;
+        font-size: 0.78rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+
+    .showcase-head h1 {
+        margin: 0;
+        font-family: "Bebas Neue", sans-serif;
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        letter-spacing: 0.04em;
+    }
+
+    .showcase-sub {
+        margin-top: 0.45rem;
+        color: #94a3b8;
+        max-width: 750px;
+    }
+
+    .showcase-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
+    }
+
+    .car-card {
+        background: #0d1220;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    .car-card img {
+        width: 100%;
+        height: 190px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .car-card-body {
+        padding: 0.9rem;
+    }
+
+    .car-card-title-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .car-card h3 {
+        margin: 0;
+        font-size: 1.05rem;
+    }
+
+    .car-variant {
+        margin: 0.25rem 0 0.55rem;
+        color: #94a3b8;
+        font-size: 0.88rem;
+    }
+
+    .car-meta {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.8rem;
+    }
+
+    .car-meta span {
+        font-size: 0.76rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 999px;
+        background: rgba(245,158,11,0.14);
+        color: #fbbf24;
+    }
+
+    .car-open-btn {
+        width: 100%;
+        border: 1px solid #f59e0b;
+        color: #111827;
+        background: linear-gradient(135deg, #d97706, #f59e0b);
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.84rem;
+        padding: 0.55rem 0.8rem;
+    }
+
+    .car-badge {
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 0.2rem 0.48rem;
+        border-radius: 999px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+    }
+
+    .car-badge.available { background: rgba(16,185,129,0.17); color: #34d399; }
+    .car-badge.sold { background: rgba(239,68,68,0.18); color: #fca5a5; }
+    .car-badge.returned { background: rgba(59,130,246,0.18); color: #93c5fd; }
+
+    .showcase-empty {
+        border: 1px dashed rgba(255,255,255,0.18);
+        border-radius: 14px;
+        padding: 2.2rem;
+        text-align: center;
+        color: #94a3b8;
+        background: rgba(13,18,32,0.45);
+    }
+
+    .showcase-empty h2 {
+        margin: 0 0 0.3rem;
+        color: #e2e8f0;
+        font-size: 1.25rem;
+    }
+
+    .showcase-modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        z-index: 220;
+    }
+
+    .showcase-modal.open {
+        display: block;
+    }
+
+    .showcase-modal-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(2,6,23,0.75);
+    }
+
+    .showcase-modal-panel {
+        position: relative;
+        width: min(960px, calc(100% - 2rem));
+        margin: 4vh auto;
+        background: #0b1220;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 16px;
+        overflow: hidden;
+        max-height: 92vh;
+        overflow-y: auto;
+    }
+
+    .showcase-modal-close {
+        position: absolute;
+        top: 0.45rem;
+        right: 0.6rem;
+        z-index: 2;
+        border: none;
+        background: transparent;
+        color: #cbd5e1;
+        font-size: 2rem;
+        line-height: 1;
+    }
+
+    .showcase-modal-gallery {
+        position: relative;
+        background: #020617;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .showcase-modal-gallery img {
+        width: 100%;
+        height: min(56vh, 450px);
+        object-fit: cover;
+        display: block;
+    }
+
+    .gallery-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 42px;
+        height: 42px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.45);
+        background: rgba(15,23,42,0.72);
+        color: #fff;
+        font-size: 1.3rem;
+    }
+
+    .gallery-nav.prev { left: 0.8rem; }
+    .gallery-nav.next { right: 0.8rem; }
+
+    .showcase-modal-content {
+        padding: 1rem;
+    }
+
+    .showcase-modal-content h2 {
+        margin: 0;
+        font-size: 1.35rem;
+    }
+
+    .modal-variant {
+        margin: 0.25rem 0 0.8rem;
+        color: #94a3b8;
+    }
+
+    .modal-info {
+        display: flex;
+        gap: 0.45rem;
+        flex-wrap: wrap;
+    }
+
+    .modal-info span {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: #cbd5e1;
+        border-radius: 999px;
+        padding: 0.25rem 0.55rem;
+        font-size: 0.78rem;
+    }
+
+    .thumb-strip {
+        margin-top: 0.9rem;
+        display: flex;
+        gap: 0.45rem;
+        overflow-x: auto;
+        padding-bottom: 0.4rem;
+    }
+
+    .thumb-btn {
+        border: 1px solid transparent;
+        border-radius: 8px;
+        padding: 0;
+        background: transparent;
+        flex: 0 0 auto;
+    }
+
+    .thumb-btn.active {
+        border-color: #f59e0b;
+    }
+
+    .thumb-btn img {
+        width: 92px;
+        height: 62px;
+        object-fit: cover;
+        border-radius: 7px;
+        display: block;
+    }
+
+    @@media (max-width: 720px) {
+        .showcase-modal-panel {
+            width: calc(100% - 1rem);
+            margin: 2vh auto;
+        }
+
+        .showcase-modal-gallery img {
+            height: 36vh;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        (function () {
+            const cars = JSON.parse(document.getElementById("showcaseData")?.textContent ?? "[]");
+            const modal = document.getElementById("showcaseModal");
+            const mainImage = document.getElementById("modalMainImage");
+            const title = document.getElementById("modalCarTitle");
+            const variant = document.getElementById("modalCarVariant");
+            const year = document.getElementById("modalYear");
+            const mileage = document.getElementById("modalMileage");
+            const price = document.getElementById("modalPrice");
+            const color = document.getElementById("modalColor");
+            const vin = document.getElementById("modalVin");
+            const status = document.getElementById("modalStatus");
+            const thumbStrip = document.getElementById("thumbStrip");
+            const prevBtn = document.getElementById("galleryPrev");
+            const nextBtn = document.getElementById("galleryNext");
+
+            if (!modal || !mainImage || !title || !thumbStrip || !prevBtn || !nextBtn) {
+                return;
+            }
+
+            const carById = new Map(cars.map(c => [c.id, c]));
+            let activeImages = [];
+            let activeImageIndex = 0;
+
+            function formatMoney(value) {
+                return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value);
+            }
+
+            function setMainImage(index) {
+                if (!activeImages.length) {
+                    return;
+                }
+
+                activeImageIndex = (index + activeImages.length) % activeImages.length;
+                mainImage.src = activeImages[activeImageIndex];
+                mainImage.alt = title.textContent + " image";
+
+                const thumbs = thumbStrip.querySelectorAll(".thumb-btn");
+                thumbs.forEach((thumb, idx) => {
+                    thumb.classList.toggle("active", idx === activeImageIndex);
+                });
+
+                const activeThumb = thumbs[activeImageIndex];
+                activeThumb?.scrollIntoView({ inline: "center", behavior: "smooth", block: "nearest" });
+            }
+
+            function renderThumbnails(images) {
+                thumbStrip.innerHTML = "";
+                images.forEach((url, idx) => {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "thumb-btn";
+                    button.addEventListener("click", function () {
+                        setMainImage(idx);
+                    });
+
+                    const image = document.createElement("img");
+                    image.src = url;
+                    image.alt = "Thumbnail " + (idx + 1);
+                    button.appendChild(image);
+                    thumbStrip.appendChild(button);
+                });
+            }
+
+            function openModal(car) {
+                activeImages = car.imageUrls && car.imageUrls.length ? car.imageUrls : ["/uploads/cars/no-image.svg"];
+                activeImageIndex = 0;
+
+                title.textContent = car.title;
+                variant.textContent = car.variant && car.variant.trim().length > 0 ? car.variant : "Standard";
+                year.textContent = "Year: " + car.year;
+                mileage.textContent = "Mileage: " + Number(car.mileageKm).toLocaleString("en-US") + " km";
+                price.textContent = "Price: " + formatMoney(car.price);
+                color.textContent = "Color: " + (car.color && car.color.trim().length > 0 ? car.color : "N/A");
+                vin.textContent = "VIN: " + (car.vin && car.vin.trim().length > 0 ? car.vin : "N/A");
+
+                if (car.isSold) {
+                    status.textContent = "Status: Sold";
+                } else if (car.isReturned) {
+                    status.textContent = "Status: Returned";
+                } else {
+                    status.textContent = "Status: Available";
+                }
+
+                renderThumbnails(activeImages);
+                setMainImage(0);
+
+                modal.classList.add("open");
+                modal.setAttribute("aria-hidden", "false");
+                document.body.style.overflow = "hidden";
+            }
+
+            function closeModal() {
+                modal.classList.remove("open");
+                modal.setAttribute("aria-hidden", "true");
+                document.body.style.overflow = "";
+            }
+
+            document.querySelectorAll(".js-open-car").forEach(button => {
+                button.addEventListener("click", function () {
+                    const car = carById.get(button.getAttribute("data-car-id"));
+                    if (!car) {
+                        return;
+                    }
+
+                    openModal(car);
+                });
+            });
+
+            document.querySelectorAll(".js-modal-close").forEach(button => {
+                button.addEventListener("click", closeModal);
+            });
+
+            prevBtn.addEventListener("click", function () {
+                setMainImage(activeImageIndex - 1);
+            });
+
+            nextBtn.addEventListener("click", function () {
+                setMainImage(activeImageIndex + 1);
+            });
+
+            thumbStrip.addEventListener("wheel", function (event) {
+                if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+                    thumbStrip.scrollLeft += event.deltaY;
+                    event.preventDefault();
+                }
+            }, { passive: false });
+
+            document.addEventListener("keydown", function (event) {
+                if (!modal.classList.contains("open")) {
+                    return;
+                }
+
+                if (event.key === "Escape") {
+                    closeModal();
+                } else if (event.key === "ArrowLeft") {
+                    setMainImage(activeImageIndex - 1);
+                } else if (event.key === "ArrowRight") {
+                    setMainImage(activeImageIndex + 1);
+                }
+            });
+        })();
+    </script>
+}

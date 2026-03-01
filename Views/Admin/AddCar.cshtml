@@ -302,7 +302,9 @@
             const addRowButton = document.getElementById("addImageRowBtn");
             const rowsHost = document.getElementById("imageUploadRows");
             const rowTemplate = document.getElementById("imageUploadRowTemplate");
-            if (!addRowButton || !rowsHost || !rowTemplate) return;
+            const imageOrdersInput = document.getElementById("NewImageOrdersCsv");
+            const form = addRowButton ? addRowButton.closest("form") : null;
+            if (!addRowButton || !rowsHost || !rowTemplate || !imageOrdersInput || !form) return;
 
             const maxRows = 10;
 
@@ -330,6 +332,7 @@
                 if (rowsHost.querySelectorAll(".upload-row").length >= maxRows) return;
                 const node = rowTemplate.content.firstElementChild.cloneNode(true);
                 rowsHost.appendChild(node);
+                initializeOrderField(node);
                 syncAddButtonState();
             }
 
@@ -339,6 +342,12 @@
 
             function syncAddButtonState() {
                 addRowButton.disabled = rowsHost.querySelectorAll(".upload-row").length >= maxRows;
+            }
+
+            function initializeOrderField(row) {
+                const orderInput = row.querySelector(".js-image-order");
+                if (!orderInput) return;
+                orderInput.value = String(rowsHost.querySelectorAll(".upload-row").length);
             }
 
             function updateRowPreview(row, file) {
@@ -355,6 +364,26 @@
                 thumb.classList.remove("d-none");
                 name.textContent = file.name;
             }
+
+            function syncImageOrdersForSubmit() {
+                const rows = rowsHost.querySelectorAll(".upload-row");
+                const orderValues = [];
+                for (const row of rows) {
+                    const fileInput = row.querySelector(".js-image-input");
+                    const orderInput = row.querySelector(".js-image-order");
+                    const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
+                    if (!hasFile) continue;
+
+                    const parsedOrder = Number.parseInt(orderInput?.value ?? "", 10);
+                    orderValues.push(Number.isInteger(parsedOrder) && parsedOrder > 0
+                        ? parsedOrder
+                        : orderValues.length + 1);
+                }
+
+                imageOrdersInput.value = orderValues.join(",");
+            }
+
+            form.addEventListener("submit", syncImageOrdersForSubmit);
 
             ensureAtLeastOneRow();
             syncAddButtonState();

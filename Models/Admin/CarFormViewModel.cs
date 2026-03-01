@@ -38,6 +38,8 @@ public sealed class CarFormViewModel
 
     [Display(Name = "Car Images")]
     public List<IFormFile> NewImages { get; set; } = [];
+    public string? NewImageOrdersCsv { get; set; }
+    public string? ExistingImageOrdersCsv { get; set; }
 
     public IReadOnlyList<CarImageViewModel> ExistingImages { get; set; } = Array.Empty<CarImageViewModel>();
     public List<Guid> DeleteImageIds { get; set; } = [];
@@ -49,4 +51,5 @@ public sealed class CarImageViewModel
     public Guid Id { get; set; }
     public string ImageUrl { get; set; } = string.Empty;
     public bool IsPrimary { get; set; }
+    public int SortOrder { get; set; }
 }

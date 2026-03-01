@@ -99,7 +99,8 @@ public sealed class AdminController : Controller
         var createdCarId = result.CarId ?? Guid.Empty;
         if (createdCarId != Guid.Empty && form.NewImages.Count > 0)
         {
-            var uploadResult = await SaveUploadedImagesAsync(createdCarId, form.NewImages, cancellationToken);
+            var imageOrders = ParseImageOrders(form.NewImageOrdersCsv);
+            var uploadResult = await SaveUploadedImagesAsync(createdCarId, form.NewImages, imageOrders, cancellationToken);
             if (uploadResult.Errors.Count > 0)
             {
                 foreach (var error in uploadResult.Errors)
@@ -159,7 +160,8 @@ public sealed class AdminController : Controller
                 {
                     Id = i.Id,
                     ImageUrl = i.ImageUrl,
-                    IsPrimary = i.IsPrimary
+                    IsPrimary = i.IsPrimary,
+                    SortOrder = i.SortOrder
                 })
                 .ToArray(),
             SelectedPrimaryImageId = car.Images.FirstOrDefault(i => i.IsPrimary)?.Id
@@ -238,9 +240,26 @@ public sealed class AdminController : Controller
             }
         }
 
+        var existingImageOrders = ParseExistingImageOrders(form.ExistingImageOrdersCsv)
+            .Where(x => !deleteIds.Contains(x.ImageId))
+            .ToArray();
+        if (existingImageOrders.Length > 0)
+        {
+            var reorderResult = await _carService.UpdateImageSortOrdersAsync(id, existingImageOrders, cancellationToken);
+            if (!reorderResult.Succeeded)
+            {
+                var errors = reorderResult.Errors.Count > 0 ? string.Join(" ", reorderResult.Errors) : reorderResult.Message;
+                ModelState.AddModelError(string.Empty, errors);
+                await PopulateExistingImagesAsync(form, id, cancellationToken);
+                form.Id = id;
+                return View(form);
+            }
+        }
+
         if (form.NewImages.Count > 0)
         {
-            var uploadResult = await SaveUploadedImagesAsync(id, form.NewImages, cancellationToken);
+            var imageOrders = ParseImageOrders(form.NewImageOrdersCsv);
+            var uploadResult = await SaveUploadedImagesAsync(id, form.NewImages, imageOrders, cancellationToken);
             if (uploadResult.Errors.Count > 0)
             {
                 foreach (var error in uploadResult.Errors)
@@ -379,7 +398,8 @@ public sealed class AdminController : Controller
             {
                 Id = i.Id,
                 ImageUrl = i.ImageUrl,
-                IsPrimary = i.IsPrimary
+                IsPrimary = i.IsPrimary,
+                SortOrder = i.SortOrder
             })
             .ToArray() ?? Array.Empty<CarImageViewModel>();
         form.SelectedPrimaryImageId ??= car?.Images.FirstOrDefault(i => i.IsPrimary)?.Id;
@@ -388,6 +408,7 @@ public sealed class AdminController : Controller
     private async Task<(List<CreateCarImageRequestDto> Images, List<string> SavedPhysicalPaths, List<string> Errors)> SaveUploadedImagesAsync(
         Guid carId,
         IReadOnlyList<IFormFile> files,
+        IReadOnlyList<int> imageOrders,
         CancellationToken cancellationToken)
     {
         var errors = new List<string>();
@@ -430,7 +451,7 @@ public sealed class AdminController : Controller
         var physicalFolder = Path.Combine(rootPath, relativeFolder);
         Directory.CreateDirectory(physicalFolder);
 
-        foreach (var file in validFiles)
+        foreach (var (file, index) in validFiles.Select((file, index) => (file, index)))
         {
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
             var generatedName = $"{Guid.NewGuid():N}{extension}";
@@ -442,11 +463,63 @@ public sealed class AdminController : Controller
             var relativeUrl = "/" + Path.Combine(relativeFolder, generatedName).Replace("\\", "/");
             images.Add(new CreateCarImageRequestDto
             {
-                ImageUrl = relativeUrl
+                ImageUrl = relativeUrl,
+                SortOrder = index < imageOrders.Count && imageOrders[index] > 0
+                    ? imageOrders[index]
+                    : index + 1
             });
         }
 
         return (images, savedPhysicalPaths, errors);
+    }
+
+    private static IReadOnlyList<int> ParseImageOrders(string? csv)
+    {
+        if (string.IsNullOrWhiteSpace(csv))
+        {
+            return Array.Empty<int>();
+        }
+
+        return csv
+            .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+            .Select(value => int.TryParse(value, out var parsed) ? parsed : 0)
+            .ToArray();
+    }
+
+    private static IReadOnlyList<UpdateCarImageSortOrderRequestDto> ParseExistingImageOrders(string? csv)
+    {
+        if (string.IsNullOrWhiteSpace(csv))
+        {
+            return Array.Empty<UpdateCarImageSortOrderRequestDto>();
+        }
+
+        var items = new List<UpdateCarImageSortOrderRequestDto>();
+        foreach (var pair in csv.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+        {
+            var parts = pair.Split(':', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length != 2)
+            {
+                continue;
+            }
+
+            if (!Guid.TryParse(parts[0], out var imageId))
+            {
+                continue;
+            }
+
+            if (!int.TryParse(parts[1], out var sortOrder))
+            {
+                continue;
+            }
+
+            items.Add(new UpdateCarImageSortOrderRequestDto
+            {
+                ImageId = imageId,
+                SortOrder = sortOrder
+            });
+        }
+
+        return items;
     }
 
     private void DeletePhysicalFileByUrl(string imageUrl)

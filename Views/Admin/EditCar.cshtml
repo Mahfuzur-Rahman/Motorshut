@@ -9,44 +9,51 @@
 
     <form asp-controller="Admin" asp-action="EditCar" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data" novalidate>
         <partial name="_CarForm" model="Model" />
+        <input asp-for="ExistingImageOrdersCsv" type="hidden" />
+
+        @if (Model.ExistingImages.Count > 0)
+        {
+            <hr class="my-4" />
+            <h5 class="mb-3">Current Images (side by side)</h5>
+            <div id="deleteImageIdsHost"></div>
+            <div class="car-image-grid" id="existingImageGrid">
+                @foreach (var image in Model.ExistingImages)
+                {
+                    <article class="car-image-card" data-image-id="@image.Id">
+                        <img src="@image.ImageUrl" alt="Car image" class="car-image-thumb" />
+                        <div class="car-image-meta">
+                            <div class="form-check">
+                                <input class="form-check-input existing-primary-radio"
+                                       type="radio"
+                                       name="SelectedPrimaryImageId"
+                                       value="@image.Id"
+                                       @(Model.SelectedPrimaryImageId == image.Id ? "checked" : string.Empty) />
+                                <label class="form-check-label">Primary Image</label>
+                            </div>
+                            <label class="form-label mt-2 mb-1">Order</label>
+                            <input type="number"
+                                   class="form-control form-control-sm existing-order-input"
+                                   data-image-id="@image.Id"
+                                   min="1"
+                                   value="@image.SortOrder" />
+                        </div>
+                        <div class="car-image-actions">
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-danger existing-remove-btn"
+                                    data-image-id="@image.Id">
+                                Remove
+                            </button>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
 
         <div class="mt-4 d-flex gap-2">
             <button type="submit" class="btn btn-primary">Update Car</button>
             <a asp-controller="Admin" asp-action="Cars" class="btn btn-outline-secondary">Back to list</a>
         </div>
     </form>
-
-    @if (Model.ExistingImages.Count > 0)
-    {
-        <hr class="my-4" />
-        <h5 class="mb-3">Current Images (side by side)</h5>
-        <div id="deleteImageIdsHost"></div>
-        <div class="car-image-grid" id="existingImageGrid">
-            @foreach (var image in Model.ExistingImages)
-            {
-                <article class="car-image-card" data-image-id="@image.Id">
-                    <img src="@image.ImageUrl" alt="Car image" class="car-image-thumb" />
-                    <div class="car-image-meta">
-                        <div class="form-check">
-                            <input class="form-check-input existing-primary-radio"
-                                   type="radio"
-                                   name="SelectedPrimaryImageId"
-                                   value="@image.Id"
-                                   @(Model.SelectedPrimaryImageId == image.Id ? "checked" : string.Empty) />
-                            <label class="form-check-label">Primary Image</label>
-                        </div>
-                    </div>
-                    <div class="car-image-actions">
-                        <button type="button"
-                                class="btn btn-sm btn-outline-danger existing-remove-btn"
-                                data-image-id="@image.Id">
-                            Remove
-                        </button>
-                    </div>
-                </article>
-            }
-        </div>
-    }
 </article>
 
     @section Scripts {
@@ -58,8 +65,11 @@
             const rowTemplate = document.getElementById("imageUploadRowTemplate");
             const existingGrid = document.getElementById("existingImageGrid");
             const deleteHost = document.getElementById("deleteImageIdsHost");
+            const imageOrdersInput = document.getElementById("NewImageOrdersCsv");
+            const existingImageOrdersInput = document.getElementById("ExistingImageOrdersCsv");
+            const form = addRowButton ? addRowButton.closest("form") : null;
 
-            if (addRowButton && rowsHost && rowTemplate) {
+            if (addRowButton && rowsHost && rowTemplate && imageOrdersInput && form) {
                 const maxRows = 10;
 
                 addRowButton.addEventListener("click", function () {
@@ -103,6 +113,7 @@
 
                     const node = rowTemplate.content.firstElementChild.cloneNode(true);
                     rowsHost.appendChild(node);
+                    initializeOrderField(node);
                     syncAddButtonState();
                 }
 
@@ -114,6 +125,15 @@
 
                 function syncAddButtonState() {
                     addRowButton.disabled = rowsHost.querySelectorAll(".upload-row").length >= maxRows;
+                }
+
+                function initializeOrderField(row) {
+                    const orderInput = row.querySelector(".js-image-order");
+                    if (!orderInput) {
+                        return;
+                    }
+
+                    orderInput.value = String(rowsHost.querySelectorAll(".upload-row").length);
                 }
 
                 function updateRowPreview(row, file) {
@@ -136,11 +156,33 @@
                     name.textContent = file.name;
                 }
 
+                function syncImageOrdersForSubmit() {
+                    const rows = rowsHost.querySelectorAll(".upload-row");
+                    const orderValues = [];
+                    for (const row of rows) {
+                        const fileInput = row.querySelector(".js-image-input");
+                        const orderInput = row.querySelector(".js-image-order");
+                        const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
+                        if (!hasFile) {
+                            continue;
+                        }
+
+                        const parsedOrder = Number.parseInt(orderInput?.value ?? "", 10);
+                        orderValues.push(Number.isInteger(parsedOrder) && parsedOrder > 0
+                            ? parsedOrder
+                            : orderValues.length + 1);
+                    }
+
+                    imageOrdersInput.value = orderValues.join(",");
+                }
+
+                form.addEventListener("submit", syncImageOrdersForSubmit);
+
                 ensureAtLeastOneRow();
                 syncAddButtonState();
             }
 
-            if (existingGrid && deleteHost) {
+            if (existingGrid && deleteHost && existingImageOrdersInput && form) {
                 const deletedIds = new Set();
 
                 existingGrid.addEventListener("click", function (event) {
@@ -175,6 +217,16 @@
 
                     ensurePrimarySelection();
                     syncDeleteInputs();
+                    syncExistingImageOrders();
+                });
+
+                existingGrid.addEventListener("input", function (event) {
+                    const orderInput = event.target.closest(".existing-order-input");
+                    if (!orderInput) {
+                        return;
+                    }
+
+                    syncExistingImageOrders();
                 });
 
                 function ensurePrimarySelection() {
@@ -208,8 +260,29 @@
                     });
                 }
 
+                function syncExistingImageOrders() {
+                    const values = [];
+                    const orderInputs = existingGrid.querySelectorAll(".existing-order-input");
+                    for (const input of orderInputs) {
+                        const imageId = input.getAttribute("data-image-id");
+                        if (!imageId || deletedIds.has(imageId)) {
+                            continue;
+                        }
+
+                        const parsedOrder = Number.parseInt(input.value ?? "", 10);
+                        const normalizedOrder = Number.isInteger(parsedOrder) && parsedOrder > 0
+                            ? parsedOrder
+                            : 1;
+                        values.push(`${imageId}:${normalizedOrder}`);
+                    }
+
+                    existingImageOrdersInput.value = values.join(",");
+                }
+
                 ensurePrimarySelection();
                 syncDeleteInputs();
+                syncExistingImageOrders();
+                form.addEventListener("submit", syncExistingImageOrders);
             }
         })();
     </script>

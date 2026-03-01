@@ -108,14 +108,16 @@ public sealed class CarService : ICarService
 
         var hasPrimary = car.Images.Any(i => i.IsPrimary);
         var nextSortOrder = car.Images.Count == 0 ? 1 : car.Images.Max(i => i.SortOrder) + 1;
+        var orderedImages = images
+            .Select((image, index) => new { image, index })
+            .Where(x => !string.IsNullOrWhiteSpace(x.image.ImageUrl))
+            .OrderBy(x => x.image.SortOrder > 0 ? x.image.SortOrder : int.MaxValue)
+            .ThenBy(x => x.index)
+            .Select(x => x.image)
+            .ToArray();
 
-        foreach (var image in images)
+        foreach (var image in orderedImages)
         {
-            if (string.IsNullOrWhiteSpace(image.ImageUrl))
-            {
-                continue;
-            }
-
             var shouldBePrimary = image.IsPrimary || !hasPrimary;
             if (shouldBePrimary)
             {
@@ -144,6 +146,59 @@ public sealed class CarService : ICarService
         return affected > 0
             ? CarOperationResultDto.Success("Images uploaded successfully.", car.Id)
             : CarOperationResultDto.Failure("Could not save car images.");
+    }
+
+    public async Task<CarOperationResultDto> UpdateImageSortOrdersAsync(
+        Guid carId,
+        IReadOnlyList<UpdateCarImageSortOrderRequestDto> imageOrders,
+        CancellationToken cancellationToken = default)
+    {
+        if (imageOrders.Count == 0)
+        {
+            return CarOperationResultDto.Success("No image order updates.");
+        }
+
+        var car = await _carRepository.GetByIdForUpdateWithImagesAsync(carId, cancellationToken);
+        if (car is null)
+        {
+            return CarOperationResultDto.Failure("Car not found.");
+        }
+
+        var existingImagesById = car.Images.ToDictionary(i => i.Id);
+        var requestedOrders = imageOrders
+            .Where(x => x.SortOrder > 0 && existingImagesById.ContainsKey(x.ImageId))
+            .GroupBy(x => x.ImageId)
+            .Select(g => g.First())
+            .OrderBy(x => x.SortOrder)
+            .ThenBy(x => x.ImageId)
+            .ToArray();
+
+        if (requestedOrders.Length == 0)
+        {
+            return CarOperationResultDto.Success("No valid image order updates.");
+        }
+
+        var requestedIds = requestedOrders.Select(x => x.ImageId).ToHashSet();
+        var reordered = requestedOrders
+            .Select(x => existingImagesById[x.ImageId])
+            .Concat(car.Images
+                .Where(x => !requestedIds.Contains(x.Id))
+                .OrderBy(x => x.SortOrder)
+                .ThenBy(x => x.CreatedAtUtc))
+            .ToArray();
+
+        var nextSortOrder = 1;
+        foreach (var image in reordered)
+        {
+            image.SortOrder = nextSortOrder++;
+        }
+
+        car.UpdatedAtUtc = DateTime.UtcNow;
+        _carRepository.Update(car);
+        var affected = await _unitOfWork.SaveChangesAsync(cancellationToken);
+        return affected > 0
+            ? CarOperationResultDto.Success("Image order updated.", car.Id)
+            : CarOperationResultDto.Failure("Could not update image order.");
     }
 
     public async Task<CarOperationResultDto> RemoveImageAsync(Guid carId, Guid imageId, CancellationToken cancellationToken = default)
