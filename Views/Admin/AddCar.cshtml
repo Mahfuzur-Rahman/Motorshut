@@ -6,258 +6,313 @@
 
 <style>
     :root {
-        --amber:      #f59e0b;
-        --amber-deep: #d97706;
-        --amber-glow: rgba(245,158,11,0.1);
-        --bg:         #06090f;
-        --surface:    #0d1220;
-        --surface2:   #111827;
-        --border:     rgba(255,255,255,0.065);
-        --text:       #e2e8f0;
-        --muted:      #64748b;
-        --muted2:     #94a3b8;
-        --green:      #10b981;
-        --red:        #f87171;
+        --accent:        #4338ca;
+        --accent-light:  rgba(67,56,202,0.08);
+        --accent-mid:    rgba(67,56,202,0.16);
+        --accent-border: rgba(67,56,202,0.22);
+        --surface:       #ffffff;
+        --bg:            #eef2ff;
+        --border:        #e0e7ff;
+        --border-hover:  #a5b4fc;
+        --text:          #1e1b4b;
+        --text-soft:     #3730a3;
+        --muted:         #6366f1;
+        --muted2:        #818cf8;
+        --muted3:        #a5b4fc;
+        --red:           #dc2626;
+        --red-bg:        rgba(220,38,38,0.06);
+        --green:         #10b981;
     }
 
-    /* ?? Page header ?????????????????????????????? */
+    @@keyframes fadeUp {
+        from { opacity:0; transform:translateY(16px); }
+        to   { opacity:1; transform:translateY(0); }
+    }
+    @@keyframes rowIn {
+        from { opacity:0; transform:translateY(8px); }
+        to   { opacity:1; transform:translateY(0); }
+    }
+    @@keyframes rowOut {
+        to { opacity:0; transform:scale(0.95) translateX(14px); }
+    }
+
+    /* ── Header ── */
     .ac-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 1rem;
-        margin-bottom: 1.6rem;
+        display:flex; align-items:center; justify-content:space-between;
+        flex-wrap:wrap; gap:1rem; margin-bottom:2rem;
+        animation: fadeUp .45s cubic-bezier(.22,1,.36,1) both;
     }
-
-    .ac-header__title {
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 2rem;
-        letter-spacing: 0.04em;
-        color: var(--text);
-        line-height: 1;
-        margin: 0 0 0.25rem;
+    .ac-header__left { display:flex; align-items:center; gap:1rem; }
+    .ac-header__icon {
+        width:48px; height:48px; background:var(--accent-light);
+        border:1.5px solid var(--accent-border); border-radius:14px;
+        display:grid; place-items:center; color:var(--accent); flex-shrink:0;
     }
-
-    .ac-header__sub {
-        font-size: 0.82rem;
-        color: var(--muted);
-    }
-
+    .ac-header__title { font-size:1.6rem; font-weight:900; color:var(--text); letter-spacing:-.02em; margin:0 0 .1rem; }
+    .ac-header__sub   { font-size:.82rem; color:var(--muted2); font-weight:500; }
     .ac-back {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        font-size: 0.82rem;
-        font-weight: 500;
-        color: var(--muted2);
-        text-decoration: none;
-        padding: 0.45rem 0.9rem;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        background: rgba(255,255,255,0.03);
-        transition: color 0.18s, background 0.18s, border-color 0.18s;
-        align-self: flex-start;
+        display:inline-flex; align-items:center; gap:.45rem;
+        font-size:.82rem; font-weight:700; color:var(--text-soft); text-decoration:none;
+        padding:.5rem 1.1rem; border:1.5px solid var(--border); border-radius:10px;
+        background:var(--surface); transition:all .18s; white-space:nowrap;
     }
+    .ac-back:hover { border-color:var(--border-hover); background:var(--accent-light); color:var(--accent); }
 
-    .ac-back:hover {
-        color: var(--text);
-        background: rgba(255,255,255,0.06);
-        border-color: rgba(255,255,255,0.12);
+    /* ── Card ── */
+    .ac-card {
+        background:var(--surface); border:1.5px solid var(--border); border-radius:18px;
+        overflow:hidden; box-shadow:0 1px 3px rgba(99,102,241,.06);
+        animation: fadeUp .5s cubic-bezier(.22,1,.36,1) both;
+        margin-bottom:1.4rem;
     }
+    .ac-card:nth-child(2) { animation-delay:.07s; }
+    .ac-card:nth-child(3) { animation-delay:.14s; }
 
-    /* ?? Form panel ??????????????????????????????? */
-    .ac-panel {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        overflow: hidden;
+    .ac-card__head {
+        padding:1rem 1.6rem; border-bottom:1.5px solid var(--border);
+        background:linear-gradient(to right,#f5f3ff,#eef2ff);
+        display:flex; align-items:center; justify-content:space-between; gap:.75rem; flex-wrap:wrap;
     }
-
-    .ac-panel__head {
-        padding: 1rem 1.4rem;
-        border-bottom: 1px solid var(--border);
-        background: rgba(255,255,255,0.018);
-        display: flex;
-        align-items: center;
-        gap: 0.7rem;
+    .ac-card__head-left { display:flex; align-items:center; gap:.75rem; }
+    .ac-card__icon {
+        width:32px; height:32px; background:var(--accent-light);
+        border:1.5px solid var(--accent-border); border-radius:9px;
+        display:grid; place-items:center; color:var(--accent); flex-shrink:0;
     }
+    .ac-card__title { font-size:.95rem; font-weight:800; color:var(--text); margin:0; }
+    .ac-card__body  { padding:1.8rem 1.6rem; }
 
-    .ac-panel__icon {
-        width: 30px;
-        height: 30px;
-        background: var(--amber-glow);
-        border: 1px solid rgba(245,158,11,0.2);
-        border-radius: 8px;
-        display: grid;
-        place-items: center;
-        color: var(--amber);
-        flex-shrink: 0;
+    /* ── Bootstrap override ── */
+    .form-label {
+        font-size:.71rem !important; font-weight:800 !important; letter-spacing:.09em !important;
+        text-transform:uppercase !important; color:var(--text-soft) !important; margin-bottom:.38rem !important;
     }
-
-    .ac-panel__title {
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 1.1rem;
-        letter-spacing: 0.06em;
-        color: var(--text);
-        margin: 0;
+    .form-control, .form-select {
+        background:var(--bg) !important; border:1.5px solid var(--border) !important;
+        border-radius:10px !important; color:var(--text) !important;
+        font-family:'Nunito',sans-serif !important; font-size:.9rem !important;
+        font-weight:600 !important; padding:.7rem 1rem !important;
+        outline:none !important; transition:all .18s !important;
     }
-
-    .ac-panel__body {
-        padding: 1.6rem 1.4rem;
+    .form-control::placeholder { color:var(--muted3) !important; font-weight:400 !important; }
+    .form-control:hover, .form-select:hover { border-color:var(--border-hover) !important; }
+    .form-control:focus, .form-select:focus {
+        border-color:var(--accent) !important; background:#fff !important;
+        box-shadow:0 0 0 3.5px rgba(99,102,241,.14) !important;
     }
-
-    /* ?? Field styles ????????????????????????????? */
-
-    /* Override Bootstrap form controls for dark theme */
-    .ac-panel .form-label {
-        font-size: 0.75rem;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--muted2);
-        margin-bottom: 0.4rem;
+    .form-select option { background:#fff; color:var(--text); }
+    textarea.form-control { resize:vertical; min-height:96px; }
+    .form-check-input { border:1.5px solid var(--border) !important; background:var(--bg) !important; }
+    .form-check-input:checked { background-color:var(--accent) !important; border-color:var(--accent) !important; }
+    .form-check-label { font-size:.875rem; color:var(--text-soft); font-weight:600; }
+    .text-danger, .field-validation-error {
+        font-size:.74rem !important; color:var(--red) !important; font-weight:600; margin-top:.25rem; display:block;
     }
+    .input-validation-error { border-color:rgba(220,38,38,.4) !important; background:var(--red-bg) !important; }
 
-    .ac-panel .form-control,
-    .ac-panel .form-select {
-        background: rgba(255,255,255,0.04) !important;
-        border: 1px solid var(--border) !important;
-        border-radius: 9px !important;
-        color: var(--text) !important;
-        font-family: 'DM Sans', sans-serif;
-        font-size: 0.9rem;
-        padding: 0.62rem 0.9rem;
-        transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
-    }
-
-    .ac-panel .form-control::placeholder { color: #334155 !important; }
-
-    .ac-panel .form-control:focus,
-    .ac-panel .form-select:focus {
-        background: rgba(245,158,11,0.04) !important;
-        border-color: rgba(245,158,11,0.4) !important;
-        box-shadow: 0 0 0 3px rgba(245,158,11,0.07) !important;
-        color: var(--text) !important;
-        outline: none;
-    }
-
-    .ac-panel .form-select option {
-        background: #0d1220;
-        color: var(--text);
-    }
-
-    .ac-panel textarea.form-control { resize: vertical; min-height: 90px; }
-
-    .ac-panel .form-check-input {
-        background-color: rgba(255,255,255,0.06);
-        border: 1px solid rgba(255,255,255,0.2);
-        width: 1rem;
-        height: 1rem;
-    }
-
-    .ac-panel .form-check-input:checked {
-        background-color: var(--amber);
-        border-color: var(--amber);
-    }
-
-    .ac-panel .form-check-label {
-        font-size: 0.88rem;
-        color: var(--muted2);
-    }
-
-    /* Validation */
-    .ac-panel .text-danger,
-    .ac-panel .field-validation-error {
-        font-size: 0.75rem;
-        color: var(--red) !important;
-        margin-top: 0.25rem;
-        display: block;
-    }
-
-    .ac-panel .input-validation-error {
-        border-color: rgba(248,113,113,0.45) !important;
-        background: rgba(248,113,113,0.04) !important;
-    }
-
-    /* ?? Section dividers inside the form ????????? */
-    .ac-section {
-        margin-bottom: 1.8rem;
-    }
-
-    .ac-section__label {
-        font-size: 0.68rem;
-        font-weight: 700;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--muted);
-        padding-bottom: 0.6rem;
-        border-bottom: 1px solid var(--border);
-        margin-bottom: 1.1rem;
-    }
-
-    /* ?? Form actions ????????????????????????????? */
+    /* ── Actions bar ── */
     .ac-actions {
-        display: flex;
-        align-items: center;
-        gap: 0.7rem;
-        padding: 1.1rem 1.4rem;
-        border-top: 1px solid var(--border);
-        background: rgba(255,255,255,0.012);
-        flex-wrap: wrap;
+        display:flex; align-items:center; gap:.75rem;
+        padding:1.1rem 1.6rem; border-top:1.5px solid var(--border);
+        background:linear-gradient(to right,#f5f3ff,#eef2ff); flex-wrap:wrap;
     }
-
     .ac-btn-save {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.45rem;
-        font-size: 0.88rem;
-        font-weight: 700;
-        letter-spacing: 0.03em;
-        padding: 0.65rem 1.4rem;
-        border-radius: 9px;
-        border: none;
-        background: linear-gradient(135deg, var(--amber-deep), var(--amber));
-        color: #0f1623;
-        cursor: pointer;
-        font-family: 'DM Sans', sans-serif;
-        box-shadow: 0 4px 14px rgba(245,158,11,0.28);
-        transition: filter 0.18s, transform 0.15s;
+        display:inline-flex; align-items:center; gap:.5rem;
+        font-size:.9rem; font-weight:800; padding:.72rem 1.6rem;
+        border-radius:10px; border:none;
+        background:linear-gradient(135deg,#3730a3,#4338ca,#4f46e5); color:#fff;
+        cursor:pointer; font-family:'Nunito',sans-serif;
+        box-shadow:0 4px 18px rgba(67,56,202,.32);
+        transition:filter .18s,transform .15s,box-shadow .18s;
     }
-
-    .ac-btn-save:hover {
-        filter: brightness(1.08);
-        transform: translateY(-1px);
-    }
-
+    .ac-btn-save:hover { filter:brightness(1.08); transform:translateY(-2px); box-shadow:0 10px 26px rgba(67,56,202,.38); }
     .ac-btn-cancel {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        font-size: 0.85rem;
-        font-weight: 500;
-        padding: 0.63rem 1.1rem;
-        border-radius: 9px;
-        border: 1px solid var(--border);
-        background: rgba(255,255,255,0.03);
-        color: var(--muted2);
-        text-decoration: none;
-        font-family: 'DM Sans', sans-serif;
-        transition: color 0.18s, background 0.18s, border-color 0.18s;
+        display:inline-flex; align-items:center; gap:.4rem;
+        font-size:.86rem; font-weight:700; padding:.68rem 1.2rem;
+        border-radius:10px; border:1.5px solid var(--border);
+        background:var(--surface); color:var(--text-soft); text-decoration:none;
+        font-family:'Nunito',sans-serif; transition:all .18s;
+    }
+    .ac-btn-cancel:hover { border-color:var(--border-hover); background:var(--accent-light); color:var(--accent); }
+
+    /* ══════════════════════════════
+       IMAGE MANAGER
+    ══════════════════════════════ */
+    .img-count-badge {
+        font-size:.7rem; font-weight:800; color:var(--accent);
+        background:var(--accent-light); border:1px solid var(--accent-border);
+        border-radius:99px; padding:.14rem .65rem; letter-spacing:.04em;
     }
 
-    .ac-btn-cancel:hover {
-        color: var(--text);
-        background: rgba(255,255,255,0.06);
-        border-color: rgba(255,255,255,0.12);
+    /* The main Browse button */
+    .img-browse-btn {
+        display:inline-flex; align-items:center; gap:.45rem;
+        font-size:.82rem; font-weight:800; color:#fff;
+        background:linear-gradient(135deg,#3730a3,#4338ca);
+        border:none; border-radius:9px; padding:.52rem 1.1rem;
+        cursor:pointer; font-family:'Nunito',sans-serif;
+        box-shadow:0 4px 14px rgba(67,56,202,.28); transition:all .18s; white-space:nowrap;
+    }
+    .img-browse-btn:hover { filter:brightness(1.1); transform:translateY(-1px); box-shadow:0 8px 20px rgba(67,56,202,.35); }
+    .img-browse-btn:disabled { opacity:.38; cursor:not-allowed; transform:none; filter:none; }
+
+    /* Empty state drop zone */
+    .img-dropzone {
+        border:2px dashed var(--border); border-radius:14px;
+        padding:2.5rem 1.5rem; text-align:center;
+        background:var(--bg); transition:all .22s; margin:1.3rem 1.6rem; cursor:pointer;
+    }
+    .img-dropzone.drag-over {
+        border-color:var(--accent); background:rgba(99,102,241,.04);
+        box-shadow:0 0 0 4px rgba(99,102,241,.1);
+    }
+    .img-dropzone__icon {
+        width:54px; height:54px; background:var(--accent-light);
+        border:1.5px solid var(--accent-border); border-radius:14px;
+        display:grid; place-items:center; color:var(--accent); margin:0 auto .9rem;
+        transition:transform .22s;
+    }
+    .img-dropzone.drag-over .img-dropzone__icon { transform:translateY(-4px) scale(1.07); }
+    .img-dropzone__title { font-size:.95rem; font-weight:800; color:var(--text); margin-bottom:.3rem; }
+    .img-dropzone__sub   { font-size:.77rem; color:var(--muted2); font-weight:500; line-height:1.65; }
+
+    /* Table header row */
+    .img-table-head {
+        display:grid;
+        grid-template-columns: 140px 1fr 90px 90px 44px;
+        gap:.75rem; align-items:center;
+        padding:.6rem 1.6rem;
+        border-bottom:1.5px solid var(--border);
+        background:#f8f7ff;
+        font-size:.66rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--muted2);
+    }
+
+    /* Image rows */
+    .img-rows { display:flex; flex-direction:column; }
+
+    .upload-row {
+        display:grid;
+        grid-template-columns: 140px 1fr 90px 90px 44px;
+        gap:.75rem; align-items:center;
+        padding:.9rem 1.6rem;
+        border-bottom:1px solid var(--border);
+        transition:background .15s;
+        animation: rowIn .28s cubic-bezier(.22,1,.36,1) both;
+    }
+    .upload-row:last-child { border-bottom:none; }
+    .upload-row:hover      { background:#fafbff; }
+    .upload-row.removing   { animation: rowOut .22s ease-out both; pointer-events:none; }
+
+    /* Thumbnail cell */
+    .row-thumb {
+        width:140px; height:88px; border-radius:10px;
+        border:1.5px solid var(--border); background:var(--bg);
+        overflow:hidden; display:grid; place-items:center;
+        color:var(--muted3); position:relative; cursor:pointer; transition:border-color .18s;
+    }
+    .row-thumb:hover:not(.empty) { border-color:var(--accent); }
+    .row-thumb img { width:100%; height:100%; object-fit:cover; display:none; }
+    .row-thumb.has-img img     { display:block; }
+    .row-thumb.has-img > svg   { display:none; }
+    .row-thumb__overlay {
+        position:absolute; inset:0; border-radius:8px;
+        background:rgba(67,56,202,.72);
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+        gap:.25rem; color:#fff; font-size:.68rem; font-weight:700;
+        opacity:0; transition:opacity .18s;
+    }
+    .row-thumb:hover:not(.empty) .row-thumb__overlay { opacity:1; }
+
+    /* Info cell */
+    .row-info { min-width:0; }
+    .row-filename {
+        font-size:.82rem; font-weight:700; color:var(--text);
+        white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; margin-bottom:.35rem;
+    }
+    .row-choose {
+        display:inline-flex; align-items:center; gap:.3rem;
+        font-size:.73rem; font-weight:700; color:var(--accent);
+        background:var(--accent-light); border:1px solid var(--accent-border);
+        border-radius:7px; padding:.28rem .7rem; cursor:pointer;
+        font-family:'Nunito',sans-serif; transition:all .16s;
+    }
+    .row-choose:hover { background:rgba(67,56,202,.15); }
+    .js-image-input   { display:none; }
+
+    /* Order input */
+    .js-image-order {
+        width:72px; height:38px; text-align:center;
+        font-size:.9rem; font-weight:800; color:var(--accent);
+        background:var(--bg); border:1.5px solid var(--border);
+        border-radius:8px; font-family:'Nunito',sans-serif; outline:none; transition:all .18s;
+        display:block; margin:0 auto;
+    }
+    .js-image-order:focus { border-color:var(--accent); background:#fff; box-shadow:0 0 0 3px rgba(99,102,241,.12); }
+
+    /* Status badge */
+    .row-status {
+        display:inline-flex; align-items:center; gap:.3rem;
+        font-size:.68rem; font-weight:700; border-radius:6px;
+        padding:.22rem .6rem; white-space:nowrap;
+    }
+    .s-empty { background:var(--bg); color:var(--muted2); border:1px solid var(--border); }
+    .s-ready { background:rgba(16,185,129,.1); color:#059669; border:1px solid rgba(16,185,129,.22); }
+    .s-dot   { width:5px; height:5px; border-radius:50%; background:currentColor; }
+
+    /* Remove button */
+    .js-remove-row {
+        width:36px; height:36px; border-radius:9px; background:none;
+        border:1.5px solid transparent; color:var(--muted3); cursor:pointer;
+        display:grid; place-items:center; margin:0 auto; transition:all .18s;
+    }
+    .js-remove-row:hover {
+        background:rgba(220,38,38,.07); border-color:rgba(220,38,38,.22);
+        color:var(--red); transform:scale(1.1);
+    }
+
+    /* Add another row footer */
+    .img-add-row {
+        display:flex; align-items:center; justify-content:center; gap:.5rem;
+        width:100%; padding:.75rem; border:none; border-top:1.5px dashed var(--border);
+        background:transparent; color:var(--muted2); font-family:'Nunito',sans-serif;
+        font-size:.82rem; font-weight:700; cursor:pointer; transition:all .18s;
+    }
+    .img-add-row:hover:not(:disabled) { background:var(--accent-light); color:var(--accent); border-top-color:var(--accent-border); }
+    .img-add-row:disabled { opacity:.32; cursor:not-allowed; }
+
+    /* Tip */
+    .img-tip {
+        margin:.2rem 1.6rem 1.2rem;
+        padding:.65rem .9rem; background:var(--accent-light); border:1px solid var(--accent-border);
+        border-radius:9px; font-size:.74rem; color:var(--text-soft); font-weight:500; line-height:1.55;
+        display:flex; gap:.5rem; align-items:flex-start;
+    }
+    .img-tip svg { flex-shrink:0; margin-top:1px; color:var(--accent); }
+
+    @@media (max-width:860px) {
+        .img-table-head { display:none; }
+        .upload-row { grid-template-columns:100px 1fr 60px 40px; }
+        .upload-row > .row-status-cell { display:none; }
+    }
+    @@media (max-width:650px) {
+        .upload-row { grid-template-columns:80px 1fr 40px; }
+        .upload-row > .row-order-cell { display:none; }
     }
 </style>
 
-<!-- Page header -->
+<!-- Header -->
 <div class="ac-header">
-    <div>
-        <h1 class="ac-header__title">Add New Car</h1>
-        <div class="ac-header__sub">Fill in the details below to add a new listing to inventory</div>
+    <div class="ac-header__left">
+        <div class="ac-header__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 14.5V16a1 1 0 0 0 1 1h1a2 2 0 1 0 4 0h4a2 2 0 1 0 4 0h1a1 1 0 0 0 1-1v-1.5l-1.2-4.1A2 2 0 0 0 16.9 9H7.1a2 2 0 0 0-1.9 1.4L4 14.5Z"/>
+                <path d="M7.5 9 9 6.8A1.5 1.5 0 0 1 10.2 6h3.6A1.5 1.5 0 0 1 15 6.8L16.5 9"/>
+            </svg>
+        </div>
+        <div>
+            <h1 class="ac-header__title">Add New Car</h1>
+            <p class="ac-header__sub">Fill in the details below to add a new listing to inventory</p>
+        </div>
     </div>
     <a asp-controller="Admin" asp-action="Cars" class="ac-back">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
@@ -265,128 +320,266 @@
     </a>
 </div>
 
-<!-- Form panel -->
-<div class="ac-panel">
-    <div class="ac-panel__head">
-        <div class="ac-panel__icon">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 14.5V16a1 1 0 0 0 1 1h1a2 2 0 1 0 4 0h4a2 2 0 1 0 4 0h1a1 1 0 0 0 1-1v-1.5l-1.2-4.1A2 2 0 0 0 16.9 9H7.1a2 2 0 0 0-1.9 1.4L4 14.5Z"/>
-                <path d="M7.5 9 9 6.8A1.5 1.5 0 0 1 10.2 6h3.6A1.5 1.5 0 0 1 15 6.8L16.5 9"/>
-            </svg>
-        </div>
-        <h3 class="ac-panel__title">Car Details</h3>
-    </div>
+<form asp-controller="Admin" asp-action="AddCar" method="post" enctype="multipart/form-data" novalidate id="acForm">
+    <input type="hidden" id="NewImageOrdersCsv" name="NewImageOrdersCsv" />
 
-    <form asp-controller="Admin" asp-action="AddCar" method="post" enctype="multipart/form-data" novalidate>
-        <div class="ac-panel__body">
+    <!-- ── Car Details ── -->
+    <div class="ac-card">
+        <div class="ac-card__head">
+            <div class="ac-card__head-left">
+                <div class="ac-card__icon">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/>
+                    </svg>
+                </div>
+                <h3 class="ac-card__title">Car Details</h3>
+            </div>
+        </div>
+        <div class="ac-card__body">
             <partial name="_CarForm" model="Model" />
         </div>
+    </div>
 
+    <!-- ── Image Manager ── -->
+    <div class="ac-card">
+        <div class="ac-card__head">
+            <div class="ac-card__head-left">
+                <div class="ac-card__icon">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                </div>
+                <h3 class="ac-card__title">Car Images</h3>
+                <span class="img-count-badge" id="imgCount">0 / 10</span>
+            </div>
+
+            <!-- ↓ THE FIX: hidden real input + button that clicks it -->
+            <input type="file" id="imgBulkInput" accept="image/*" multiple style="display:none" />
+            <button type="button" class="img-browse-btn" id="imgBrowseBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                Browse &amp; Add Images
+            </button>
+        </div>
+
+        <!-- Empty state -->
+        <div id="imgDropzone" class="img-dropzone">
+            <div class="img-dropzone__icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>
+                    <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+                </svg>
+            </div>
+            <div class="img-dropzone__title">Drag &amp; drop images here</div>
+            <div class="img-dropzone__sub">
+                or click <strong>Browse &amp; Add Images</strong> in the top-right<br>
+                PNG · JPG · WEBP — max 5 MB each — up to 10 images
+            </div>
+        </div>
+
+        <!-- Table header (hidden until rows exist) -->
+        <div class="img-table-head" id="imgTableHead" style="display:none">
+            <span>Preview</span>
+            <span>File name</span>
+            <span style="text-align:center">Order</span>
+            <span>Status</span>
+            <span></span>
+        </div>
+
+        <!-- Rows -->
+        <div class="img-rows" id="imageUploadRows"></div>
+
+        <!-- Add another -->
+        <button type="button" class="img-add-row" id="imgAddRowBtn" style="display:none">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Empty Row
+        </button>
+
+        <!-- Tip -->
+        <div class="img-tip" id="imgTip" style="display:none">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            Set <strong>Order&nbsp;=&nbsp;1</strong> for the cover photo. Click a thumbnail to swap its image.
+        </div>
+    </div>
+
+    <!-- ── Submit ── -->
+    <div class="ac-card">
         <div class="ac-actions">
             <button type="submit" class="ac-btn-save">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                Save Car
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                    <polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+                </svg>
+                Save Car Listing
             </button>
             <a asp-controller="Admin" asp-action="Cars" class="ac-btn-cancel">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 Cancel
             </a>
         </div>
-    </form>
-</div>
+    </div>
+
+</form>
+
+<!-- Row template -->
+<template id="imgRowTpl">
+    <div class="upload-row">
+        <!-- col 1: thumbnail -->
+        <div class="row-thumb empty">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+            </svg>
+            <img alt="preview" />
+            <div class="row-thumb__overlay">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Change
+            </div>
+        </div>
+        <!-- col 2: info -->
+        <div class="row-info">
+            <span class="row-filename">No file chosen</span>
+            <label class="row-choose">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Choose file
+                <input type="file" name="NewImageFiles" accept="image/*" class="js-image-input" />
+            </label>
+        </div>
+        <!-- col 3: order -->
+        <div class="row-order-cell" style="display:flex;justify-content:center">
+            <input type="number" class="js-image-order" min="1" max="10" value="1" />
+        </div>
+        <!-- col 4: status -->
+        <div class="row-status-cell">
+            <span class="row-status s-empty"><span class="s-dot"></span> Empty</span>
+        </div>
+        <!-- col 5: remove -->
+        <button type="button" class="js-remove-row" title="Remove">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+    </div>
+</template>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        (function () {
-            const addRowButton = document.getElementById("addImageRowBtn");
-            const rowsHost = document.getElementById("imageUploadRows");
-            const rowTemplate = document.getElementById("imageUploadRowTemplate");
-            const imageOrdersInput = document.getElementById("NewImageOrdersCsv");
-            const form = addRowButton ? addRowButton.closest("form") : null;
-            if (!addRowButton || !rowsHost || !rowTemplate || !imageOrdersInput || !form) return;
+    (function () {
+        const MAX         = 10;
+        const bulkInput   = document.getElementById('imgBulkInput');
+        const browseBtn   = document.getElementById('imgBrowseBtn');
+        const rowsHost    = document.getElementById('imageUploadRows');
+        const tpl         = document.getElementById('imgRowTpl');
+        const ordersInput = document.getElementById('NewImageOrdersCsv');
+        const dropzone    = document.getElementById('imgDropzone');
+        const tableHead   = document.getElementById('imgTableHead');
+        const addRowBtn   = document.getElementById('imgAddRowBtn');
+        const countBadge  = document.getElementById('imgCount');
+        const tipEl       = document.getElementById('imgTip');
+        const form        = document.getElementById('acForm');
 
-            const maxRows = 10;
+        function rowCount() { return rowsHost.querySelectorAll('.upload-row').length; }
 
-            addRowButton.addEventListener("click", () => addRow());
+        function syncUI() {
+            const n = rowCount(), full = n >= MAX;
+            countBadge.textContent   = n + ' / ' + MAX;
+            dropzone.style.display   = n === 0 ? 'block' : 'none';
+            tableHead.style.display  = n  >  0 ? 'grid'  : 'none';
+            addRowBtn.style.display  = n  >  0 ? 'flex'  : 'none';
+            tipEl.style.display      = n  >  0 ? 'flex'  : 'none';
+            browseBtn.disabled       = full;
+            addRowBtn.disabled       = full;
+        }
 
-            rowsHost.addEventListener("change", function (e) {
-                const input = e.target.closest(".js-image-input");
-                if (!input) return;
-                const row = input.closest(".upload-row");
-                if (!row) return;
-                updateRowPreview(row, input.files?.[0] ?? null);
-            });
+        function applyFile(row, file) {
+            // Assign file to the hidden input via DataTransfer
+            const fi = row.querySelector('.js-image-input');
+            try { const dt = new DataTransfer(); dt.items.add(file); fi.files = dt.files; } catch(e){}
 
-            rowsHost.addEventListener("click", function (e) {
-                const removeBtn = e.target.closest(".js-remove-row");
-                if (!removeBtn) return;
-                const row = removeBtn.closest(".upload-row");
-                if (!row) return;
-                row.remove();
-                ensureAtLeastOneRow();
-                syncAddButtonState();
-            });
+            row.querySelector('.row-filename').textContent = file.name;
 
-            function addRow() {
-                if (rowsHost.querySelectorAll(".upload-row").length >= maxRows) return;
-                const node = rowTemplate.content.firstElementChild.cloneNode(true);
-                rowsHost.appendChild(node);
-                initializeOrderField(node);
-                syncAddButtonState();
+            const thumb = row.querySelector('.row-thumb');
+            const img   = thumb.querySelector('img');
+            img.src = URL.createObjectURL(file);
+            thumb.classList.remove('empty');
+            thumb.classList.add('has-img');
+
+            const badge = row.querySelector('.row-status');
+            badge.className = 'row-status s-ready';
+            badge.innerHTML = '<span class="s-dot"></span> Ready';
+        }
+
+        function addRow(file) {
+            if (rowCount() >= MAX) return;
+            const node = tpl.content.firstElementChild.cloneNode(true);
+            node.querySelector('.js-image-order').value = rowCount() + 1;
+            rowsHost.appendChild(node);
+            if (file) applyFile(node, file);
+            syncUI();
+        }
+
+        function removeRow(row) {
+            row.classList.add('removing');
+            row.addEventListener('animationend', () => { row.remove(); syncUI(); }, { once: true });
+        }
+
+        // ── Browse button clicks the real hidden input ──
+        browseBtn.addEventListener('click', () => { if (!browseBtn.disabled) bulkInput.click(); });
+
+        // ── When user selects files from OS dialog ──
+        bulkInput.addEventListener('change', () => {
+            Array.from(bulkInput.files).forEach(f => { if (rowCount() < MAX) addRow(f); });
+            bulkInput.value = ''; // reset so same files work again
+        });
+
+        // ── Add empty row ──
+        addRowBtn.addEventListener('click', () => addRow(null));
+
+        // ── Per-row file chooser (the "Choose file" label) ──
+        rowsHost.addEventListener('change', (e) => {
+            const inp = e.target.closest('.js-image-input');
+            if (inp && inp.files.length) applyFile(inp.closest('.upload-row'), inp.files[0]);
+        });
+
+        // ── Clicks inside rows (remove or thumbnail re-pick) ──
+        rowsHost.addEventListener('click', (e) => {
+            const removeBtn = e.target.closest('.js-remove-row');
+            if (removeBtn) { removeRow(removeBtn.closest('.upload-row')); return; }
+
+            const thumb = e.target.closest('.row-thumb');
+            if (thumb && thumb.classList.contains('has-img')) {
+                thumb.closest('.upload-row').querySelector('.js-image-input').click();
             }
+        });
 
-            function ensureAtLeastOneRow() {
-                if (rowsHost.querySelectorAll(".upload-row").length === 0) addRow();
-            }
+        // ── Drop zone ──
+        ['dragenter','dragover'].forEach(ev =>
+            dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.add('drag-over'); })
+        );
+        ['dragleave','drop'].forEach(ev =>
+            dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.remove('drag-over'); })
+        );
+        dropzone.addEventListener('click', () => { if (rowCount() < MAX) bulkInput.click(); });
+        dropzone.addEventListener('drop', e => {
+            Array.from(e.dataTransfer?.files || [])
+                .filter(f => f.type.startsWith('image/'))
+                .forEach(f => { if (rowCount() < MAX) addRow(f); });
+        });
 
-            function syncAddButtonState() {
-                addRowButton.disabled = rowsHost.querySelectorAll(".upload-row").length >= maxRows;
-            }
-
-            function initializeOrderField(row) {
-                const orderInput = row.querySelector(".js-image-order");
-                if (!orderInput) return;
-                orderInput.value = String(rowsHost.querySelectorAll(".upload-row").length);
-            }
-
-            function updateRowPreview(row, file) {
-                const thumb = row.querySelector(".upload-row-thumb");
-                const name  = row.querySelector(".upload-row-file");
-                if (!thumb || !name) return;
-                if (!file) {
-                    thumb.classList.add("d-none");
-                    thumb.removeAttribute("src");
-                    name.textContent = "No image selected";
-                    return;
+        // ── Sync order CSV before submit ──
+        form.addEventListener('submit', () => {
+            const orders = [];
+            rowsHost.querySelectorAll('.upload-row').forEach(row => {
+                const inp = row.querySelector('.js-image-input');
+                if (inp && inp.files && inp.files.length) {
+                    const v = parseInt(row.querySelector('.js-image-order').value, 10);
+                    orders.push(isNaN(v) ? orders.length + 1 : v);
                 }
-                thumb.src = URL.createObjectURL(file);
-                thumb.classList.remove("d-none");
-                name.textContent = file.name;
-            }
+            });
+            ordersInput.value = orders.join(',');
+        });
 
-            function syncImageOrdersForSubmit() {
-                const rows = rowsHost.querySelectorAll(".upload-row");
-                const orderValues = [];
-                for (const row of rows) {
-                    const fileInput = row.querySelector(".js-image-input");
-                    const orderInput = row.querySelector(".js-image-order");
-                    const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
-                    if (!hasFile) continue;
-
-                    const parsedOrder = Number.parseInt(orderInput?.value ?? "", 10);
-                    orderValues.push(Number.isInteger(parsedOrder) && parsedOrder > 0
-                        ? parsedOrder
-                        : orderValues.length + 1);
-                }
-
-                imageOrdersInput.value = orderValues.join(",");
-            }
-
-            form.addEventListener("submit", syncImageOrdersForSubmit);
-
-            ensureAtLeastOneRow();
-            syncAddButtonState();
-        })();
+        syncUI();
+    })();
     </script>
 }

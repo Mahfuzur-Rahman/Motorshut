@@ -2,488 +2,583 @@
 @{
     ViewData["Title"] = "Cars";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var totalCars = Model.Cars.Count;
+    var soldCars = Model.Cars.Count(c => c.IsSold);
+    var inStockCars = totalCars - soldCars;
 }
 
 <style>
-    :root {
-        --amber:      #f59e0b;
-        --amber-deep: #d97706;
-        --amber-glow: rgba(245,158,11,0.1);
-        --bg:         #06090f;
-        --surface:    #0d1220;
-        --surface2:   #111827;
-        --border:     rgba(255,255,255,0.065);
-        --text:       #e2e8f0;
-        --muted:      #64748b;
-        --muted2:     #94a3b8;
-        --green:      #10b981;
-        --red:        #f87171;
-        --blue:       #60a5fa;
+    .cars-page {
+        display: grid;
+        gap: 1.2rem;
     }
 
-    /* ?? Page header ?????????????????????????????? */
-    .cl-header {
+    .cars-hero {
+        position: relative;
+        overflow: hidden;
+        border: 1.5px solid var(--border);
+        border-radius: 18px;
+        background:
+            radial-gradient(circle at top right, rgba(79, 70, 229, 0.18), transparent 55%),
+            linear-gradient(135deg, #ffffff 0%, #eef2ff 100%);
+        padding: 1.35rem;
+    }
+
+    .cars-hero__head {
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
-        flex-wrap: wrap;
         gap: 1rem;
-        margin-bottom: 1.6rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
     }
 
-    .cl-header__title {
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 2rem;
-        letter-spacing: 0.04em;
-        color: var(--text);
-        line-height: 1;
-        margin: 0 0 0.25rem;
+    .cars-hero__label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #6366f1;
     }
 
-    .cl-header__sub {
-        font-size: 0.82rem;
-        color: var(--muted);
+    .cars-hero__label::before {
+        content: "";
+        width: 16px;
+        height: 2px;
+        border-radius: 2px;
+        background: linear-gradient(90deg, #4f46e5, #7c3aed);
     }
 
-    /* ?? Add button ??????????????????????????????? */
-    .cl-btn-add {
+    .cars-hero__title {
+        margin: 0.3rem 0 0.35rem;
+        font-size: clamp(1.6rem, 2.3vw, 2rem);
+        line-height: 1.1;
+        font-weight: 800;
+        color: #1e1b4b;
+    }
+
+    .cars-hero__sub {
+        margin: 0;
+        font-size: 0.93rem;
+        color: #4c1d95;
+        opacity: 0.85;
+        max-width: 680px;
+    }
+
+    .cars-btn-add {
         display: inline-flex;
         align-items: center;
         gap: 0.45rem;
-        font-size: 0.85rem;
-        font-weight: 700;
-        letter-spacing: 0.03em;
-        padding: 0.55rem 1.1rem;
-        border-radius: 9px;
+        font-size: 0.86rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        padding: 0.58rem 1.05rem;
+        border-radius: 10px;
         text-decoration: none;
-        background: linear-gradient(135deg, var(--amber-deep), var(--amber));
-        color: #0f1623;
+        color: #ffffff;
+        background: linear-gradient(135deg, #4338ca, #7c3aed);
+        box-shadow: 0 8px 22px rgba(67, 56, 202, 0.22);
         border: none;
-        box-shadow: 0 4px 14px rgba(245,158,11,0.28);
-        transition: filter 0.18s, transform 0.15s;
+        transition: transform 0.16s, box-shadow 0.18s, filter 0.18s;
         white-space: nowrap;
-        align-self: flex-start;
     }
 
-    .cl-btn-add:hover {
-        filter: brightness(1.08);
+    .cars-btn-add:hover {
+        color: #ffffff;
         transform: translateY(-1px);
-        color: #0f1623;
+        filter: brightness(1.04);
+        box-shadow: 0 12px 28px rgba(67, 56, 202, 0.28);
     }
 
-    /* ?? Search bar ??????????????????????????????? */
-    .cl-search-wrap {
-        background: var(--surface);
-        border: 1px solid var(--border);
+    .cars-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(120px, 1fr));
+        gap: 0.8rem;
+    }
+
+    .cars-metric {
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 0.72rem 0.82rem;
+    }
+
+    .cars-metric span {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #6366f1;
+    }
+
+    .cars-metric strong {
+        display: block;
+        margin-top: 0.18rem;
+        font-size: 1.35rem;
+        line-height: 1;
+        color: #1e1b4b;
+        font-weight: 800;
+    }
+
+    .cars-filter {
+        border: 1.5px solid var(--border);
         border-radius: 14px;
-        padding: 1rem 1.2rem;
-        margin-bottom: 1.2rem;
+        background: var(--surface);
+        padding: 0.95rem;
         display: flex;
         align-items: center;
-        gap: 0.7rem;
+        gap: 0.65rem;
         flex-wrap: wrap;
     }
 
-    .cl-search-input-wrap {
+    .cars-filter__input-wrap {
         position: relative;
         flex: 1;
-        min-width: 220px;
+        min-width: 240px;
     }
 
-    .cl-search-icon {
+    .cars-filter__icon {
         position: absolute;
-        left: 0.85rem;
+        left: 0.82rem;
         top: 50%;
         transform: translateY(-50%);
-        color: var(--muted);
+        color: #818cf8;
         pointer-events: none;
     }
 
-    .cl-search-input {
+    .cars-filter__input {
         width: 100%;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid var(--border);
-        border-radius: 9px;
-        padding: 0.6rem 1rem 0.6rem 2.5rem;
-        color: var(--text);
-        font-family: 'DM Sans', sans-serif;
-        font-size: 0.88rem;
+        height: 42px;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        background: #ffffff;
+        padding: 0 0.85rem 0 2.4rem;
+        color: #1e1b4b;
+        font-size: 0.9rem;
+        font-family: 'Nunito', sans-serif;
         outline: none;
-        transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+        transition: border-color 0.18s, box-shadow 0.18s;
     }
 
-    .cl-search-input::placeholder { color: #334155; }
-
-    .cl-search-input:focus {
-        border-color: rgba(245,158,11,0.4);
-        background: rgba(245,158,11,0.04);
-        box-shadow: 0 0 0 3px rgba(245,158,11,0.07);
+    .cars-filter__input::placeholder {
+        color: #a5b4fc;
     }
 
-    .cl-btn {
+    .cars-filter__input:focus {
+        border-color: #818cf8;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+
+    .cars-btn {
         display: inline-flex;
         align-items: center;
-        gap: 0.4rem;
-        font-size: 0.83rem;
-        font-weight: 600;
-        padding: 0.58rem 1rem;
-        border-radius: 9px;
-        border: 1px solid var(--border);
-        background: rgba(255,255,255,0.04);
-        color: var(--muted2);
+        gap: 0.38rem;
+        height: 42px;
+        padding: 0 0.95rem;
+        border-radius: 10px;
         text-decoration: none;
-        cursor: pointer;
-        font-family: 'DM Sans', sans-serif;
-        transition: color 0.18s, background 0.18s, border-color 0.18s;
+        border: 1.5px solid var(--border);
+        font-size: 0.83rem;
+        font-weight: 700;
+        font-family: 'Nunito', sans-serif;
         white-space: nowrap;
+        transition: color 0.18s, background 0.18s, border-color 0.18s;
     }
 
-    .cl-btn:hover {
-        color: var(--text);
-        background: rgba(255,255,255,0.07);
-        border-color: rgba(255,255,255,0.12);
+    .cars-btn--search {
+        color: #ffffff;
+        background: #4f46e5;
+        border-color: #4f46e5;
     }
 
-    .cl-btn--search {
-        background: var(--amber-glow);
-        border-color: rgba(245,158,11,0.25);
-        color: var(--amber);
+    .cars-btn--search:hover {
+        color: #ffffff;
+        background: #4338ca;
+        border-color: #4338ca;
     }
 
-    .cl-btn--search:hover {
-        background: rgba(245,158,11,0.18);
-        color: var(--amber);
-        border-color: rgba(245,158,11,0.4);
+    .cars-btn--clear {
+        color: #4338ca;
+        background: #ffffff;
     }
 
-    /* ?? Table panel ?????????????????????????????? */
-    .cl-panel {
-        background: var(--surface);
-        border: 1px solid var(--border);
+    .cars-btn--clear:hover {
+        color: #312e81;
+        background: rgba(224, 231, 255, 0.45);
+        border-color: #a5b4fc;
+    }
+
+    .cars-panel {
+        border: 1.5px solid var(--border);
         border-radius: 16px;
         overflow: hidden;
+        background: var(--surface);
     }
 
-    .cl-panel__head {
+    .cars-panel__head {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 1.1rem 1.4rem;
-        border-bottom: 1px solid var(--border);
-        gap: 1rem;
+        gap: 0.8rem;
         flex-wrap: wrap;
+        padding: 1rem 1.15rem;
+        border-bottom: 1.5px solid var(--border);
+        background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
     }
 
-    .cl-panel__title {
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 1.15rem;
-        letter-spacing: 0.06em;
-        color: var(--text);
+    .cars-panel__title {
         margin: 0;
+        font-size: 1rem;
+        font-weight: 800;
+        color: #1e1b4b;
     }
 
-    .cl-count-badge {
-        font-size: 0.72rem;
-        font-weight: 700;
-        padding: 0.22rem 0.65rem;
-        border-radius: 999px;
-        background: var(--amber-glow);
-        border: 1px solid rgba(245,158,11,0.2);
-        color: var(--amber);
-        letter-spacing: 0.05em;
-    }
-
-    /* ?? Empty state ?????????????????????????????? */
-    .cl-empty {
-        display: flex;
-        flex-direction: column;
+    .cars-search-tag {
+        display: inline-flex;
         align-items: center;
-        justify-content: center;
-        padding: 4rem 2rem;
-        gap: 0.75rem;
-        color: var(--muted);
+        gap: 0.42rem;
+        font-size: 0.77rem;
+        font-weight: 700;
+        color: #4338ca;
+        border: 1px solid #c7d2fe;
+        border-radius: 999px;
+        background: #eef2ff;
+        padding: 0.22rem 0.62rem;
     }
 
-    .cl-empty__icon {
-        width: 52px;
-        height: 52px;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid var(--border);
-        border-radius: 14px;
+    .cars-search-tag a {
+        color: #6366f1;
+        text-decoration: none;
+    }
+
+    .cars-search-tag a:hover {
+        color: #312e81;
+    }
+
+    .cars-count {
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #4338ca;
+        border: 1px solid #c7d2fe;
+        border-radius: 999px;
+        background: #eef2ff;
+        padding: 0.3rem 0.72rem;
+    }
+
+    .cars-empty {
+        text-align: center;
+        padding: 3.2rem 1.2rem;
+    }
+
+    .cars-empty__icon {
+        width: 50px;
+        height: 50px;
+        margin: 0 auto 0.6rem;
+        border: 1.5px solid var(--border);
+        border-radius: 13px;
+        color: #6366f1;
+        background: #eef2ff;
         display: grid;
         place-items: center;
-        color: var(--muted);
-        margin-bottom: 0.25rem;
     }
 
-    .cl-empty p { font-size: 0.9rem; margin: 0; }
+    .cars-empty p {
+        margin: 0;
+        color: #6366f1;
+        font-size: 0.92rem;
+    }
 
-    /* ?? Table ???????????????????????????????????? */
-    .cl-table-wrap { overflow-x: auto; }
+    .cars-table-wrap {
+        overflow-x: auto;
+    }
 
-    .cl-table {
+    .cars-table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 0.875rem;
+        min-width: 760px;
     }
 
-    .cl-table thead tr {
-        border-bottom: 1px solid var(--border);
-    }
-
-    .cl-table thead th {
-        padding: 0.75rem 1.1rem;
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--muted);
+    .cars-table thead th {
         text-align: left;
         white-space: nowrap;
-        background: rgba(255,255,255,0.018);
+        padding: 0.72rem 1rem;
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #6366f1;
+        background: #f8faff;
+        border-bottom: 1.5px solid var(--border);
     }
 
-    .cl-table thead th:last-child { text-align: right; }
+    .cars-table thead th:last-child,
+    .cars-table td:last-child {
+        text-align: right;
+    }
 
-    .cl-table tbody tr {
+    .cars-table tbody tr {
         border-bottom: 1px solid var(--border);
         transition: background 0.15s;
     }
 
-    .cl-table tbody tr:last-child { border-bottom: none; }
+    .cars-table tbody tr:hover {
+        background: #f8faff;
+    }
 
-    .cl-table tbody tr:hover { background: rgba(255,255,255,0.025); }
+    .cars-table tbody tr:last-child {
+        border-bottom: none;
+    }
 
-    .cl-table td {
-        padding: 0.9rem 1.1rem;
-        color: var(--text);
+    .cars-table td {
+        padding: 0.86rem 1rem;
         vertical-align: middle;
+        color: #1e1b4b;
+        font-size: 0.88rem;
     }
 
-    .cl-table td:last-child { text-align: right; }
-
-    /* Car name cell */
-    .cl-car-name {
-        font-weight: 600;
-        color: var(--text);
-        font-size: 0.9rem;
-    }
-
-    .cl-car-variant {
-        font-size: 0.76rem;
-        color: var(--muted);
-        margin-top: 2px;
-    }
-
-    /* Year */
-    .cl-year {
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 1.05rem;
-        letter-spacing: 0.06em;
-        color: var(--muted2);
-    }
-
-    /* Price */
-    .cl-price {
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 1.1rem;
-        letter-spacing: 0.04em;
-        color: var(--text);
-    }
-
-    /* Mileage */
-    .cl-mileage {
-        font-size: 0.84rem;
-        color: var(--muted2);
-    }
-
-    /* Status badges */
-    .cl-badges { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
-
-    .cl-badge {
-        font-size: 0.7rem;
+    .cars-name {
         font-weight: 700;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        padding: 0.2rem 0.55rem;
-        border-radius: 6px;
+        color: #1e1b4b;
     }
 
-    .cl-badge--sold     { background: rgba(16,185,129,0.12);  color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
-    .cl-badge--stock    { background: rgba(96,165,250,0.12);  color: var(--blue);  border: 1px solid rgba(96,165,250,0.2); }
-    .cl-badge--returned { background: rgba(245,158,11,0.12);  color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+    .cars-variant {
+        margin-top: 0.14rem;
+        font-size: 0.77rem;
+        color: #6366f1;
+    }
 
-    /* Edit button */
-    .cl-btn-edit {
+    .cars-year {
+        font-weight: 800;
+        color: #4338ca;
+    }
+
+    .cars-price {
+        font-weight: 800;
+        color: #1e1b4b;
+    }
+
+    .cars-mileage {
+        color: #6366f1;
+    }
+
+    .cars-badges {
         display: inline-flex;
-        align-items: center;
         gap: 0.35rem;
-        font-size: 0.78rem;
-        font-weight: 600;
-        padding: 0.38rem 0.8rem;
-        border-radius: 7px;
-        border: 1px solid var(--border);
-        background: rgba(255,255,255,0.03);
-        color: var(--muted2);
-        text-decoration: none;
-        transition: color 0.18s, background 0.18s, border-color 0.18s;
-        white-space: nowrap;
+        flex-wrap: wrap;
     }
 
-    .cl-btn-edit:hover {
-        color: var(--text);
-        background: rgba(255,255,255,0.07);
-        border-color: rgba(255,255,255,0.14);
-    }
-
-    /* Search highlight indicator */
-    .cl-search-tag {
+    .cars-badge {
         display: inline-flex;
         align-items: center;
-        gap: 0.4rem;
-        font-size: 0.76rem;
-        color: var(--amber);
-        background: var(--amber-glow);
-        border: 1px solid rgba(245,158,11,0.2);
+        padding: 0.18rem 0.55rem;
         border-radius: 999px;
-        padding: 0.2rem 0.65rem;
+        font-size: 0.67rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
     }
 
-    .cl-search-tag a {
-        color: var(--muted);
-        text-decoration: none;
+    .cars-badge--stock {
+        background: rgba(59, 130, 246, 0.1);
+        color: #1d4ed8;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .cars-badge--sold {
+        background: rgba(16, 185, 129, 0.12);
+        color: #047857;
+        border: 1px solid rgba(16, 185, 129, 0.24);
+    }
+
+    .cars-badge--returned {
+        background: rgba(245, 158, 11, 0.14);
+        color: #b45309;
+        border: 1px solid rgba(245, 158, 11, 0.24);
+    }
+
+    .cars-btn-edit {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.33rem;
+        font-size: 0.79rem;
         font-weight: 700;
-        transition: color 0.15s;
+        color: #4338ca;
+        text-decoration: none;
+        border: 1.5px solid #c7d2fe;
+        background: #eef2ff;
+        border-radius: 8px;
+        padding: 0.36rem 0.74rem;
+        transition: color 0.18s, background 0.18s, border-color 0.18s;
     }
 
-    .cl-search-tag a:hover { color: var(--red); }
+    .cars-btn-edit:hover {
+        color: #312e81;
+        background: #e0e7ff;
+        border-color: #a5b4fc;
+    }
+
+    @@media (max-width: 980px) {
+        .cars-metrics {
+            grid-template-columns: 1fr;
+        }
+
+        .cars-hero__head {
+            margin-bottom: 0.75rem;
+        }
+    }
 </style>
 
-<!-- Page header -->
-<div class="cl-header">
-    <div>
-        <h1 class="cl-header__title">Cars</h1>
-        <div class="cl-header__sub">Manage your full inventory — search, edit, and track all listings</div>
-    </div>
-    <a asp-controller="Admin" asp-action="AddCar" class="cl-btn-add">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add New Car
-    </a>
-</div>
-
-<!-- Search bar -->
-<form method="get" asp-controller="Admin" asp-action="Cars" class="cl-search-wrap">
-    <div class="cl-search-input-wrap">
-        <svg class="cl-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text"
-               class="cl-search-input"
-               name="search"
-               value="@Model.Search"
-               placeholder="Search by make, model, variant, colour, VIN…"
-               autocomplete="off" />
-    </div>
-    <button type="submit" class="cl-btn cl-btn--search">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        Search
-    </button>
-    @if (!string.IsNullOrWhiteSpace(Model.Search))
-    {
-        <a asp-controller="Admin" asp-action="Cars" class="cl-btn">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            Clear
-        </a>
-    }
-</form>
-
-<!-- Table panel -->
-<div class="cl-panel">
-    <div class="cl-panel__head">
-        <div style="display:flex;align-items:center;gap:0.7rem;flex-wrap:wrap;">
-            <h3 class="cl-panel__title">Cars List</h3>
-            @if (!string.IsNullOrWhiteSpace(Model.Search))
-            {
-                <span class="cl-search-tag">
-                    Searching: "@Model.Search"
-                    <a asp-controller="Admin" asp-action="Cars" title="Clear search">?</a>
-                </span>
-            }
-        </div>
-        <span class="cl-count-badge">@Model.Cars.Count result@(Model.Cars.Count == 1 ? "" : "s")</span>
-    </div>
-
-    @if (Model.Cars.Count == 0)
-    {
-        <div class="cl-empty">
-            <div class="cl-empty__icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M4 14.5V16a1 1 0 0 0 1 1h1a2 2 0 1 0 4 0h4a2 2 0 1 0 4 0h1a1 1 0 0 0 1-1v-1.5l-1.2-4.1A2 2 0 0 0 16.9 9H7.1a2 2 0 0 0-1.9 1.4L4 14.5Z"/>
-                    <path d="M7.5 9 9 6.8A1.5 1.5 0 0 1 10.2 6h3.6A1.5 1.5 0 0 1 15 6.8L16.5 9"/>
-                </svg>
+<div class="cars-page">
+    <section class="cars-hero">
+        <div class="cars-hero__head">
+            <div>
+                <div class="cars-hero__label">Inventory</div>
+                <h1 class="cars-hero__title">Cars Management</h1>
+                <p class="cars-hero__sub">Search, review, and update every listing from one place.</p>
             </div>
-            <p>No cars found@(!string.IsNullOrWhiteSpace(Model.Search) ? $" matching \"{Model.Search}\"" : "").</p>
-            @if (!string.IsNullOrWhiteSpace(Model.Search))
-            {
-                <a asp-controller="Admin" asp-action="Cars" class="cl-btn" style="margin-top:0.25rem">Clear search</a>
-            }
+            <a asp-controller="Admin" asp-action="AddCar" class="cars-btn-add">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add New Car
+            </a>
         </div>
-    }
-    else
-    {
-        <div class="cl-table-wrap">
-            <table class="cl-table">
-                <thead>
-                    <tr>
-                        <th>Car</th>
-                        <th>Year</th>
-                        <th>Price</th>
-                        <th>Mileage</th>
-                        <th>Status</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var car in Model.Cars)
-                    {
+
+        <div class="cars-metrics">
+            <div class="cars-metric">
+                <span>Total Cars</span>
+                <strong>@totalCars</strong>
+            </div>
+            <div class="cars-metric">
+                <span>In Stock</span>
+                <strong>@inStockCars</strong>
+            </div>
+            <div class="cars-metric">
+                <span>Sold</span>
+                <strong>@soldCars</strong>
+            </div>
+        </div>
+    </section>
+
+    <form method="get" asp-controller="Admin" asp-action="Cars" class="cars-filter">
+        <div class="cars-filter__input-wrap">
+            <svg class="cars-filter__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text"
+                   class="cars-filter__input"
+                   name="search"
+                   value="@Model.Search"
+                   placeholder="Search by make, model, variant, color, VIN"
+                   autocomplete="off" />
+        </div>
+
+        <button type="submit" class="cars-btn cars-btn--search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Search
+        </button>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Search))
+        {
+            <a asp-controller="Admin" asp-action="Cars" class="cars-btn cars-btn--clear">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Clear
+            </a>
+        }
+    </form>
+
+    <section class="cars-panel">
+        <div class="cars-panel__head">
+            <div style="display:flex;align-items:center;gap:0.55rem;flex-wrap:wrap;">
+                <h2 class="cars-panel__title">Cars List</h2>
+                @if (!string.IsNullOrWhiteSpace(Model.Search))
+                {
+                    <span class="cars-search-tag">
+                        Searching: "@Model.Search"
+                        <a asp-controller="Admin" asp-action="Cars" title="Clear search">Clear</a>
+                    </span>
+                }
+            </div>
+            <span class="cars-count">@Model.Cars.Count result@(Model.Cars.Count == 1 ? "" : "s")</span>
+        </div>
+
+        @if (Model.Cars.Count == 0)
+        {
+            <div class="cars-empty">
+                <div class="cars-empty__icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 14.5V16a1 1 0 0 0 1 1h1a2 2 0 1 0 4 0h4a2 2 0 1 0 4 0h1a1 1 0 0 0 1-1v-1.5l-1.2-4.1A2 2 0 0 0 16.9 9H7.1a2 2 0 0 0-1.9 1.4L4 14.5Z"/>
+                        <path d="M7.5 9 9 6.8A1.5 1.5 0 0 1 10.2 6h3.6A1.5 1.5 0 0 1 15 6.8L16.5 9"/>
+                    </svg>
+                </div>
+                <p>No cars found@(!string.IsNullOrWhiteSpace(Model.Search) ? $" matching \"{Model.Search}\"" : "").</p>
+                @if (!string.IsNullOrWhiteSpace(Model.Search))
+                {
+                    <a asp-controller="Admin" asp-action="Cars" class="cars-btn cars-btn--clear" style="margin-top:0.75rem;">Clear search</a>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="cars-table-wrap">
+                <table class="cars-table">
+                    <thead>
                         <tr>
-                            <td>
-                                <div class="cl-car-name">@car.Make @car.Model</div>
-                                @if (!string.IsNullOrWhiteSpace(car.Variant))
-                                {
-                                    <div class="cl-car-variant">@car.Variant</div>
-                                }
-                            </td>
-                            <td><span class="cl-year">@car.Year</span></td>
-                            <td><span class="cl-price">$@car.Price.ToString("N2")</span></td>
-                            <td><span class="cl-mileage">@car.MileageKm.ToString("N0") km</span></td>
-                            <td>
-                                <div class="cl-badges">
-                                    @if (car.IsSold)
-                                    {
-                                        <span class="cl-badge cl-badge--sold">Sold</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="cl-badge cl-badge--stock">In Stock</span>
-                                    }
-                                    @if (car.IsReturned)
-                                    {
-                                        <span class="cl-badge cl-badge--returned">Returned</span>
-                                    }
-                                </div>
-                            </td>
-                            <td>
-                                <a asp-controller="Admin"
-                                   asp-action="EditCar"
-                                   asp-route-id="@car.Id"
-                                   class="cl-btn-edit">
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                                    Edit
-                                </a>
-                            </td>
+                            <th>Car</th>
+                            <th>Year</th>
+                            <th>Price</th>
+                            <th>Mileage</th>
+                            <th>Status</th>
+                            <th></th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    }
+                    </thead>
+                    <tbody>
+                        @foreach (var car in Model.Cars)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="cars-name">@car.Make @car.Model</div>
+                                    @if (!string.IsNullOrWhiteSpace(car.Variant))
+                                    {
+                                        <div class="cars-variant">@car.Variant</div>
+                                    }
+                                </td>
+                                <td><span class="cars-year">@car.Year</span></td>
+                                <td><span class="cars-price">$@car.Price.ToString("N2")</span></td>
+                                <td><span class="cars-mileage">@car.MileageKm.ToString("N0") km</span></td>
+                                <td>
+                                    <div class="cars-badges">
+                                        @if (car.IsSold)
+                                        {
+                                            <span class="cars-badge cars-badge--sold">Sold</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cars-badge cars-badge--stock">In Stock</span>
+                                        }
+                                        @if (car.IsReturned)
+                                        {
+                                            <span class="cars-badge cars-badge--returned">Returned</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <a asp-controller="Admin"
+                                       asp-action="EditCar"
+                                       asp-route-id="@car.Id"
+                                       class="cars-btn-edit">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                        Edit
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
 </div>

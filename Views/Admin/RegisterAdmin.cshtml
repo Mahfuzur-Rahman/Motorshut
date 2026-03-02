@@ -5,493 +5,561 @@
 }
 
 <style>
-    /* ── Tokens ─────────────────────────────────── */
+    /* ── Tokens (inherits AdminLayout indigo palette) ── */
     :root {
-        --amber:      #f59e0b;
-        --amber-deep: #d97706;
-        --amber-glow: rgba(245,158,11,0.1);
-        --surface:    #0d1220;
-        --border:     rgba(255,255,255,0.065);
-        --text:       #e2e8f0;
-        --muted:      #64748b;
-        --muted2:     #94a3b8;
-        --red:        #f87171;
+        --accent:        #4338ca;
+        --accent-light:  rgba(67, 56, 202, 0.08);
+        --accent-mid:    rgba(67, 56, 202, 0.16);
+        --accent-border: rgba(67, 56, 202, 0.22);
+        --surface:       #ffffff;
+        --bg:            #eef2ff;
+        --border:        #e0e7ff;
+        --border-hover:  #a5b4fc;
+        --text:          #1e1b4b;
+        --text-soft:     #3730a3;
+        --muted:         #6366f1;
+        --muted2:        #818cf8;
+        --muted3:        #a5b4fc;
+        --red:           #dc2626;
+        --red-bg:        rgba(220, 38, 38, 0.06);
+        --red-border:    rgba(220, 38, 38, 0.18);
+        --green:         #16a34a;
+        --green-bg:      rgba(22, 163, 74, 0.07);
     }
 
-    /* ── Layout ─────────────────────────────────── */
-    .ra-layout {
-        display: grid;
-        grid-template-columns: 1fr 300px;
-        gap: 1.4rem;
-        max-width: 900px;
-        align-items: start;
-    }
-
-    /* ── Page header ────────────────────────────── */
-    .ra-header {
+    /* ── Page header ── */
+    .rg-header {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         justify-content: space-between;
         flex-wrap: wrap;
         gap: 1rem;
-        margin-bottom: 1.6rem;
-        max-width: 900px;
+        margin-bottom: 2rem;
     }
 
-    .ra-header__left { display: flex; align-items: center; gap: 0.85rem; }
+    .rg-header__left { display: flex; align-items: center; gap: 1rem; }
 
-    .ra-header__icon {
-        width: 46px;
-        height: 46px;
-        border-radius: 13px;
-        background: var(--amber-glow);
-        border: 1px solid rgba(245,158,11,0.22);
+    .rg-header__icon {
+        width: 48px; height: 48px;
+        background: var(--accent-light);
+        border: 1.5px solid var(--accent-border);
+        border-radius: 14px;
         display: grid;
         place-items: center;
-        color: var(--amber);
+        color: var(--accent);
         flex-shrink: 0;
     }
 
-    .ra-header__title {
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 2rem;
-        letter-spacing: 0.04em;
+    .rg-header__title {
+        font-size: 1.55rem;
+        font-weight: 800;
         color: var(--text);
-        line-height: 1;
-        margin: 0 0 0.2rem;
+        letter-spacing: -0.01em;
+        margin: 0 0 0.1rem;
+        line-height: 1.2;
     }
 
-    .ra-header__sub { font-size: 0.82rem; color: var(--muted); }
+    .rg-header__sub {
+        font-size: 0.82rem;
+        color: var(--muted2);
+        font-weight: 500;
+    }
 
-    .ra-back {
+    .rg-back {
         display: inline-flex;
         align-items: center;
         gap: 0.4rem;
         font-size: 0.82rem;
-        font-weight: 500;
-        color: var(--muted2);
+        font-weight: 600;
+        color: var(--text-soft);
         text-decoration: none;
-        padding: 0.45rem 0.9rem;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        background: rgba(255,255,255,0.03);
-        transition: color 0.18s, background 0.18s, border-color 0.18s;
+        padding: 0.48rem 1rem;
+        border: 1.5px solid var(--border);
+        border-radius: 9px;
+        background: var(--surface);
+        transition: all 0.18s;
         white-space: nowrap;
     }
 
-    .ra-back:hover {
-        color: var(--text);
-        background: rgba(255,255,255,0.06);
-        border-color: rgba(255,255,255,0.12);
+    .rg-back:hover {
+        border-color: var(--border-hover);
+        background: var(--accent-light);
+        color: var(--accent);
     }
 
-    /* ── Main card ──────────────────────────────── */
-    .ra-card {
+    /* ── Layout ── */
+    .rg-layout {
+        display: grid;
+        grid-template-columns: 1fr 288px;
+        gap: 1.5rem;
+        align-items: start;
+        max-width: 960px;
+    }
+
+    /* ── Card ── */
+    .rg-card {
         background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 16px;
+        border: 1.5px solid var(--border);
+        border-radius: 18px;
         overflow: hidden;
-        position: relative;
+        box-shadow: 0 1px 3px rgba(99,102,241,0.06), 0 4px 20px rgba(99,102,241,0.04);
     }
 
-    .ra-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 10%;
-        right: 10%;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(245,158,11,0.35), transparent);
-    }
-
-    .ra-card__head {
-        padding: 1rem 1.4rem;
-        border-bottom: 1px solid var(--border);
-        background: rgba(255,255,255,0.018);
+    .rg-card__head {
+        padding: 1.1rem 1.6rem;
+        border-bottom: 1.5px solid var(--border);
+        background: linear-gradient(to right, #f5f3ff, #eef2ff);
         display: flex;
         align-items: center;
-        gap: 0.7rem;
+        gap: 0.75rem;
     }
 
-    .ra-card__icon {
-        width: 30px;
-        height: 30px;
-        background: var(--amber-glow);
-        border: 1px solid rgba(245,158,11,0.2);
-        border-radius: 8px;
+    .rg-card__head-icon {
+        width: 32px; height: 32px;
+        background: var(--accent-light);
+        border: 1.5px solid var(--accent-border);
+        border-radius: 9px;
         display: grid;
         place-items: center;
-        color: var(--amber);
+        color: var(--accent);
         flex-shrink: 0;
     }
 
-    .ra-card__title {
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 1.1rem;
-        letter-spacing: 0.06em;
+    .rg-card__head-title {
+        font-size: 0.95rem;
+        font-weight: 700;
         color: var(--text);
         margin: 0;
     }
 
-    .ra-card__body { padding: 1.6rem 1.4rem; }
-
-    /* ── Alert ──────────────────────────────────── */
-    .ra-alert {
-        background: rgba(248,113,113,0.08);
-        border: 1px solid rgba(248,113,113,0.2);
-        border-radius: 9px;
-        padding: 0.75rem 1rem;
-        color: var(--red);
-        font-size: 0.84rem;
-        margin-bottom: 1.3rem;
-        display: flex;
-        align-items: flex-start;
-        gap: 0.55rem;
+    .rg-card__head-sub {
+        font-size: 0.75rem;
+        color: var(--muted2);
+        margin-left: auto;
+        font-weight: 500;
     }
 
-    .ra-alert:empty { display: none; }
+    .rg-card__body { padding: 1.8rem 1.6rem; }
 
-    .ra-alert__icon { flex-shrink: 0; margin-top: 1px; }
+    /* ── Alert ── */
+    .rg-alert {
+        background: var(--red-bg);
+        border: 1.5px solid var(--red-border);
+        border-radius: 10px;
+        padding: 0.8rem 1rem;
+        color: var(--red);
+        font-size: 0.84rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.6rem;
+        font-weight: 500;
+    }
 
-    /* ── Section label ──────────────────────────── */
-    .ra-section-label {
-        font-size: 0.68rem;
-        font-weight: 700;
+    .rg-alert:empty { display: none; }
+
+    /* ── Section divider ── */
+    .rg-section {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin: 1.6rem 0 1.2rem;
+        font-size: 0.69rem;
+        font-weight: 800;
         letter-spacing: 0.14em;
         text-transform: uppercase;
         color: var(--muted);
-        padding-bottom: 0.6rem;
-        border-bottom: 1px solid var(--border);
-        margin-bottom: 1.1rem;
-        margin-top: 1.4rem;
     }
 
-    .ra-section-label:first-child { margin-top: 0; }
+    .rg-section:first-child { margin-top: 0; }
 
-    /* ── Fields ─────────────────────────────────── */
-    .ra-grid {
+    .rg-section::before, .rg-section::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+    }
+
+    /* ── Grid ── */
+    .rg-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 1rem;
+        gap: 1rem 1.2rem;
     }
 
-    .ra-field { display: flex; flex-direction: column; gap: 0.35rem; }
-    .ra-field--full { grid-column: 1 / -1; }
+    .rg-field { display: flex; flex-direction: column; gap: 0.38rem; }
+    .rg-field--full { grid-column: 1 / -1; }
 
-    .ra-label {
-        font-size: 0.73rem;
-        font-weight: 600;
+    .rg-label {
+        font-size: 0.72rem;
+        font-weight: 700;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: var(--muted2);
+        color: var(--text-soft);
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
     }
 
-    .ra-input-wrap { position: relative; }
+    .rg-label__req {
+        color: var(--muted3);
+        font-size: 0.65rem;
+    }
 
-    .ra-input-icon {
+    /* ── Input ── */
+    .rg-input-wrap { position: relative; }
+
+    .rg-input-icon {
         position: absolute;
-        left: 0.85rem;
+        left: 0.9rem;
         top: 50%;
         transform: translateY(-50%);
-        color: var(--muted);
+        color: var(--muted3);
         pointer-events: none;
         transition: color 0.18s;
     }
 
-    .ra-input {
+    .rg-input {
         width: 100%;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid var(--border);
-        border-radius: 9px;
-        padding: 0.68rem 1rem 0.68rem 2.5rem;
+        background: var(--bg);
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        padding: 0.72rem 1rem 0.72rem 2.6rem;
         color: var(--text);
-        font-family: 'DM Sans', sans-serif;
-        font-size: 0.9rem;
+        font-family: 'Nunito', sans-serif;
+        font-size: 0.92rem;
+        font-weight: 500;
         outline: none;
-        transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+        transition: all 0.18s;
     }
 
-    .ra-input::placeholder { color: #334155; }
+    .rg-input::placeholder { color: var(--muted3); font-weight: 400; }
 
-    .ra-input:focus {
-        border-color: rgba(245,158,11,0.4);
-        background: rgba(245,158,11,0.04);
-        box-shadow: 0 0 0 3px rgba(245,158,11,0.07);
+    .rg-input:hover { border-color: var(--border-hover); }
+
+    .rg-input:focus {
+        border-color: var(--accent);
+        background: #fafbff;
+        box-shadow: 0 0 0 3.5px var(--accent-mid);
     }
 
-    .ra-input-wrap:focus-within .ra-input-icon { color: var(--amber); }
+    .rg-input-wrap:focus-within .rg-input-icon { color: var(--accent); }
 
-    .ra-input.input-validation-error {
-        border-color: rgba(248,113,113,0.45);
-        background: rgba(248,113,113,0.04);
+    .rg-input.input-validation-error {
+        border-color: rgba(220,38,38,0.4);
+        background: var(--red-bg);
     }
 
-    .ra-error {
+    .rg-input--pw { padding-right: 2.8rem; }
+
+    .rg-error {
         font-size: 0.74rem;
         color: var(--red);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
     }
 
-    /* Password toggle */
-    .ra-pw-toggle {
+    /* ── Password toggle ── */
+    .rg-pw-toggle {
         position: absolute;
         right: 0.85rem;
         top: 50%;
         transform: translateY(-50%);
         background: none;
         border: none;
-        color: var(--muted);
+        color: var(--muted3);
         cursor: pointer;
         display: flex;
         align-items: center;
-        padding: 2px;
-        transition: color 0.18s;
+        padding: 3px;
+        border-radius: 5px;
+        transition: color 0.18s, background 0.18s;
     }
 
-    .ra-pw-toggle:hover { color: var(--muted2); }
-    .ra-input--pw { padding-right: 2.8rem; }
+    .rg-pw-toggle:hover {
+        color: var(--accent);
+        background: var(--accent-light);
+    }
 
-    /* ── Strength meter ─────────────────────────── */
-    .ra-strength {
+    /* ── Strength meter ── */
+    .rg-strength {
         display: flex;
         align-items: center;
         gap: 0.6rem;
         margin-top: 0.5rem;
-    }
-
-    .ra-strength__bars {
-        display: flex;
-        gap: 3px;
-        flex: 1;
-    }
-
-    .ra-strength__bar {
-        height: 3px;
-        flex: 1;
-        border-radius: 99px;
-        background: rgba(255,255,255,0.08);
-        transition: background 0.3s;
-    }
-
-    .ra-strength__bar.weak   { background: #f87171; }
-    .ra-strength__bar.fair   { background: #fbbf24; }
-    .ra-strength__bar.good   { background: #34d399; }
-    .ra-strength__bar.strong { background: #10b981; }
-
-    .ra-strength__label {
-        font-size: 0.71rem;
-        color: var(--muted);
-        min-width: 42px;
-        text-align: right;
-        font-weight: 600;
-        transition: color 0.3s;
-    }
-
-    /* ── Password match badge ───────────────────── */
-    .ra-match {
-        font-size: 0.73rem;
-        font-weight: 500;
-        margin-top: 0.4rem;
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
         opacity: 0;
         transition: opacity 0.2s;
     }
 
-    .ra-match.visible  { opacity: 1; }
-    .ra-match.matched  { color: #34d399; }
-    .ra-match.mismatch { color: var(--red); }
+    .rg-strength.visible { opacity: 1; }
 
-    /* ── Actions ────────────────────────────────── */
-    .ra-actions {
+    .rg-strength__bars { display: flex; gap: 4px; flex: 1; }
+
+    .rg-strength__bar {
+        height: 4px;
+        flex: 1;
+        border-radius: 99px;
+        background: var(--border);
+        transition: background 0.3s;
+    }
+
+    .rg-strength__bar.weak   { background: #ef4444; }
+    .rg-strength__bar.fair   { background: #f59e0b; }
+    .rg-strength__bar.good   { background: #10b981; }
+    .rg-strength__bar.strong { background: #059669; }
+
+    .rg-strength__label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        min-width: 40px;
+        text-align: right;
+        transition: color 0.3s;
+        color: var(--muted2);
+    }
+
+    /* ── Match indicator ── */
+    .rg-match {
+        font-size: 0.73rem;
+        font-weight: 600;
+        margin-top: 0.45rem;
         display: flex;
         align-items: center;
-        gap: 0.7rem;
-        padding: 1.1rem 1.4rem;
-        border-top: 1px solid var(--border);
-        background: rgba(255,255,255,0.012);
+        gap: 0.35rem;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    .rg-match.visible  { opacity: 1; }
+    .rg-match.matched  { color: var(--green); }
+    .rg-match.mismatch { color: var(--red); }
+
+    /* ── Actions ── */
+    .rg-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1.1rem 1.6rem;
+        border-top: 1.5px solid var(--border);
+        background: linear-gradient(to right, #f5f3ff, #eef2ff);
         flex-wrap: wrap;
     }
 
-    .ra-btn-submit {
+    .rg-btn-submit {
         display: inline-flex;
         align-items: center;
-        gap: 0.45rem;
-        font-size: 0.88rem;
+        gap: 0.5rem;
+        font-size: 0.9rem;
         font-weight: 700;
-        letter-spacing: 0.03em;
-        padding: 0.68rem 1.5rem;
-        border-radius: 9px;
+        padding: 0.72rem 1.6rem;
+        border-radius: 10px;
         border: none;
-        background: linear-gradient(135deg, var(--amber-deep), var(--amber));
-        color: #0f1623;
+        background: linear-gradient(135deg, #3730a3, #4338ca, #4f46e5);
+        color: #fff;
         cursor: pointer;
-        font-family: 'DM Sans', sans-serif;
-        box-shadow: 0 4px 14px rgba(245,158,11,0.28);
+        font-family: 'Nunito', sans-serif;
+        box-shadow: 0 4px 14px rgba(67,56,202,0.35);
         transition: filter 0.18s, transform 0.15s, box-shadow 0.18s;
+        letter-spacing: 0.01em;
     }
 
-    .ra-btn-submit:hover {
+    .rg-btn-submit:hover {
         filter: brightness(1.08);
         transform: translateY(-2px);
-        box-shadow: 0 8px 22px rgba(245,158,11,0.36);
+        box-shadow: 0 8px 22px rgba(67,56,202,0.42);
     }
 
-    .ra-btn-cancel {
+    .rg-btn-submit:active { transform: translateY(0); filter: brightness(0.97); }
+
+    .rg-btn-cancel {
         display: inline-flex;
         align-items: center;
         gap: 0.4rem;
-        font-size: 0.85rem;
-        font-weight: 500;
-        padding: 0.65rem 1.1rem;
-        border-radius: 9px;
-        border: 1px solid var(--border);
-        background: rgba(255,255,255,0.03);
-        color: var(--muted2);
-        text-decoration: none;
-        font-family: 'DM Sans', sans-serif;
-        transition: color 0.18s, background 0.18s, border-color 0.18s;
-    }
-
-    .ra-btn-cancel:hover {
-        color: var(--text);
-        background: rgba(255,255,255,0.06);
-        border-color: rgba(255,255,255,0.12);
-    }
-
-    /* ── Side panel ─────────────────────────────── */
-    .ra-side { display: flex; flex-direction: column; gap: 1rem; }
-
-    /* Avatar preview */
-    .ra-avatar-card {
+        font-size: 0.86rem;
+        font-weight: 600;
+        padding: 0.68rem 1.2rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--border);
         background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 1.4rem;
+        color: var(--text-soft);
+        text-decoration: none;
+        font-family: 'Nunito', sans-serif;
+        transition: all 0.18s;
+    }
+
+    .rg-btn-cancel:hover {
+        border-color: var(--border-hover);
+        background: var(--accent-light);
+        color: var(--accent);
+    }
+
+    /* ── Sidebar ── */
+    .rg-side { display: flex; flex-direction: column; gap: 1.2rem; }
+
+    /* Avatar card */
+    .rg-avatar-card {
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(99,102,241,0.06);
+    }
+
+    .rg-avatar-card__top {
+        padding: 1.8rem 1.4rem 1.4rem;
+        background: linear-gradient(160deg, #ede9fe, #e0e7ff, #eef2ff);
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 0.8rem;
         text-align: center;
+        border-bottom: 1.5px solid var(--border);
     }
 
-    .ra-avatar {
-        width: 72px;
-        height: 72px;
+    .rg-avatar {
+        width: 76px; height: 76px;
         border-radius: 50%;
-        background: linear-gradient(135deg, var(--amber-deep), var(--amber));
+        background: linear-gradient(135deg, #3730a3, #4338ca, #6366f1);
         display: grid;
         place-items: center;
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 1.9rem;
-        letter-spacing: 0.06em;
-        color: #0f1623;
-        box-shadow: 0 6px 24px rgba(245,158,11,0.3);
-        transition: all 0.25s ease;
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: 0.02em;
+        box-shadow: 0 6px 24px rgba(67,56,202,0.3), 0 0 0 4px rgba(67,56,202,0.1);
+        transition: all 0.3s;
         position: relative;
-        overflow: hidden;
     }
 
-    .ra-avatar::after {
+    .rg-avatar::after {
         content: '';
         position: absolute;
         inset: 0;
-        background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.2), transparent 60%);
         border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.22), transparent 60%);
     }
 
-    .ra-avatar__initials {
-        position: relative;
-        z-index: 1;
+    .rg-avatar__initials { position: relative; z-index: 1; }
+
+    .rg-avatar-name {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text);
+        transition: all 0.2s;
+    }
+
+    .rg-avatar-role {
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: var(--accent-light);
+        border: 1px solid var(--accent-border);
+        border-radius: 99px;
+        padding: 0.22rem 0.75rem;
+    }
+
+    .rg-avatar-username {
+        font-size: 0.78rem;
+        color: var(--muted2);
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .rg-avatar-card__meta {
+        padding: 0.9rem 1.2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+    }
+
+    .rg-meta-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.78rem;
+    }
+
+    .rg-meta-row__key { color: var(--muted2); font-weight: 500; }
+    .rg-meta-row__val {
+        font-weight: 700;
+        color: var(--text-soft);
+        background: var(--accent-light);
+        border-radius: 5px;
+        padding: 0.1rem 0.5rem;
+        font-size: 0.72rem;
         letter-spacing: 0.04em;
     }
 
-    .ra-avatar-name {
-        font-size: 0.88rem;
-        font-weight: 600;
-        color: var(--text);
-        min-height: 1.2em;
-        transition: all 0.2s;
-    }
-
-    .ra-avatar-role {
-        font-size: 0.7rem;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--amber);
-        background: var(--amber-glow);
-        border: 1px solid rgba(245,158,11,0.18);
-        border-radius: 99px;
-        padding: 0.2rem 0.7rem;
-    }
-
-    .ra-avatar-username {
-        font-size: 0.76rem;
-        color: var(--muted);
-        min-height: 1em;
-        transition: all 0.2s;
-    }
-
     /* Info card */
-    .ra-info-card {
+    .rg-info-card {
         background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 1.2rem 1.3rem;
+        border: 1.5px solid var(--border);
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(99,102,241,0.06);
     }
 
-    .ra-info-card__title {
-        font-size: 0.72rem;
-        font-weight: 700;
+    .rg-info-card__head {
+        padding: 0.75rem 1.2rem;
+        border-bottom: 1.5px solid var(--border);
+        background: linear-gradient(to right, #f5f3ff, #eef2ff);
+        font-size: 0.68rem;
+        font-weight: 800;
         letter-spacing: 0.12em;
         text-transform: uppercase;
         color: var(--muted);
-        margin-bottom: 0.9rem;
-        padding-bottom: 0.6rem;
-        border-bottom: 1px solid var(--border);
     }
 
-    .ra-info-list {
+    .rg-info-card__body { padding: 1rem 1.2rem; }
+
+    .rg-checklist {
+        list-style: none;
+        margin: 0; padding: 0;
         display: flex;
         flex-direction: column;
-        gap: 0.65rem;
-        list-style: none;
-        margin: 0;
-        padding: 0;
+        gap: 0.55rem;
     }
 
-    .ra-info-list li {
+    .rg-checklist li {
         display: flex;
         align-items: flex-start;
-        gap: 0.55rem;
+        gap: 0.6rem;
         font-size: 0.8rem;
-        color: var(--muted2);
+        color: var(--text-soft);
+        font-weight: 500;
         line-height: 1.5;
     }
 
-    .ra-info-list__dot {
-        width: 5px;
-        height: 5px;
+    .rg-checklist__dot {
+        width: 18px; height: 18px;
         border-radius: 50%;
-        background: var(--amber);
+        background: var(--accent-light);
+        border: 1.5px solid var(--accent-border);
+        display: grid;
+        place-items: center;
         flex-shrink: 0;
-        margin-top: 0.45em;
+        margin-top: 1px;
     }
 
-    @@media (max-width: 750px) {
-        .ra-layout { grid-template-columns: 1fr; }
-        .ra-side { display: none; }
-        .ra-grid { grid-template-columns: 1fr; }
-        .ra-field--full { grid-column: 1; }
+    .rg-checklist__dot svg { color: var(--accent); }
+
+    /* ── Responsive ── */
+    @@media (max-width: 780px) {
+        .rg-layout { grid-template-columns: 1fr; }
+        .rg-side { display: none; }
+        .rg-grid { grid-template-columns: 1fr; }
+        .rg-field--full { grid-column: 1; }
     }
 </style>
 
 <!-- Page header -->
-<div class="ra-header">
-    <div class="ra-header__left">
-        <div class="ra-header__icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<div class="rg-header">
+    <div class="rg-header__left">
+        <div class="rg-header__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="9" cy="7" r="4"/>
                 <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
                 <line x1="19" y1="8" x2="19" y2="14"/>
@@ -499,25 +567,25 @@
             </svg>
         </div>
         <div>
-            <h1 class="ra-header__title">Register Admin</h1>
-            <div class="ra-header__sub">Create a new administrator account for the MotorsHut panel</div>
+            <h1 class="rg-header__title">Register Admin</h1>
+            <div class="rg-header__sub">Create a new administrator account for the MotorsHut panel</div>
         </div>
     </div>
-    <a asp-controller="Admin" asp-action="Dashboard" class="ra-back">
+    <a asp-controller="Admin" asp-action="Dashboard" class="rg-back">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M19 12H5M12 5l-7 7 7 7"/>
         </svg>
-        Dashboard
+        Back to Dashboard
     </a>
 </div>
 
-<!-- Two-column layout -->
-<div class="ra-layout">
+<!-- Layout -->
+<div class="rg-layout">
 
-    <!-- ── Main form card ── -->
-    <div class="ra-card">
-        <div class="ra-card__head">
-            <div class="ra-card__icon">
+    <!-- ── Main Form Card ── -->
+    <div class="rg-card">
+        <div class="rg-card__head">
+            <div class="rg-card__head-icon">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="9" cy="7" r="4"/>
                     <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
@@ -525,147 +593,155 @@
                     <line x1="22" y1="11" x2="16" y2="11"/>
                 </svg>
             </div>
-            <h3 class="ra-card__title">New Admin Account</h3>
+            <h3 class="rg-card__head-title">New Administrator Account</h3>
+            <span class="rg-card__head-sub">All fields required</span>
         </div>
 
-        <form asp-controller="Admin" asp-action="RegisterAdmin" method="post" novalidate id="raForm">
-            <div class="ra-card__body">
+        <form asp-controller="Admin" asp-action="RegisterAdmin" method="post" novalidate>
+            <div class="rg-card__body">
 
                 <!-- Validation summary -->
-                <div asp-validation-summary="ModelOnly" class="ra-alert">
-                    <svg class="ra-alert__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <div asp-validation-summary="ModelOnly" class="rg-alert">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px">
                         <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
                     </svg>
                     <span></span>
                 </div>
 
-                <!-- Personal info -->
-                <div class="ra-section-label">Personal Information</div>
-                <div class="ra-grid">
-                    <div class="ra-field">
-                        <label asp-for="FirstName" class="ra-label"></label>
-                        <div class="ra-input-wrap">
-                            <input asp-for="FirstName" class="ra-input" placeholder="First name"
-                                   autocomplete="given-name" id="raFirstName"
-                                   oninput="updatePreview()" />
-                            <svg class="ra-input-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <!-- Personal Info -->
+                <div class="rg-section">Personal Information</div>
+                <div class="rg-grid">
+                    <div class="rg-field">
+                        <label asp-for="FirstName" class="rg-label">
+                            First Name <span class="rg-label__req">*</span>
+                        </label>
+                        <div class="rg-input-wrap">
+                            <svg class="rg-input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                             </svg>
+                            <input asp-for="FirstName" class="rg-input" placeholder="Enter first name"
+                                   autocomplete="given-name" id="rgFirstName" oninput="updatePreview()" />
                         </div>
-                        <span asp-validation-for="FirstName" class="ra-error"></span>
+                        <span asp-validation-for="FirstName" class="rg-error"></span>
                     </div>
 
-                    <div class="ra-field">
-                        <label asp-for="LastName" class="ra-label"></label>
-                        <div class="ra-input-wrap">
-                            <input asp-for="LastName" class="ra-input" placeholder="Last name"
-                                   autocomplete="family-name" id="raLastName"
-                                   oninput="updatePreview()" />
-                            <svg class="ra-input-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <div class="rg-field">
+                        <label asp-for="LastName" class="rg-label">
+                            Last Name <span class="rg-label__req">*</span>
+                        </label>
+                        <div class="rg-input-wrap">
+                            <svg class="rg-input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                             </svg>
+                            <input asp-for="LastName" class="rg-input" placeholder="Enter last name"
+                                   autocomplete="family-name" id="rgLastName" oninput="updatePreview()" />
                         </div>
-                        <span asp-validation-for="LastName" class="ra-error"></span>
+                        <span asp-validation-for="LastName" class="rg-error"></span>
                     </div>
                 </div>
 
-                <!-- Account info -->
-                <div class="ra-section-label">Account Details</div>
-                <div class="ra-grid">
-                    <div class="ra-field">
-                        <label asp-for="UserName" class="ra-label"></label>
-                        <div class="ra-input-wrap">
-                            <input asp-for="UserName" class="ra-input" placeholder="username"
-                                   autocomplete="username" id="raUsername"
-                                   oninput="updatePreview()" />
-                            <svg class="ra-input-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <!-- Account Details -->
+                <div class="rg-section">Account Details</div>
+                <div class="rg-grid">
+                    <div class="rg-field">
+                        <label asp-for="UserName" class="rg-label">
+                            Username <span class="rg-label__req">*</span>
+                        </label>
+                        <div class="rg-input-wrap">
+                            <svg class="rg-input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
                             </svg>
+                            <input asp-for="UserName" class="rg-input" placeholder="e.g. john.doe"
+                                   autocomplete="username" id="rgUsername" oninput="updatePreview()" />
                         </div>
-                        <span asp-validation-for="UserName" class="ra-error"></span>
+                        <span asp-validation-for="UserName" class="rg-error"></span>
                     </div>
 
-                    <div class="ra-field">
-                        <label asp-for="Email" class="ra-label"></label>
-                        <div class="ra-input-wrap">
-                            <input asp-for="Email" class="ra-input" placeholder="admin@example.com" autocomplete="email" />
-                            <svg class="ra-input-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <div class="rg-field">
+                        <label asp-for="Email" class="rg-label">
+                            Email Address <span class="rg-label__req">*</span>
+                        </label>
+                        <div class="rg-input-wrap">
+                            <svg class="rg-input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 9l10 6 10-6"/>
                             </svg>
+                            <input asp-for="Email" class="rg-input" placeholder="admin@motorshut.com" autocomplete="email" />
                         </div>
-                        <span asp-validation-for="Email" class="ra-error"></span>
+                        <span asp-validation-for="Email" class="rg-error"></span>
                     </div>
                 </div>
 
                 <!-- Security -->
-                <div class="ra-section-label">Security</div>
-                <div class="ra-grid">
-                    <div class="ra-field">
-                        <label asp-for="Password" class="ra-label"></label>
-                        <div class="ra-input-wrap">
-                            <input asp-for="Password" class="ra-input ra-input--pw" type="password"
-                                   placeholder="Create password" autocomplete="new-password"
-                                   id="raPwd" oninput="updateStrength(this.value); checkMatch()" />
-                            <svg class="ra-input-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <div class="rg-section">Security</div>
+                <div class="rg-grid">
+                    <div class="rg-field">
+                        <label asp-for="Password" class="rg-label">
+                            Password <span class="rg-label__req">*</span>
+                        </label>
+                        <div class="rg-input-wrap">
+                            <svg class="rg-input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                             </svg>
-                            <button type="button" class="ra-pw-toggle" onclick="togglePw(this)" tabindex="-1" aria-label="Toggle password">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <input asp-for="Password" class="rg-input rg-input--pw" type="password"
+                                   placeholder="Create a strong password" autocomplete="new-password"
+                                   id="rgPwd" oninput="updateStrength(this.value); checkMatch()" />
+                            <button type="button" class="rg-pw-toggle" onclick="togglePw(this)" tabindex="-1" aria-label="Toggle password">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
                                 </svg>
                             </button>
                         </div>
-                        <!-- Strength meter -->
-                        <div class="ra-strength" id="raStrength" style="display:none">
-                            <div class="ra-strength__bars">
-                                <div class="ra-strength__bar" id="rsb1"></div>
-                                <div class="ra-strength__bar" id="rsb2"></div>
-                                <div class="ra-strength__bar" id="rsb3"></div>
-                                <div class="ra-strength__bar" id="rsb4"></div>
+                        <div class="rg-strength" id="rgStrength">
+                            <div class="rg-strength__bars">
+                                <div class="rg-strength__bar" id="rsb1"></div>
+                                <div class="rg-strength__bar" id="rsb2"></div>
+                                <div class="rg-strength__bar" id="rsb3"></div>
+                                <div class="rg-strength__bar" id="rsb4"></div>
                             </div>
-                            <span class="ra-strength__label" id="raStrengthLabel"></span>
+                            <span class="rg-strength__label" id="rgStrengthLabel"></span>
                         </div>
-                        <span asp-validation-for="Password" class="ra-error"></span>
+                        <span asp-validation-for="Password" class="rg-error"></span>
                     </div>
 
-                    <div class="ra-field">
-                        <label asp-for="ConfirmPassword" class="ra-label"></label>
-                        <div class="ra-input-wrap">
-                            <input asp-for="ConfirmPassword" class="ra-input ra-input--pw" type="password"
-                                   placeholder="Confirm password" autocomplete="new-password"
-                                   id="raConfirm" oninput="checkMatch()" />
-                            <svg class="ra-input-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <div class="rg-field">
+                        <label asp-for="ConfirmPassword" class="rg-label">
+                            Confirm Password <span class="rg-label__req">*</span>
+                        </label>
+                        <div class="rg-input-wrap">
+                            <svg class="rg-input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                             </svg>
-                            <button type="button" class="ra-pw-toggle" onclick="togglePw(this)" tabindex="-1" aria-label="Toggle password">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <input asp-for="ConfirmPassword" class="rg-input rg-input--pw" type="password"
+                                   placeholder="Repeat your password" autocomplete="new-password"
+                                   id="rgConfirm" oninput="checkMatch()" />
+                            <button type="button" class="rg-pw-toggle" onclick="togglePw(this)" tabindex="-1" aria-label="Toggle confirm password">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
                                 </svg>
                             </button>
                         </div>
-                        <!-- Match indicator -->
-                        <div class="ra-match" id="raMatch">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="raMatchIcon">
+                        <div class="rg-match" id="rgMatch">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="rgMatchIcon">
                                 <polyline points="20 6 9 17 4 12"/>
                             </svg>
-                            <span id="raMatchText">Passwords match</span>
+                            <span id="rgMatchText">Passwords match</span>
                         </div>
-                        <span asp-validation-for="ConfirmPassword" class="ra-error"></span>
+                        <span asp-validation-for="ConfirmPassword" class="rg-error"></span>
                     </div>
                 </div>
 
             </div>
 
             <!-- Actions -->
-            <div class="ra-actions">
-                <button type="submit" class="ra-btn-submit">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="rg-actions">
+                <button type="submit" class="rg-btn-submit">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
                         <line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
                     </svg>
-                    Register Admin
+                    Register Administrator
                 </button>
-                <a asp-controller="Admin" asp-action="Dashboard" class="ra-btn-cancel">
+                <a asp-controller="Admin" asp-action="Dashboard" class="rg-btn-cancel">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                     </svg>
@@ -675,122 +751,178 @@
         </form>
     </div>
 
-    <!-- ── Side panel ── -->
-    <aside class="ra-side">
+    <!-- ── Sidebar ── -->
+    <aside class="rg-side">
 
         <!-- Live avatar preview -->
-        <div class="ra-avatar-card">
-            <div class="ra-avatar">
-                <span class="ra-avatar__initials" id="raAvatarInitials">AD</span>
+        <div class="rg-avatar-card">
+            <div class="rg-avatar-card__top">
+                <div class="rg-avatar">
+                    <span class="rg-avatar__initials" id="rgAvatarInitials">AD</span>
+                </div>
+                <div class="rg-avatar-name" id="rgAvatarName">New Administrator</div>
+                <div class="rg-avatar-role">Administrator</div>
+                <div class="rg-avatar-username" id="rgAvatarUsername">@@username</div>
             </div>
-            <div class="ra-avatar-name" id="raAvatarName">New Administrator</div>
-            <div class="ra-avatar-role">Administrator</div>
-            <div class="ra-avatar-username" id="raAvatarUsername">@@username</div>
+            <div class="rg-avatar-card__meta">
+                <div class="rg-meta-row">
+                    <span class="rg-meta-row__key">Role</span>
+                    <span class="rg-meta-row__val">Admin</span>
+                </div>
+                <div class="rg-meta-row">
+                    <span class="rg-meta-row__key">Panel Access</span>
+                    <span class="rg-meta-row__val">Full</span>
+                </div>
+                <div class="rg-meta-row">
+                    <span class="rg-meta-row__key">Status</span>
+                    <span class="rg-meta-row__val">Active</span>
+                </div>
+            </div>
         </div>
 
-        <!-- Password tips -->
-        <div class="ra-info-card">
-            <div class="ra-info-card__title">Password Requirements</div>
-            <ul class="ra-info-list">
-                <li><span class="ra-info-list__dot"></span>At least 8 characters long</li>
-                <li><span class="ra-info-list__dot"></span>One uppercase letter (A–Z)</li>
-                <li><span class="ra-info-list__dot"></span>One number (0–9)</li>
-                <li><span class="ra-info-list__dot"></span>One special character (!@@#$…)</li>
-            </ul>
+        <!-- Password requirements -->
+        <div class="rg-info-card">
+            <div class="rg-info-card__head">Password Requirements</div>
+            <div class="rg-info-card__body">
+                <ul class="rg-checklist">
+                    <li>
+                        <div class="rg-checklist__dot">
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        At least 8 characters long
+                    </li>
+                    <li>
+                        <div class="rg-checklist__dot">
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        One uppercase letter (A–Z)
+                    </li>
+                    <li>
+                        <div class="rg-checklist__dot">
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        One number (0–9)
+                    </li>
+                    <li>
+                        <div class="rg-checklist__dot">
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        One special character (!@@#$…)
+                    </li>
+                </ul>
+            </div>
         </div>
 
-        <!-- Access note -->
-        <div class="ra-info-card">
-            <div class="ra-info-card__title">Admin Access</div>
-            <ul class="ra-info-list">
-                <li><span class="ra-info-list__dot"></span>Full dashboard access</li>
-                <li><span class="ra-info-list__dot"></span>Manage car listings</li>
-                <li><span class="ra-info-list__dot"></span>Register new admins</li>
-                <li><span class="ra-info-list__dot"></span>Credentials are sent to the provided email</li>
-            </ul>
+        <!-- Admin access -->
+        <div class="rg-info-card">
+            <div class="rg-info-card__head">Admin Privileges</div>
+            <div class="rg-info-card__body">
+                <ul class="rg-checklist">
+                    <li>
+                        <div class="rg-checklist__dot">
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        Full dashboard access
+                    </li>
+                    <li>
+                        <div class="rg-checklist__dot">
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        Manage car listings
+                    </li>
+                    <li>
+                        <div class="rg-checklist__dot">
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        Register new admins
+                    </li>
+                    <li>
+                        <div class="rg-checklist__dot">
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        Credentials sent to email
+                    </li>
+                </ul>
+            </div>
         </div>
 
     </aside>
 
-</div><!-- /.ra-layout -->
+</div><!-- /.rg-layout -->
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        // ── Toggle password visibility ──────────────
+        // Toggle password visibility
         function togglePw(btn) {
-            const input = btn.closest('.ra-input-wrap').querySelector('input');
+            const input = btn.closest('.rg-input-wrap').querySelector('input');
             const isText = input.type === 'text';
             input.type = isText ? 'password' : 'text';
             btn.innerHTML = isText
-                ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
-                : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+                ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
+                : `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
         }
 
-        // ── Password strength ───────────────────────
+        // Password strength
         function updateStrength(val) {
-            const wrap  = document.getElementById('raStrength');
-            const label = document.getElementById('raStrengthLabel');
+            const wrap  = document.getElementById('rgStrength');
+            const label = document.getElementById('rgStrengthLabel');
             const bars  = ['rsb1','rsb2','rsb3','rsb4'].map(id => document.getElementById(id));
 
-            if (!val) { wrap.style.display = 'none'; return; }
-            wrap.style.display = 'flex';
+            if (!val) { wrap.classList.remove('visible'); return; }
+            wrap.classList.add('visible');
 
             let score = 0;
-            if (val.length >= 8)            score++;
-            if (/[A-Z]/.test(val))          score++;
-            if (/[0-9]/.test(val))          score++;
-            if (/[^A-Za-z0-9]/.test(val))   score++;
+            if (val.length >= 8)           score++;
+            if (/[A-Z]/.test(val))         score++;
+            if (/[0-9]/.test(val))         score++;
+            if (/[^A-Za-z0-9]/.test(val))  score++;
 
             const cls    = ['','weak','fair','good','strong'];
             const labels = ['','Weak','Fair','Good','Strong'];
-            const colors = ['','#f87171','#fbbf24','#34d399','#10b981'];
+            const colors = ['','#ef4444','#f59e0b','#10b981','#059669'];
 
             bars.forEach((b, i) => {
-                b.className = 'ra-strength__bar' + (i < score ? ` ${cls[score]}` : '');
+                b.className = 'rg-strength__bar' + (i < score ? ` ${cls[score]}` : '');
             });
             label.textContent = labels[score];
             label.style.color = colors[score];
         }
 
-        // ── Password match ──────────────────────────
+        // Password match check
         function checkMatch() {
-            const pwd     = document.getElementById('raPwd').value;
-            const confirm = document.getElementById('raConfirm').value;
-            const el      = document.getElementById('raMatch');
-            const icon    = document.getElementById('raMatchIcon');
-            const text    = document.getElementById('raMatchText');
+            const pwd     = document.getElementById('rgPwd').value;
+            const confirm = document.getElementById('rgConfirm').value;
+            const el      = document.getElementById('rgMatch');
+            const icon    = document.getElementById('rgMatchIcon');
+            const text    = document.getElementById('rgMatchText');
 
             if (!confirm) { el.classList.remove('visible'); return; }
-
             el.classList.add('visible');
+
             if (pwd === confirm) {
-                el.className = 'ra-match visible matched';
+                el.className = 'rg-match visible matched';
                 icon.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
                 text.textContent = 'Passwords match';
             } else {
-                el.className = 'ra-match visible mismatch';
+                el.className = 'rg-match visible mismatch';
                 icon.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
                 text.textContent = 'Passwords do not match';
             }
         }
 
-        // ── Live avatar preview ─────────────────────
+        // Live avatar preview
         function updatePreview() {
-            const first    = document.getElementById('raFirstName').value.trim();
-            const last     = document.getElementById('raLastName').value.trim();
-            const username = document.getElementById('raUsername').value.trim();
+            const first    = document.getElementById('rgFirstName').value.trim();
+            const last     = document.getElementById('rgLastName').value.trim();
+            const username = document.getElementById('rgUsername').value.trim();
 
-            // Initials
             const initials = ((first[0] || '') + (last[0] || '')).toUpperCase() || 'AD';
-            document.getElementById('raAvatarInitials').textContent = initials;
+            document.getElementById('rgAvatarInitials').textContent = initials;
 
-            // Full name
             const fullName = [first, last].filter(Boolean).join(' ');
-            document.getElementById('raAvatarName').textContent = fullName || 'New Administrator';
-
-           
-            document.getElementById('raAvatarUsername').textContent = username ? ('@@' + username) : '@@username';
+            document.getElementById('rgAvatarName').textContent = fullName || 'New Administrator';
+            document.getElementById('rgAvatarUsername').textContent = username ? ('@@' + username) : '@@username';
         }
     </script>
 }

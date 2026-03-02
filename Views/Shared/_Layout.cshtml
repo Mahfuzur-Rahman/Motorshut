@@ -7,270 +7,343 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MotorsHut</title>
+    <title>@ViewData["Title"] - Motors Hut</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Lora:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MotorsHut.styles.css" asp-append-version="true" />
 
     <style>
-        /* ── Global ───────────────────────────────────────── */
-        *, *::before, *::after { box-sizing: border-box; }
+        /* ── Tokens ── */
+        :root {
+            --accent:        #4f46e5;
+            --accent-deep:   #3730a3;
+            --accent-light:  #eff0fe;
+            --accent-border: #c7d2fe;
+            --grad:          linear-gradient(90deg, #4f46e5, #7c3aed, #a855f7, #ec4899, #f97316);
+            --bg:            #ffffff;
+            --surface:       #ffffff;
+            --surface2:      #f9fafb;
+            --border:        #e5e7eb;
+            --text:          #111827;       /* near-black — crisp */
+            --text-soft:     #374151;       /* dark grey */
+            --text-nav:      #1f2937;       /* strong nav text */
+            --muted:         #6b7280;
+            --nav-h:         66px;
+        }
 
-        html { scroll-behavior: smooth; }
+        /* ── Reset ── */
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; font-size: 16px; }
 
         body {
-            font-family: 'DM Sans', sans-serif;
-            background: #06090f;
-            color: #e2e8f0;
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             margin: 0;
+            line-height: 1.6;
         }
 
-        /* ── Navbar ───────────────────────────────────────── */
+        /* ══ NAVBAR ══ */
         .mh-nav {
             position: sticky;
             top: 0;
             z-index: 200;
-            height: 62px;
-            display: flex;
-            align-items: center;
-            background: rgba(6, 9, 15, 0.82);
-            backdrop-filter: blur(18px) saturate(160%);
-            -webkit-backdrop-filter: blur(18px) saturate(160%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.055);
-            padding: 0 1.6rem;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 1px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        /* ✦ Animated gradient bar at top */
+        .mh-nav::before {
+            content: '';
+            display: block;
+            height: 4px;
+            background: var(--grad);
+            background-size: 300% 100%;
+            animation: gradShift 6s linear infinite;
+        }
+
+        @@keyframes gradShift {
+            0%   { background-position: 0%   50%; }
+            100% { background-position: 300% 50%; }
         }
 
         .mh-nav__inner {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            width: 100%;
-            max-width: 1440px;
+            height: var(--nav-h);
+            max-width: 1400px;
             margin: 0 auto;
+            padding: 0 2rem;
+            gap: 1.5rem;
         }
 
-        /* Brand */
+        /* ── Brand ── */
         .mh-brand {
             display: flex;
             align-items: center;
-            gap: 0.52rem;
+            gap: 0.65rem;
             text-decoration: none;
             flex-shrink: 0;
         }
 
         .mh-brand__icon {
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #d97706, #f59e0b);
-            border-radius: 8px;
+            width: 38px; height: 38px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 10px;
             display: grid;
             place-items: center;
-            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+            flex-shrink: 0;
         }
 
-        .mh-brand__icon svg {
-            width: 18px;
-            height: 18px;
-            color: #0f1623;
-        }
+        .mh-brand__icon svg { width: 20px; height: 20px; color: #fff; }
 
         .mh-brand__text {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.5rem;
-            letter-spacing: 0.08em;
-            color: #f1f5f9;
-            line-height: 1;
+            font-family: 'Lora', serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #111827;          /* solid black — always visible */
+            letter-spacing: 0.01em;
         }
 
-        /* Nav links */
+        /* ── Nav links ── */
         .mh-nav__links {
             display: flex;
             align-items: center;
             gap: 0.15rem;
             list-style: none;
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
+            flex: 1;
+            justify-content: center;
         }
 
         .mh-nav__link {
-            font-size: 0.86rem;
-            font-weight: 500;
-            color: #94a3b8;
+            font-size: 0.95rem;
+            font-weight: 700;              /* bold — no fading */
+            color: #374151;               /* solid dark grey */
             text-decoration: none;
-            padding: 0.42rem 0.9rem;
+            padding: 0.48rem 1rem;
             border-radius: 8px;
             transition: color 0.18s, background 0.18s;
-            letter-spacing: 0.01em;
             white-space: nowrap;
         }
 
         .mh-nav__link:hover {
-            color: #f1f5f9;
-            background: rgba(255, 255, 255, 0.065);
+            color: var(--accent);
+            background: var(--accent-light);
         }
 
         .mh-nav__link.active {
-            color: #f59e0b;
+            color: var(--accent);
+            background: var(--accent-light);
+            font-weight: 800;
         }
 
-        /* Nav right */
+        /* ── Nav right ── */
         .mh-nav__right {
             display: flex;
             align-items: center;
-            gap: 0.55rem;
+            gap: 0.7rem;
+            flex-shrink: 0;
         }
 
         .mh-nav__pill {
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: #94a3b8;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #374151;              /* solid readable text */
             text-decoration: none;
-            padding: 0.4rem 0.9rem;
+            padding: 0.48rem 1.1rem;
             border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 2px solid #d1d5db;
+            background: #ffffff;
             transition: color 0.18s, border-color 0.18s, background 0.18s;
             white-space: nowrap;
         }
 
         .mh-nav__pill:hover {
-            color: #f1f5f9;
-            border-color: rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.05);
+            color: var(--accent);
+            border-color: var(--accent);
+            background: var(--accent-light);
         }
 
         .mh-nav__cta {
-            font-size: 0.82rem;
-            font-weight: 700;
-            color: #0f1623;
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #ffffff;
             text-decoration: none;
-            padding: 0.44rem 1.05rem;
+            padding: 0.5rem 1.2rem;
             border-radius: 8px;
-            background: linear-gradient(135deg, #d97706, #f59e0b);
-            transition: filter 0.18s, transform 0.12s;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+            transition: transform 0.15s, box-shadow 0.18s, filter 0.18s;
             white-space: nowrap;
-            box-shadow: 0 3px 12px rgba(245,158,11,0.3);
+            border: none;
         }
 
         .mh-nav__cta:hover {
+            color: #ffffff;
+            transform: translateY(-2px);
             filter: brightness(1.08);
-            transform: translateY(-1px);
-            color: #0f1623;
+            box-shadow: 0 8px 22px rgba(79, 70, 229, 0.38);
         }
 
-        /* Hamburger */
+        /* ── Hamburger ── */
         .mh-nav__toggle {
             display: none;
             flex-direction: column;
             justify-content: center;
             gap: 5px;
-            background: none;
-            border: none;
+            background: #fff;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
             cursor: pointer;
-            padding: 4px;
-            width: 32px;
-            height: 32px;
+            padding: 7px 8px;
+            width: 38px; height: 38px;
         }
+
+        .mh-nav__toggle:hover { border-color: var(--accent); background: var(--accent-light); }
 
         .mh-nav__toggle span {
             display: block;
             height: 2px;
             width: 100%;
-            background: #94a3b8;
+            background: #374151;
             border-radius: 2px;
             transition: all 0.25s;
         }
 
-        /* Mobile drawer */
+        /* ── Mobile drawer ── */
         .mh-nav__drawer {
             display: none;
             position: fixed;
-            top: 62px;
-            left: 0;
-            right: 0;
-            background: rgba(6, 9, 15, 0.97);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255,255,255,0.07);
-            padding: 1rem 1.5rem 1.5rem;
+            top: calc(var(--nav-h) + 4px); /* 4px = gradient bar */
+            left: 0; right: 0;
+            background: #ffffff;
+            border-bottom: 2px solid var(--border);
+            padding: 0.8rem 1.6rem 1.6rem;
             z-index: 199;
             flex-direction: column;
-            gap: 0.2rem;
+            gap: 0.1rem;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
         }
 
         .mh-nav__drawer.open { display: flex; }
 
         .mh-nav__drawer .mh-nav__link {
             display: block;
-            padding: 0.65rem 0.5rem;
-            font-size: 1rem;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 0.75rem 0.5rem;
+            font-size: 1.02rem;
+            font-weight: 700;
+            color: #111827;
+            border-bottom: 1px solid #f3f4f6;
+            border-radius: 0;
         }
+
+        .mh-nav__drawer .mh-nav__link:last-of-type { border-bottom: none; }
 
         .mh-nav__drawer-btns {
             display: flex;
-            gap: 0.6rem;
-            margin-top: 0.8rem;
+            gap: 0.7rem;
+            margin-top: 1rem;
         }
 
         .mh-nav__drawer-btns .mh-nav__pill,
         .mh-nav__drawer-btns .mh-nav__cta {
             flex: 1;
             text-align: center;
-            padding: 0.65rem;
+            padding: 0.7rem;
         }
 
-        /* ── Main wrapper ──────────────────────────────── */
-        .mh-main-wrap {
-            flex: 1;
-        }
-
-        .mh-main-wrap.full {
-            padding: 0;
-        }
-
+        /* ── Main wrapper ── */
+        .mh-main-wrap { flex: 1; }
+        .mh-main-wrap.full { padding: 0; }
         .mh-main-wrap.contained {
             max-width: 1300px;
             margin: 0 auto;
-            padding: 2rem 1.5rem 3rem;
+            padding: 2.5rem 1.5rem 3.5rem;
             width: 100%;
         }
 
-        /* ── Footer ───────────────────────────────────── */
+        /* ── Footer ── */
         .mh-footer {
-            border-top: 1px solid rgba(255,255,255,0.06);
-            padding: 1.2rem 1.6rem;
-            text-align: center;
-            color: #334155;
-            font-size: 0.82rem;
+            border-top: 2px solid var(--border);
+            padding: 1.5rem 2rem;
+            background: var(--surface2);
+        }
+
+        .mh-footer__inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .mh-footer__brand {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            text-decoration: none;
+        }
+
+        .mh-footer__brand-icon {
+            width: 26px; height: 26px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 7px;
+            display: grid;
+            place-items: center;
+        }
+
+        .mh-footer__brand-icon svg { width: 14px; height: 14px; color: #fff; }
+
+        .mh-footer__brand-name {
+            font-family: 'Lora', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .mh-footer__text {
+            font-size: 0.86rem;
+            color: #6b7280;
+            font-weight: 500;
+            margin: 0;
         }
 
         .mh-footer a {
-            color: #475569;
+            color: var(--accent);
             text-decoration: none;
+            font-weight: 700;
             transition: color 0.18s;
         }
 
-        .mh-footer a:hover { color: #94a3b8; }
+        .mh-footer a:hover { color: var(--accent-deep); text-decoration: underline; }
 
-        /* ── Responsive ───────────────────────────────── */
+        /* ── Responsive ── */
         @@media (max-width: 900px) {
-            .mh-nav__links,
-            .mh-nav__right { display: none; }
+            .mh-nav__links, .mh-nav__right { display: none; }
             .mh-nav__toggle { display: flex; }
+            .mh-footer__inner { justify-content: center; text-align: center; }
         }
     </style>
 </head>
 
 <body>
-    <!-- Navbar -->
+
+    <!-- ══ Navbar ══ -->
     <nav class="mh-nav" id="mhNav">
         <div class="mh-nav__inner">
-            <a class="mh-brand" asp-controller="Home" asp-action="Index" aria-label="MotorsHut Home">
+
+            <a class="mh-brand" asp-controller="Home" asp-action="Index" aria-label="Motors Hut Home">
                 <div class="mh-brand__icon">
                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M4 14.5V16a1 1 0 0 0 1 1h1a2 2 0 1 0 4 0h4a2 2 0 1 0 4 0h1a1 1 0 0 0 1-1v-1.5l-1.2-4.1A2 2 0 0 0 16.9 9H7.1a2 2 0 0 0-1.9 1.4L4 14.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
@@ -279,7 +352,7 @@
                         <circle cx="16" cy="17" r="1.2" fill="currentColor"/>
                     </svg>
                 </div>
-                <span class="mh-brand__text">MotorsHut</span>
+                <span class="mh-brand__text">Motors Hut</span>
             </a>
 
             <ul class="mh-nav__links">
@@ -292,7 +365,7 @@
 
             <div class="mh-nav__right">
                 <a class="mh-nav__pill" asp-controller="Account" asp-action="Login">Sign In</a>
-                <a class="mh-nav__cta" href="#">List Your Car</a>
+                <a class="mh-nav__cta" style="display: none;" href="#">List Your Car</a>
             </div>
 
             <button class="mh-nav__toggle" id="mhToggle" aria-label="Open menu">
@@ -310,7 +383,7 @@
         <a class="mh-nav__link" asp-controller="Home" asp-action="Index" asp-fragment="contact">Contact</a>
         <div class="mh-nav__drawer-btns">
             <a class="mh-nav__pill" asp-controller="Account" asp-action="Login">Sign In</a>
-            <a class="mh-nav__cta" href="#">List Your Car</a>
+            <a class="mh-nav__cta" style="display: none;" href="#">List Your Car</a>
         </div>
     </div>
 
@@ -324,7 +397,20 @@
     @if (!hideGlobalFooter)
     {
         <footer class="mh-footer">
-            <div>&copy; 2026 MotorsHut &mdash; <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy Policy</a></div>
+            <div class="mh-footer__inner">
+                <a class="mh-footer__brand" asp-controller="Home" asp-action="Index">
+                    <div class="mh-footer__brand-icon">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M4 14.5V16a1 1 0 0 0 1 1h1a2 2 0 1 0 4 0h4a2 2 0 1 0 4 0h1a1 1 0 0 0 1-1v-1.5l-1.2-4.1A2 2 0 0 0 16.9 9H7.1a2 2 0 0 0-1.9 1.4L4 14.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <span class="mh-footer__brand-name">Motors Hut</span>
+                </a>
+                <p class="mh-footer__text">
+                    &copy; 2026 Motors Hut &mdash;
+                    <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy Policy</a>
+                </p>
+            </div>
         </footer>
     }
 
@@ -336,38 +422,44 @@
     {
         <script>
             Swal.fire({
-                toast: true,
-                position: "top-end",
-                icon: "success",
+                toast: true, position: "top-end", icon: "success",
                 title: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(successMessage)),
-                showConfirmButton: false,
-                timer: 2200,
-                timerProgressBar: true
+                showConfirmButton: false, timer: 2200, timerProgressBar: true,
+                background: '#ffffff', color: '#111827', iconColor: '#4f46e5'
             });
         </script>
     }
 
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    @if (TempData["ErrorMessage"] is string errorMessage)
+    {
+        <script>
+            Swal.fire({
+                toast: true, position: "top-end", icon: "error",
+                title: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(errorMessage)),
+                showConfirmButton: false, timer: 2600, timerProgressBar: true,
+                background: '#ffffff', color: '#111827', iconColor: '#dc2626'
+            });
+        </script>
+    }
 
     <script>
-        // Mobile nav toggle
         const toggle = document.getElementById('mhToggle');
         const drawer = document.getElementById('mhDrawer');
+
         toggle?.addEventListener('click', () => {
             drawer.classList.toggle('open');
-            const bars = toggle.querySelectorAll('span');
+            const bars   = toggle.querySelectorAll('span');
             const isOpen = drawer.classList.contains('open');
-            bars[0].style.transform = isOpen ? 'translateY(7px) rotate(45deg)' : '';
-            bars[1].style.opacity  = isOpen ? '0' : '';
+            bars[0].style.transform = isOpen ? 'translateY(7px) rotate(45deg)'  : '';
+            bars[1].style.opacity   = isOpen ? '0' : '';
             bars[2].style.transform = isOpen ? 'translateY(-7px) rotate(-45deg)' : '';
         });
 
-        // Navbar scroll transparency
         const nav = document.getElementById('mhNav');
         window.addEventListener('scroll', () => {
-            nav.style.background = window.scrollY > 20
-                ? 'rgba(6, 9, 15, 0.96)'
-                : 'rgba(6, 9, 15, 0.82)';
+            nav.style.boxShadow = window.scrollY > 20
+                ? '0 4px 24px rgba(0,0,0,0.1)'
+                : '0 1px 12px rgba(0,0,0,0.06)';
         }, { passive: true });
     </script>
 
