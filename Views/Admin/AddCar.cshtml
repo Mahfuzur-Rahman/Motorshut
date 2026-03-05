@@ -102,9 +102,48 @@
     }
     .form-select option { background:#fff; color:var(--text); }
     textarea.form-control { resize:vertical; min-height:96px; }
-    .form-check-input { border:1.5px solid var(--border) !important; background:var(--bg) !important; }
-    .form-check-input:checked { background-color:var(--accent) !important; border-color:var(--accent) !important; }
-    .form-check-label { font-size:.875rem; color:var(--text-soft); font-weight:600; }
+
+    .form-check-input {
+        width: 18px !important;
+        height: 18px !important;
+        border: 2px solid var(--border) !important;
+        background: var(--bg) !important;
+        border-radius: 5px !important;
+        cursor: pointer !important;
+        transition: all .18s !important;
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        flex-shrink: 0 !important;
+        vertical-align: middle !important;
+    }
+
+        .form-check-input:hover {
+            border-color: var(--border-hover) !important;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--accent) !important;
+            border-color: var(--accent) !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' d='M3 8l3.5 3.5L13 4.5'/%3E%3C/svg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            background-size: 13px !important;
+            box-shadow: 0 2px 8px rgba(67,56,202,.28) !important;
+        }
+
+        .form-check-input:focus {
+            box-shadow: 0 0 0 3.5px rgba(99,102,241,.18) !important;
+            border-color: var(--accent) !important;
+            outline: none !important;
+        }
+
+    .form-check-label {
+        font-size: .875rem;
+        color: var(--text-soft);
+        font-weight: 600;
+        cursor: pointer;
+    }
+
     .text-danger, .field-validation-error {
         font-size:.74rem !important; color:var(--red) !important; font-weight:600; margin-top:.25rem; display:block;
     }
@@ -363,6 +402,9 @@
                 Browse &amp; Add Images
             </button>
         </div>
+        <div class="px-4 pt-3">
+            <span asp-validation-for="NewImages" class="text-danger"></span>
+        </div>
 
         <!-- Empty state -->
         <div id="imgDropzone" class="img-dropzone">
@@ -375,7 +417,7 @@
             <div class="img-dropzone__title">Drag &amp; drop images here</div>
             <div class="img-dropzone__sub">
                 or click <strong>Browse &amp; Add Images</strong> in the top-right<br>
-                PNG · JPG · WEBP — max 5 MB each — up to 10 images
+                PNG · JPG · WEBP — max 30 MB each — up to 10 images
             </div>
         </div>
 
@@ -443,7 +485,7 @@
             <label class="row-choose">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                 Choose file
-                <input type="file" name="NewImageFiles" accept="image/*" class="js-image-input" />
+                <input type="file" name="NewImages" accept="image/*" class="js-image-input" />
             </label>
         </div>
         <!-- col 3: order -->
@@ -580,6 +622,79 @@
         });
 
         syncUI();
+    })();
+    </script>
+    <script>
+    (function () {
+        const form = document.getElementById('acForm');
+        if (!form) return;
+
+        const saveBtn = form.querySelector('.ac-btn-save');
+        if (!saveBtn) return;
+
+        const originalHtml = saveBtn.innerHTML;
+        let isSubmitting = false;
+
+        function showToast(icon, title) {
+            if (!window.Swal) {
+                alert(title);
+                return;
+            }
+
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon,
+                title,
+                showConfirmButton: false,
+                timer: 2600,
+                timerProgressBar: true,
+                background: '#ffffff',
+                color: '#1e1b4b'
+            });
+        }
+
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            if (isSubmitting) return;
+
+            isSubmitting = true;
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const payload = await response.json().catch(function () {
+                    return { succeeded: false, message: 'Unexpected server response.' };
+                });
+
+                if (!response.ok || !payload.succeeded) {
+                    const message = payload.message || 'Could not save car.';
+                    showToast('error', message);
+                    return;
+                }
+
+                showToast('success', payload.message || 'Car saved successfully.');
+                if (payload.redirectUrl) {
+                    setTimeout(function () {
+                        window.location.href = payload.redirectUrl;
+                    }, 700);
+                }
+            } catch {
+                showToast('error', 'Request failed. Please try again.');
+            } finally {
+                isSubmitting = false;
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalHtml;
+            }
+        });
     })();
     </script>
 }

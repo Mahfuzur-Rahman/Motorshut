@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MySqlConnector;
 using MotorsHut.DAL.Abstractions;
 using MotorsHut.DAL.Abstractions.Repositories;
 using MotorsHut.DAL.Data;
@@ -94,10 +95,18 @@ public static class ServiceCollectionExtensions
     private static string NormalizeMySqlConnectionString(string connectionString)
     {
         // Keep app bootable when placeholder appsettings values are still present.
-        return connectionString
+        var normalized = connectionString
             .Replace("YOUR_AIVEN_HOST", "localhost", StringComparison.OrdinalIgnoreCase)
             .Replace("YOUR_AIVEN_PORT", "3306", StringComparison.OrdinalIgnoreCase)
             .Replace("YOUR_AIVEN_USER", "root", StringComparison.OrdinalIgnoreCase)
             .Replace("YOUR_AIVEN_PASSWORD", string.Empty, StringComparison.OrdinalIgnoreCase);
+
+        var builder = new MySqlConnectionStringBuilder(normalized)
+        {
+            // Prevent false-positive EF concurrency errors when values don't change.
+            UseAffectedRows = false
+        };
+
+        return builder.ConnectionString;
     }
 }

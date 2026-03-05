@@ -8,6 +8,7 @@ public interface ICarService
     Task<CarDetailsDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<CarOperationResultDto> CreateAsync(CreateCarRequestDto request, CancellationToken cancellationToken = default);
     Task<CarOperationResultDto> UpdateAsync(UpdateCarRequestDto request, CancellationToken cancellationToken = default);
+    Task<CarEditOperationResultDto> UpdateWithImagesAsync(UpdateCarWithImagesRequestDto request, CancellationToken cancellationToken = default);
     Task<CarOperationResultDto> AddImagesAsync(Guid carId, IReadOnlyList<CreateCarImageRequestDto> images, CancellationToken cancellationToken = default);
     Task<CarOperationResultDto> UpdateImageSortOrdersAsync(Guid carId, IReadOnlyList<UpdateCarImageSortOrderRequestDto> imageOrders, CancellationToken cancellationToken = default);
     Task<CarOperationResultDto> RemoveImageAsync(Guid carId, Guid imageId, CancellationToken cancellationToken = default);

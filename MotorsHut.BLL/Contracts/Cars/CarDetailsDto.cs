@@ -9,9 +9,12 @@ public sealed class CarDetailsDto
     public int Year { get; init; }
     public decimal Price { get; init; }
     public int MileageKm { get; init; }
+    public string? FuelType { get; init; }
+    public string? Transmission { get; init; }
+    public string? ShortDescription { get; init; }
     public string? Color { get; init; }
     public string? Vin { get; init; }
-    public bool IsSold { get; init; }
-    public bool IsReturned { get; init; }
+    public int InStock { get; init; }
+    public int TotalSold { get; init; }
     public IReadOnlyList<CarImageItemDto> Images { get; init; } = Array.Empty<CarImageItemDto>();
 }

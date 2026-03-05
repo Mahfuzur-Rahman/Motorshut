@@ -4,8 +4,8 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 
     var totalCars = Model.Cars.Count;
-    var soldCars = Model.Cars.Count(c => c.IsSold);
-    var inStockCars = totalCars - soldCars;
+    var soldCars = Model.Cars.Sum(c => c.TotalSold);
+    var inStockCars = Model.Cars.Sum(c => c.InStock);
 }
 
 <style>
@@ -551,18 +551,8 @@
                                 <td><span class="cars-mileage">@car.MileageKm.ToString("N0") km</span></td>
                                 <td>
                                     <div class="cars-badges">
-                                        @if (car.IsSold)
-                                        {
-                                            <span class="cars-badge cars-badge--sold">Sold</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="cars-badge cars-badge--stock">In Stock</span>
-                                        }
-                                        @if (car.IsReturned)
-                                        {
-                                            <span class="cars-badge cars-badge--returned">Returned</span>
-                                        }
+                                        <span class="cars-badge cars-badge--stock">Stock: @car.InStock</span>
+                                        <span class="cars-badge cars-badge--sold">Sold: @car.TotalSold</span>
                                     </div>
                                 </td>
                                 <td>

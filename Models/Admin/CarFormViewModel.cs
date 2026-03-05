@@ -27,14 +27,26 @@ public sealed class CarFormViewModel
     [Range(0, int.MaxValue)]
     public int MileageKm { get; set; }
 
+    [StringLength(30)]
+    public string? FuelType { get; set; }
+
+    [StringLength(30)]
+    public string? Transmission { get; set; }
+
+    [StringLength(500)]
+    public string? ShortDescription { get; set; }
+
     [StringLength(50)]
     public string? Color { get; set; }
 
     [StringLength(50)]
     public string? Vin { get; set; }
 
-    public bool IsSold { get; set; }
-    public bool IsReturned { get; set; }
+    [Range(0, int.MaxValue)]
+    public int InStock { get; set; }
+
+    [Range(0, int.MaxValue)]
+    public int TotalSold { get; set; }
 
     [Display(Name = "Car Images")]
     public List<IFormFile> NewImages { get; set; } = [];

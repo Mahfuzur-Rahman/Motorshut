@@ -59,4 +59,69 @@ public sealed class CarRepository : GenericRepository<Car>, ICarRepository
         return await Context.Set<CarImage>()
             .FirstOrDefaultAsync(i => i.CarId == carId && i.Id == imageId, cancellationToken);
     }
+
+    public async Task<IReadOnlyList<CarImage>> ListImagesByCarIdAsync(Guid carId, CancellationToken cancellationToken = default)
+    {
+        return await Context.Set<CarImage>()
+            .AsNoTracking()
+            .Where(i => i.CarId == carId)
+            .OrderBy(i => i.SortOrder)
+            .ThenBy(i => i.CreatedAtUtc)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<int> UpdateCarFieldsAsync(
+        Guid carId,
+        string make,
+        string model,
+        string? variant,
+        int year,
+        decimal price,
+        int mileageKm,
+        string? fuelType,
+        string? transmission,
+        string? shortDescription,
+        string? color,
+        string? vin,
+        int inStock,
+        int totalSold,
+        DateTime updatedAtUtc,
+        CancellationToken cancellationToken = default)
+    {
+        return await Context.Set<Car>()
+            .Where(c => c.Id == carId)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(c => c.Make, make)
+                .SetProperty(c => c.Model, model)
+                .SetProperty(c => c.Variant, variant)
+                .SetProperty(c => c.Year, year)
+                .SetProperty(c => c.Price, price)
+                .SetProperty(c => c.MileageKm, mileageKm)
+                .SetProperty(c => c.FuelType, fuelType)
+                .SetProperty(c => c.Transmission, transmission)
+                .SetProperty(c => c.ShortDescription, shortDescription)
+                .SetProperty(c => c.Color, color)
+                .SetProperty(c => c.Vin, vin)
+                .SetProperty(c => c.InStock, inStock)
+                .SetProperty(c => c.TotalSold, totalSold)
+                .SetProperty(c => c.UpdatedAtUtc, updatedAtUtc),
+                cancellationToken);
+    }
+
+    public async Task<int> DeleteImagesByCarIdAsync(Guid carId, CancellationToken cancellationToken = default)
+    {
+        return await Context.Set<CarImage>()
+            .Where(i => i.CarId == carId)
+            .ExecuteDeleteAsync(cancellationToken);
+    }
+
+    public async Task AddImagesRangeAsync(IReadOnlyList<CarImage> images, CancellationToken cancellationToken = default)
+    {
+        if (images.Count == 0)
+        {
+            return;
+        }
+
+        await Context.Set<CarImage>().AddRangeAsync(images, cancellationToken);
+    }
 }

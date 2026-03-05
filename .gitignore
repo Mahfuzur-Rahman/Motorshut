@@ -27,3 +27,6 @@ ScaffoldingReadMe.txt
 # OS files
 .DS_Store
 Thumbs.db
+
+# Temporary local build check output
+.tmp_build_check

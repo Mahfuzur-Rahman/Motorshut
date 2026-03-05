@@ -4,6 +4,7 @@ using MotorsHut.BLL.Abstractions.Services;
 using MotorsHut.BLL.Contracts.Auth;
 using MotorsHut.BLL.Contracts.Cars;
 using MotorsHut.Models.Admin;
+using System.Text;
 
 namespace MotorsHut.Controllers;
 
@@ -12,7 +13,7 @@ namespace MotorsHut.Controllers;
 public sealed class AdminController : Controller
 {
     private const int MaxImagesPerCar = 10;
-    private const long MaxImageSizeBytes = 5 * 1024 * 1024;
+    private const long MaxImageSizeBytes = 30 * 1024 * 1024;
     private static readonly string[] AllowedImageExtensions = [".jpg", ".jpeg", ".png", ".webp"];
 
     private readonly IAuthService _authService;
@@ -52,8 +53,8 @@ public sealed class AdminController : Controller
                 Year = c.Year,
                 Price = c.Price,
                 MileageKm = c.MileageKm,
-                IsSold = c.IsSold,
-                IsReturned = c.IsReturned
+                InStock = c.InStock,
+                TotalSold = c.TotalSold
             }).ToArray()
         };
 
@@ -70,8 +71,14 @@ public sealed class AdminController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddCar(CarFormViewModel form, CancellationToken cancellationToken)
     {
+        var isAjax = IsAjaxRequest();
         if (!ModelState.IsValid)
         {
+            if (isAjax)
+            {
+                return AjaxFailure("Validation failed.", 400, GetModelErrors());
+            }
+
             return View(form);
         }
 
@@ -83,15 +90,23 @@ public sealed class AdminController : Controller
             Year = form.Year,
             Price = form.Price,
             MileageKm = form.MileageKm,
+            FuelType = form.FuelType,
+            Transmission = form.Transmission,
+            ShortDescription = form.ShortDescription,
             Color = form.Color,
             Vin = form.Vin,
-            IsSold = form.IsSold,
-            IsReturned = form.IsReturned
+            InStock = form.InStock,
+            TotalSold = form.TotalSold
         }, cancellationToken);
 
         if (!result.Succeeded)
         {
             var errors = result.Errors.Count > 0 ? string.Join(" ", result.Errors) : result.Message;
+            if (isAjax)
+            {
+                return AjaxFailure(errors, 400, result.Errors);
+            }
+
             ModelState.AddModelError(string.Empty, errors);
             return View(form);
         }
@@ -100,9 +115,14 @@ public sealed class AdminController : Controller
         if (createdCarId != Guid.Empty && form.NewImages.Count > 0)
         {
             var imageOrders = ParseImageOrders(form.NewImageOrdersCsv);
-            var uploadResult = await SaveUploadedImagesAsync(createdCarId, form.NewImages, imageOrders, cancellationToken);
+            var uploadResult = await SaveUploadedImagesAsync(createdCarId, form.Make, form.Model, form.NewImages, imageOrders, cancellationToken);
             if (uploadResult.Errors.Count > 0)
             {
+                if (isAjax)
+                {
+                    return AjaxFailure("Image upload validation failed.", 400, uploadResult.Errors);
+                }
+
                 foreach (var error in uploadResult.Errors)
                 {
                     ModelState.AddModelError(nameof(form.NewImages), error);
@@ -122,10 +142,20 @@ public sealed class AdminController : Controller
                     }
 
                     var errors = addImagesResult.Errors.Count > 0 ? string.Join(" ", addImagesResult.Errors) : addImagesResult.Message;
+                    if (isAjax)
+                    {
+                        return AjaxFailure(errors, 409, addImagesResult.Errors);
+                    }
+
                     ModelState.AddModelError(nameof(form.NewImages), errors);
                     return View(form);
                 }
             }
+        }
+
+        if (isAjax)
+        {
+            return AjaxSuccess("Car added successfully.", Url.Action(nameof(Cars)));
         }
 
         TempData["SuccessMessage"] = "Car added successfully.";
@@ -150,10 +180,13 @@ public sealed class AdminController : Controller
             Year = car.Year,
             Price = car.Price,
             MileageKm = car.MileageKm,
+            FuelType = car.FuelType,
+            Transmission = car.Transmission,
+            ShortDescription = car.ShortDescription,
             Color = car.Color,
             Vin = car.Vin,
-            IsSold = car.IsSold,
-            IsReturned = car.IsReturned,
+            InStock = car.InStock,
+            TotalSold = car.TotalSold,
             ExistingImages = car.Images
                 .OrderBy(i => i.SortOrder)
                 .Select(i => new CarImageViewModel
@@ -174,38 +207,25 @@ public sealed class AdminController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditCar(Guid id, CarFormViewModel form, CancellationToken cancellationToken)
     {
+        var isAjax = IsAjaxRequest();
         var existingCar = await _carService.GetByIdAsync(id, cancellationToken);
         if (existingCar is null)
         {
+            if (isAjax)
+            {
+                return AjaxFailure("Car not found.", 404);
+            }
+
             return NotFound();
         }
 
         if (!ModelState.IsValid)
         {
-            await PopulateExistingImagesAsync(form, id, cancellationToken);
-            form.Id = id;
-            return View(form);
-        }
+            if (isAjax)
+            {
+                return AjaxFailure("Validation failed.", 400, GetModelErrors());
+            }
 
-        var result = await _carService.UpdateAsync(new UpdateCarRequestDto
-        {
-            Id = id,
-            Make = form.Make,
-            Model = form.Model,
-            Variant = form.Variant,
-            Year = form.Year,
-            Price = form.Price,
-            MileageKm = form.MileageKm,
-            Color = form.Color,
-            Vin = form.Vin,
-            IsSold = form.IsSold,
-            IsReturned = form.IsReturned
-        }, cancellationToken);
-
-        if (!result.Succeeded)
-        {
-            var errors = result.Errors.Count > 0 ? string.Join(" ", result.Errors) : result.Message;
-            ModelState.AddModelError(string.Empty, errors);
             await PopulateExistingImagesAsync(form, id, cancellationToken);
             form.Id = id;
             return View(form);
@@ -215,53 +235,33 @@ public sealed class AdminController : Controller
         var existingRemainsCount = existingCar.Images.Count(i => !deleteIds.Contains(i.Id));
         if (existingRemainsCount + form.NewImages.Count > MaxImagesPerCar)
         {
+            if (isAjax)
+            {
+                return AjaxFailure($"A car can have up to {MaxImagesPerCar} images.", 400);
+            }
+
             ModelState.AddModelError(nameof(form.NewImages), $"A car can have up to {MaxImagesPerCar} images.");
             await PopulateExistingImagesAsync(form, id, cancellationToken);
             form.Id = id;
             return View(form);
         }
 
-        foreach (var imageId in deleteIds)
-        {
-            var deleteResult = await _carService.RemoveImageAsync(id, imageId, cancellationToken);
-            if (!deleteResult.Succeeded)
-            {
-                var errors = deleteResult.Errors.Count > 0 ? string.Join(" ", deleteResult.Errors) : deleteResult.Message;
-                ModelState.AddModelError(string.Empty, errors);
-                await PopulateExistingImagesAsync(form, id, cancellationToken);
-                form.Id = id;
-                return View(form);
-            }
-
-            var deletedImage = existingCar.Images.FirstOrDefault(i => i.Id == imageId);
-            if (deletedImage is not null)
-            {
-                DeletePhysicalFileByUrl(deletedImage.ImageUrl);
-            }
-        }
-
         var existingImageOrders = ParseExistingImageOrders(form.ExistingImageOrdersCsv)
             .Where(x => !deleteIds.Contains(x.ImageId))
             .ToArray();
-        if (existingImageOrders.Length > 0)
-        {
-            var reorderResult = await _carService.UpdateImageSortOrdersAsync(id, existingImageOrders, cancellationToken);
-            if (!reorderResult.Succeeded)
-            {
-                var errors = reorderResult.Errors.Count > 0 ? string.Join(" ", reorderResult.Errors) : reorderResult.Message;
-                ModelState.AddModelError(string.Empty, errors);
-                await PopulateExistingImagesAsync(form, id, cancellationToken);
-                form.Id = id;
-                return View(form);
-            }
-        }
 
+        var uploadResult = (Images: new List<CreateCarImageRequestDto>(), SavedPhysicalPaths: new List<string>(), Errors: new List<string>());
         if (form.NewImages.Count > 0)
         {
             var imageOrders = ParseImageOrders(form.NewImageOrdersCsv);
-            var uploadResult = await SaveUploadedImagesAsync(id, form.NewImages, imageOrders, cancellationToken);
+            uploadResult = await SaveUploadedImagesAsync(id, form.Make, form.Model, form.NewImages, imageOrders, cancellationToken);
             if (uploadResult.Errors.Count > 0)
             {
+                if (isAjax)
+                {
+                    return AjaxFailure("Image upload validation failed.", 400, uploadResult.Errors);
+                }
+
                 foreach (var error in uploadResult.Errors)
                 {
                     ModelState.AddModelError(nameof(form.NewImages), error);
@@ -271,37 +271,59 @@ public sealed class AdminController : Controller
                 form.Id = id;
                 return View(form);
             }
-
-            if (uploadResult.Images.Count > 0)
-            {
-                var addImagesResult = await _carService.AddImagesAsync(id, uploadResult.Images, cancellationToken);
-                if (!addImagesResult.Succeeded)
-                {
-                    foreach (var savedPath in uploadResult.SavedPhysicalPaths)
-                    {
-                        DeletePhysicalFile(savedPath);
-                    }
-
-                    var errors = addImagesResult.Errors.Count > 0 ? string.Join(" ", addImagesResult.Errors) : addImagesResult.Message;
-                    ModelState.AddModelError(nameof(form.NewImages), errors);
-                    await PopulateExistingImagesAsync(form, id, cancellationToken);
-                    form.Id = id;
-                    return View(form);
-                }
-            }
         }
 
-        if (form.SelectedPrimaryImageId.HasValue && !deleteIds.Contains(form.SelectedPrimaryImageId.Value))
+        var editResult = await _carService.UpdateWithImagesAsync(new UpdateCarWithImagesRequestDto
         {
-            var primaryResult = await _carService.SetPrimaryImageAsync(id, form.SelectedPrimaryImageId.Value, cancellationToken);
-            if (!primaryResult.Succeeded)
+            Id = id,
+            Make = form.Make,
+            Model = form.Model,
+            Variant = form.Variant,
+            Year = form.Year,
+            Price = form.Price,
+            MileageKm = form.MileageKm,
+            FuelType = form.FuelType,
+            Transmission = form.Transmission,
+            ShortDescription = form.ShortDescription,
+            Color = form.Color,
+            Vin = form.Vin,
+            InStock = form.InStock,
+            TotalSold = form.TotalSold,
+            DeleteImageIds = deleteIds.ToArray(),
+            ExistingImageOrders = existingImageOrders,
+            NewImages = uploadResult.Images,
+            SelectedPrimaryImageId = form.SelectedPrimaryImageId.HasValue && !deleteIds.Contains(form.SelectedPrimaryImageId.Value)
+                ? form.SelectedPrimaryImageId
+                : null
+        }, cancellationToken);
+
+        if (!editResult.Succeeded)
+        {
+            foreach (var savedPath in uploadResult.SavedPhysicalPaths)
             {
-                var errors = primaryResult.Errors.Count > 0 ? string.Join(" ", primaryResult.Errors) : primaryResult.Message;
-                ModelState.AddModelError(string.Empty, errors);
-                await PopulateExistingImagesAsync(form, id, cancellationToken);
-                form.Id = id;
-                return View(form);
+                DeletePhysicalFile(savedPath);
             }
+
+            var errors = editResult.Errors.Count > 0 ? string.Join(" ", editResult.Errors) : editResult.Message;
+            if (isAjax)
+            {
+                return AjaxFailure(errors, 409, editResult.Errors);
+            }
+
+            ModelState.AddModelError(string.Empty, errors);
+            await PopulateExistingImagesAsync(form, id, cancellationToken);
+            form.Id = id;
+            return View(form);
+        }
+
+        foreach (var imageUrl in editResult.DeletedImageUrls)
+        {
+            DeletePhysicalFileByUrl(imageUrl);
+        }
+
+        if (isAjax)
+        {
+            return AjaxSuccess("Car and images updated successfully.", Url.Action(nameof(Cars)));
         }
 
         TempData["SuccessMessage"] = "Car and images updated successfully.";
@@ -407,6 +429,8 @@ public sealed class AdminController : Controller
 
     private async Task<(List<CreateCarImageRequestDto> Images, List<string> SavedPhysicalPaths, List<string> Errors)> SaveUploadedImagesAsync(
         Guid carId,
+        string? make,
+        string? model,
         IReadOnlyList<IFormFile> files,
         IReadOnlyList<int> imageOrders,
         CancellationToken cancellationToken)
@@ -437,7 +461,7 @@ public sealed class AdminController : Controller
 
             if (file.Length > MaxImageSizeBytes)
             {
-                errors.Add($"'{file.FileName}' exceeds 5 MB.");
+                errors.Add($"'{file.FileName}' exceeds 30 MB.");
             }
         }
 
@@ -447,7 +471,8 @@ public sealed class AdminController : Controller
         }
 
         var rootPath = _webHostEnvironment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-        var relativeFolder = Path.Combine("uploads", "cars", carId.ToString("N"));
+        var carFolderName = BuildCarImageFolderName(carId, make, model);
+        var relativeFolder = Path.Combine("uploads", "cars", carFolderName);
         var physicalFolder = Path.Combine(rootPath, relativeFolder);
         Directory.CreateDirectory(physicalFolder);
 
@@ -471,6 +496,58 @@ public sealed class AdminController : Controller
         }
 
         return (images, savedPhysicalPaths, errors);
+    }
+
+    private static string BuildCarImageFolderName(Guid carId, string? make, string? model)
+    {
+        var segments = new List<string> { carId.ToString("N") };
+        var makeSegment = SlugifySegment(make);
+        var modelSegment = SlugifySegment(model);
+
+        if (!string.IsNullOrWhiteSpace(makeSegment))
+        {
+            segments.Add(makeSegment);
+        }
+
+        if (!string.IsNullOrWhiteSpace(modelSegment))
+        {
+            segments.Add(modelSegment);
+        }
+
+        return string.Join("-", segments);
+    }
+
+    private static string SlugifySegment(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var buffer = new StringBuilder();
+        var trimmed = value.Trim().ToLowerInvariant();
+        var previousWasDash = false;
+
+        foreach (var ch in trimmed)
+        {
+            if (char.IsLetterOrDigit(ch))
+            {
+                buffer.Append(ch);
+                previousWasDash = false;
+            }
+            else if (!previousWasDash)
+            {
+                buffer.Append('-');
+                previousWasDash = true;
+            }
+
+            if (buffer.Length >= 40)
+            {
+                break;
+            }
+        }
+
+        return buffer.ToString().Trim('-');
     }
 
     private static IReadOnlyList<int> ParseImageOrders(string? csv)
@@ -541,5 +618,38 @@ public sealed class AdminController : Controller
         {
             System.IO.File.Delete(physicalPath);
         }
+    }
+
+    private bool IsAjaxRequest()
+    {
+        return string.Equals(Request.Headers["X-Requested-With"], "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private IActionResult AjaxSuccess(string message, string? redirectUrl = null)
+    {
+        return Json(new
+        {
+            succeeded = true,
+            message,
+            redirectUrl
+        });
+    }
+
+    private IActionResult AjaxFailure(string message, int statusCode, IEnumerable<string>? errors = null)
+    {
+        return StatusCode(statusCode, new
+        {
+            succeeded = false,
+            message,
+            errors = errors?.ToArray() ?? Array.Empty<string>()
+        });
+    }
+
+    private IReadOnlyList<string> GetModelErrors()
+    {
+        return ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => string.IsNullOrWhiteSpace(e.ErrorMessage) ? "Invalid value." : e.ErrorMessage)
+            .ToArray();
     }
 }

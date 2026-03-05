@@ -70,10 +70,13 @@ namespace MotorsHut.Controllers
                         Year = car.Year,
                         Price = car.Price,
                         MileageKm = car.MileageKm,
+                        FuelType = car.FuelType,
+                        Transmission = car.Transmission,
+                        ShortDescription = car.ShortDescription,
                         Color = car.Color,
                         Vin = car.Vin,
-                        IsSold = car.IsSold,
-                        IsReturned = car.IsReturned,
+                        InStock = car.InStock,
+                        TotalSold = car.TotalSold,
                         CardImageUrl = cardImage,
                         ImageUrls = orderedImages.Length > 0 ? orderedImages : [fallbackImageUrl]
                     };

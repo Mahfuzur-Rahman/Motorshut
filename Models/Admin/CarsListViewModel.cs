@@ -15,6 +15,6 @@ public sealed class CarListItemViewModel
     public int Year { get; set; }
     public decimal Price { get; set; }
     public int MileageKm { get; set; }
-    public bool IsSold { get; set; }
-    public bool IsReturned { get; set; }
+    public int InStock { get; set; }
+    public int TotalSold { get; set; }
 }

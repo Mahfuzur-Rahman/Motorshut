@@ -1,289 +1,883 @@
-@model MotorsHut.Models.Admin.CarFormViewModel
+﻿@model MotorsHut.Models.Admin.CarFormViewModel
 @{
     ViewData["Title"] = "Edit Car";
-    Layout = "_AdminLayout";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<article class="admin-panel">
-    <h3 class="mb-3">Edit Car Details</h3>
+<style>
+    :root {
+        --accent:        #4338ca;
+        --accent-light:  rgba(67,56,202,0.08);
+        --accent-mid:    rgba(67,56,202,0.16);
+        --accent-border: rgba(67,56,202,0.22);
+        --surface:       #ffffff;
+        --bg:            #eef2ff;
+        --border:        #e0e7ff;
+        --border-hover:  #a5b4fc;
+        --text:          #1e1b4b;
+        --text-soft:     #3730a3;
+        --muted:         #6366f1;
+        --muted2:        #818cf8;
+        --muted3:        #a5b4fc;
+        --red:           #dc2626;
+        --red-bg:        rgba(220,38,38,0.06);
+        --green:         #10b981;
+    }
 
-    <form asp-controller="Admin" asp-action="EditCar" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data" novalidate>
-        <partial name="_CarForm" model="Model" />
-        <input asp-for="ExistingImageOrdersCsv" type="hidden" />
+    @@keyframes fadeUp {
+        from { opacity:0; transform:translateY(16px); }
+        to   { opacity:1; transform:translateY(0); }
+    }
+    @@keyframes rowIn {
+        from { opacity:0; transform:translateY(8px); }
+        to   { opacity:1; transform:translateY(0); }
+    }
+    @@keyframes rowOut {
+        to { opacity:0; transform:scale(0.95) translateX(14px); }
+    }
 
-        @if (Model.ExistingImages.Count > 0)
-        {
-            <hr class="my-4" />
-            <h5 class="mb-3">Current Images (side by side)</h5>
-            <div id="deleteImageIdsHost"></div>
-            <div class="car-image-grid" id="existingImageGrid">
+    /* ── Header ── */
+    .ac-header {
+        display:flex; align-items:center; justify-content:space-between;
+        flex-wrap:wrap; gap:1rem; margin-bottom:2rem;
+        animation: fadeUp .45s cubic-bezier(.22,1,.36,1) both;
+    }
+    .ac-header__left { display:flex; align-items:center; gap:1rem; }
+    .ac-header__icon {
+        width:48px; height:48px; background:var(--accent-light);
+        border:1.5px solid var(--accent-border); border-radius:14px;
+        display:grid; place-items:center; color:var(--accent); flex-shrink:0;
+    }
+    .ac-header__title { font-size:1.6rem; font-weight:900; color:var(--text); letter-spacing:-.02em; margin:0 0 .1rem; }
+    .ac-header__sub   { font-size:.82rem; color:var(--muted2); font-weight:500; }
+    .ac-back {
+        display:inline-flex; align-items:center; gap:.45rem;
+        font-size:.82rem; font-weight:700; color:var(--text-soft); text-decoration:none;
+        padding:.5rem 1.1rem; border:1.5px solid var(--border); border-radius:10px;
+        background:var(--surface); transition:all .18s; white-space:nowrap;
+    }
+    .ac-back:hover { border-color:var(--border-hover); background:var(--accent-light); color:var(--accent); }
+
+    /* ── Card ── */
+    .ac-card {
+        background:var(--surface); border:1.5px solid var(--border); border-radius:18px;
+        overflow:hidden; box-shadow:0 1px 3px rgba(99,102,241,.06);
+        animation: fadeUp .5s cubic-bezier(.22,1,.36,1) both;
+        margin-bottom:1.4rem;
+    }
+    .ac-card:nth-child(2) { animation-delay:.07s; }
+    .ac-card:nth-child(3) { animation-delay:.14s; }
+    .ac-card:nth-child(4) { animation-delay:.21s; }
+
+    .ac-card__head {
+        padding:1rem 1.6rem; border-bottom:1.5px solid var(--border);
+        background:linear-gradient(to right,#f5f3ff,#eef2ff);
+        display:flex; align-items:center; justify-content:space-between; gap:.75rem; flex-wrap:wrap;
+    }
+    .ac-card__head-left { display:flex; align-items:center; gap:.75rem; }
+    .ac-card__icon {
+        width:32px; height:32px; background:var(--accent-light);
+        border:1.5px solid var(--accent-border); border-radius:9px;
+        display:grid; place-items:center; color:var(--accent); flex-shrink:0;
+    }
+    .ac-card__title { font-size:.95rem; font-weight:800; color:var(--text); margin:0; }
+    .ac-card__body  { padding:1.8rem 1.6rem; }
+
+    /* ── Bootstrap override ── */
+    .form-label {
+        font-size:.71rem !important; font-weight:800 !important; letter-spacing:.09em !important;
+        text-transform:uppercase !important; color:var(--text-soft) !important; margin-bottom:.38rem !important;
+    }
+    .form-control, .form-select {
+        background:var(--bg) !important; border:1.5px solid var(--border) !important;
+        border-radius:10px !important; color:var(--text) !important;
+        font-family:'Nunito',sans-serif !important; font-size:.9rem !important;
+        font-weight:600 !important; padding:.7rem 1rem !important;
+        outline:none !important; transition:all .18s !important;
+    }
+    .form-control::placeholder { color:var(--muted3) !important; font-weight:400 !important; }
+    .form-control:hover, .form-select:hover { border-color:var(--border-hover) !important; }
+    .form-control:focus, .form-select:focus {
+        border-color:var(--accent) !important; background:#fff !important;
+        box-shadow:0 0 0 3.5px rgba(99,102,241,.14) !important;
+    }
+    .form-select option { background:#fff; color:var(--text); }
+    textarea.form-control { resize:vertical; min-height:96px; }
+
+    /* ── Custom Checkboxes & Radios ── */
+    .form-check-input {
+        width: 18px !important;
+        height: 18px !important;
+        border: 2px solid var(--border) !important;
+        background: var(--bg) !important;
+        border-radius: 5px !important;
+        cursor: pointer !important;
+        transition: all .18s !important;
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        flex-shrink: 0 !important;
+        vertical-align: middle !important;
+    }
+    .form-check-input[type="radio"] { border-radius: 50% !important; }
+    .form-check-input:hover { border-color: var(--border-hover) !important; }
+    .form-check-input:checked {
+        background-color: var(--accent) !important;
+        border-color: var(--accent) !important;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' d='M3 8l3.5 3.5L13 4.5'/%3E%3C/svg%3E") !important;
+        background-repeat: no-repeat !important;
+        background-position: center !important;
+        background-size: 13px !important;
+        box-shadow: 0 2px 8px rgba(67,56,202,.28) !important;
+    }
+    .form-check-input[type="radio"]:checked {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='3.5' fill='%23ffffff'/%3E%3C/svg%3E") !important;
+    }
+    .form-check-input:focus {
+        box-shadow: 0 0 0 3.5px rgba(99,102,241,.18) !important;
+        border-color: var(--accent) !important;
+        outline: none !important;
+    }
+    .form-check-input:disabled { opacity: .45 !important; cursor: not-allowed !important; }
+    .form-check-label { font-size:.875rem; color:var(--text-soft); font-weight:600; cursor:pointer; }
+
+    .text-danger, .field-validation-error {
+        font-size:.74rem !important; color:var(--red) !important; font-weight:600; margin-top:.25rem; display:block;
+    }
+    .input-validation-error { border-color:rgba(220,38,38,.4) !important; background:var(--red-bg) !important; }
+
+    /* ── Actions bar ── */
+    .ac-actions {
+        display:flex; align-items:center; gap:.75rem;
+        padding:1.1rem 1.6rem; border-top:1.5px solid var(--border);
+        background:linear-gradient(to right,#f5f3ff,#eef2ff); flex-wrap:wrap;
+    }
+    .ac-btn-save {
+        display:inline-flex; align-items:center; gap:.5rem;
+        font-size:.9rem; font-weight:800; padding:.72rem 1.6rem;
+        border-radius:10px; border:none;
+        background:linear-gradient(135deg,#3730a3,#4338ca,#4f46e5); color:#fff;
+        cursor:pointer; font-family:'Nunito',sans-serif;
+        box-shadow:0 4px 18px rgba(67,56,202,.32);
+        transition:filter .18s,transform .15s,box-shadow .18s;
+    }
+    .ac-btn-save:hover { filter:brightness(1.08); transform:translateY(-2px); box-shadow:0 10px 26px rgba(67,56,202,.38); }
+    .ac-btn-cancel {
+        display:inline-flex; align-items:center; gap:.4rem;
+        font-size:.86rem; font-weight:700; padding:.68rem 1.2rem;
+        border-radius:10px; border:1.5px solid var(--border);
+        background:var(--surface); color:var(--text-soft); text-decoration:none;
+        font-family:'Nunito',sans-serif; transition:all .18s;
+    }
+    .ac-btn-cancel:hover { border-color:var(--border-hover); background:var(--accent-light); color:var(--accent); }
+
+    /* ══════════════════════════════
+       EXISTING IMAGE GRID
+    ══════════════════════════════ */
+    .exist-grid {
+        display:grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap:1rem;
+        padding:1.6rem;
+    }
+    .exist-card {
+        border:1.5px solid var(--border); border-radius:14px;
+        overflow:hidden; background:var(--bg);
+        transition:all .2s; animation: rowIn .3s cubic-bezier(.22,1,.36,1) both;
+        position:relative;
+    }
+    .exist-card:hover { border-color:var(--border-hover); box-shadow:0 4px 16px rgba(99,102,241,.1); }
+    .exist-card.marked-delete {
+        opacity:.45; border-color:rgba(220,38,38,.3);
+        background:var(--red-bg);
+    }
+    .exist-card.marked-delete .exist-thumb { filter:grayscale(1); }
+
+    .exist-thumb {
+        width:100%; aspect-ratio:4/3; object-fit:cover;
+        display:block; border-bottom:1.5px solid var(--border);
+        transition:filter .2s;
+    }
+    .exist-body { padding:.75rem; }
+
+    /* Primary radio row */
+    .exist-primary-row {
+        display:flex; align-items:center; gap:.5rem;
+        padding:.55rem .75rem; border-bottom:1px solid var(--border);
+        background:linear-gradient(to right,#f5f3ff,#eef2ff);
+    }
+    .exist-primary-label {
+        font-size:.72rem; font-weight:800; color:var(--text-soft);
+        letter-spacing:.06em; text-transform:uppercase;
+    }
+    .exist-primary-row input:checked + .exist-primary-label { color:var(--accent); }
+
+    /* Order input inside card */
+    .exist-order-wrap { display:flex; align-items:center; gap:.5rem; margin-bottom:.65rem; }
+    .exist-order-label {
+        font-size:.66rem; font-weight:800; color:var(--muted2);
+        letter-spacing:.09em; text-transform:uppercase; white-space:nowrap;
+    }
+    .existing-order-input {
+        width:62px !important; height:34px !important;
+        text-align:center !important; font-size:.88rem !important;
+        font-weight:800 !important; color:var(--accent) !important;
+        background:var(--surface) !important; border:1.5px solid var(--border) !important;
+        border-radius:8px !important; font-family:'Nunito',sans-serif !important;
+        padding:.3rem .5rem !important; outline:none !important; transition:all .18s !important;
+    }
+    .existing-order-input:focus {
+        border-color:var(--accent) !important;
+        box-shadow:0 0 0 3px rgba(99,102,241,.12) !important;
+    }
+
+    /* Remove / Undo button */
+    .exist-remove-btn {
+        width:100%; display:flex; align-items:center; justify-content:center; gap:.4rem;
+        font-size:.75rem; font-weight:800; border-radius:8px; padding:.42rem .75rem;
+        border:1.5px solid rgba(220,38,38,.28); color:var(--red);
+        background:rgba(220,38,38,.05); cursor:pointer;
+        font-family:'Nunito',sans-serif; transition:all .18s;
+    }
+    .exist-remove-btn:hover { background:rgba(220,38,38,.12); border-color:rgba(220,38,38,.45); }
+    .exist-remove-btn.undo {
+        border-color:var(--border); color:var(--text-soft);
+        background:var(--bg);
+    }
+    .exist-remove-btn.undo:hover { border-color:var(--border-hover); background:var(--accent-light); color:var(--accent); }
+
+    /* Cover badge */
+    .exist-cover-badge {
+        position:absolute; top:.55rem; right:.55rem;
+        font-size:.62rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+        background:var(--accent); color:#fff; border-radius:6px; padding:.18rem .5rem;
+        pointer-events:none; opacity:0; transition:opacity .2s;
+    }
+    .exist-card.is-primary .exist-cover-badge { opacity:1; }
+
+    /* Image count badge */
+    .img-count-badge {
+        font-size:.7rem; font-weight:800; color:var(--accent);
+        background:var(--accent-light); border:1px solid var(--accent-border);
+        border-radius:99px; padding:.14rem .65rem; letter-spacing:.04em;
+    }
+
+    /* ══════════════════════════════
+       NEW IMAGE MANAGER (same as AddCar)
+    ══════════════════════════════ */
+    .img-browse-btn {
+        display:inline-flex; align-items:center; gap:.45rem;
+        font-size:.82rem; font-weight:800; color:#fff;
+        background:linear-gradient(135deg,#3730a3,#4338ca);
+        border:none; border-radius:9px; padding:.52rem 1.1rem;
+        cursor:pointer; font-family:'Nunito',sans-serif;
+        box-shadow:0 4px 14px rgba(67,56,202,.28); transition:all .18s; white-space:nowrap;
+    }
+    .img-browse-btn:hover { filter:brightness(1.1); transform:translateY(-1px); box-shadow:0 8px 20px rgba(67,56,202,.35); }
+    .img-browse-btn:disabled { opacity:.38; cursor:not-allowed; transform:none; filter:none; }
+
+    .img-dropzone {
+        border:2px dashed var(--border); border-radius:14px;
+        padding:2.5rem 1.5rem; text-align:center;
+        background:var(--bg); transition:all .22s; margin:1.3rem 1.6rem; cursor:pointer;
+    }
+    .img-dropzone.drag-over {
+        border-color:var(--accent); background:rgba(99,102,241,.04);
+        box-shadow:0 0 0 4px rgba(99,102,241,.1);
+    }
+    .img-dropzone__icon {
+        width:54px; height:54px; background:var(--accent-light);
+        border:1.5px solid var(--accent-border); border-radius:14px;
+        display:grid; place-items:center; color:var(--accent); margin:0 auto .9rem;
+        transition:transform .22s;
+    }
+    .img-dropzone.drag-over .img-dropzone__icon { transform:translateY(-4px) scale(1.07); }
+    .img-dropzone__title { font-size:.95rem; font-weight:800; color:var(--text); margin-bottom:.3rem; }
+    .img-dropzone__sub   { font-size:.77rem; color:var(--muted2); font-weight:500; line-height:1.65; }
+
+    .img-table-head {
+        display:grid;
+        grid-template-columns: 140px 1fr 90px 90px 44px;
+        gap:.75rem; align-items:center;
+        padding:.6rem 1.6rem;
+        border-bottom:1.5px solid var(--border);
+        background:#f8f7ff;
+        font-size:.66rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--muted2);
+    }
+
+    .img-rows { display:flex; flex-direction:column; }
+
+    .upload-row {
+        display:grid;
+        grid-template-columns: 140px 1fr 90px 90px 44px;
+        gap:.75rem; align-items:center;
+        padding:.9rem 1.6rem;
+        border-bottom:1px solid var(--border);
+        transition:background .15s;
+        animation: rowIn .28s cubic-bezier(.22,1,.36,1) both;
+    }
+    .upload-row:last-child { border-bottom:none; }
+    .upload-row:hover      { background:#fafbff; }
+    .upload-row.removing   { animation: rowOut .22s ease-out both; pointer-events:none; }
+
+    .row-thumb {
+        width:140px; height:88px; border-radius:10px;
+        border:1.5px solid var(--border); background:var(--bg);
+        overflow:hidden; display:grid; place-items:center;
+        color:var(--muted3); position:relative; cursor:pointer; transition:border-color .18s;
+    }
+    .row-thumb:hover:not(.empty) { border-color:var(--accent); }
+    .row-thumb img { width:100%; height:100%; object-fit:cover; display:none; }
+    .row-thumb.has-img img     { display:block; }
+    .row-thumb.has-img > svg   { display:none; }
+    .row-thumb__overlay {
+        position:absolute; inset:0; border-radius:8px;
+        background:rgba(67,56,202,.72);
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+        gap:.25rem; color:#fff; font-size:.68rem; font-weight:700;
+        opacity:0; transition:opacity .18s;
+    }
+    .row-thumb:hover:not(.empty) .row-thumb__overlay { opacity:1; }
+
+    .row-info { min-width:0; }
+    .row-filename {
+        font-size:.82rem; font-weight:700; color:var(--text);
+        white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; margin-bottom:.35rem;
+    }
+    .row-choose {
+        display:inline-flex; align-items:center; gap:.3rem;
+        font-size:.73rem; font-weight:700; color:var(--accent);
+        background:var(--accent-light); border:1px solid var(--accent-border);
+        border-radius:7px; padding:.28rem .7rem; cursor:pointer;
+        font-family:'Nunito',sans-serif; transition:all .16s;
+    }
+    .row-choose:hover { background:rgba(67,56,202,.15); }
+    .js-image-input   { display:none; }
+
+    .js-image-order {
+        width:72px; height:38px; text-align:center;
+        font-size:.9rem; font-weight:800; color:var(--accent);
+        background:var(--bg); border:1.5px solid var(--border);
+        border-radius:8px; font-family:'Nunito',sans-serif; outline:none; transition:all .18s;
+        display:block; margin:0 auto;
+    }
+    .js-image-order:focus { border-color:var(--accent); background:#fff; box-shadow:0 0 0 3px rgba(99,102,241,.12); }
+
+    .row-status {
+        display:inline-flex; align-items:center; gap:.3rem;
+        font-size:.68rem; font-weight:700; border-radius:6px;
+        padding:.22rem .6rem; white-space:nowrap;
+    }
+    .s-empty { background:var(--bg); color:var(--muted2); border:1px solid var(--border); }
+    .s-ready { background:rgba(16,185,129,.1); color:#059669; border:1px solid rgba(16,185,129,.22); }
+    .s-dot   { width:5px; height:5px; border-radius:50%; background:currentColor; }
+
+    .js-remove-row {
+        width:36px; height:36px; border-radius:9px; background:none;
+        border:1.5px solid transparent; color:var(--muted3); cursor:pointer;
+        display:grid; place-items:center; margin:0 auto; transition:all .18s;
+    }
+    .js-remove-row:hover {
+        background:rgba(220,38,38,.07); border-color:rgba(220,38,38,.22);
+        color:var(--red); transform:scale(1.1);
+    }
+
+    .img-add-row {
+        display:flex; align-items:center; justify-content:center; gap:.5rem;
+        width:100%; padding:.75rem; border:none; border-top:1.5px dashed var(--border);
+        background:transparent; color:var(--muted2); font-family:'Nunito',sans-serif;
+        font-size:.82rem; font-weight:700; cursor:pointer; transition:all .18s;
+    }
+    .img-add-row:hover:not(:disabled) { background:var(--accent-light); color:var(--accent); border-top-color:var(--accent-border); }
+    .img-add-row:disabled { opacity:.32; cursor:not-allowed; }
+
+    .img-tip {
+        margin:.2rem 1.6rem 1.2rem;
+        padding:.65rem .9rem; background:var(--accent-light); border:1px solid var(--accent-border);
+        border-radius:9px; font-size:.74rem; color:var(--text-soft); font-weight:500; line-height:1.55;
+        display:flex; gap:.5rem; align-items:flex-start;
+    }
+    .img-tip svg { flex-shrink:0; margin-top:1px; color:var(--accent); }
+
+    @@media (max-width:860px) {
+        .img-table-head { display:none; }
+        .upload-row { grid-template-columns:100px 1fr 60px 40px; }
+        .upload-row > .row-status-cell { display:none; }
+        .exist-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+    }
+    @@media (max-width:650px) {
+        .upload-row { grid-template-columns:80px 1fr 40px; }
+        .upload-row > .row-order-cell { display:none; }
+    }
+</style>
+
+<!-- Header -->
+<div class="ac-header">
+    <div class="ac-header__left">
+        <div class="ac-header__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+        </div>
+        <div>
+            <h1 class="ac-header__title">Edit Car</h1>
+            <p class="ac-header__sub">Update the details for this listing</p>
+        </div>
+    </div>
+    <a asp-controller="Admin" asp-action="Cars" class="ac-back">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Back to Cars
+    </a>
+</div>
+
+<form asp-controller="Admin" asp-action="EditCar" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data" novalidate id="acForm">
+    <input type="hidden" id="NewImageOrdersCsv"      name="NewImageOrdersCsv" />
+    <input asp-for="ExistingImageOrdersCsv" type="hidden" id="ExistingImageOrdersCsv" />
+    <div id="deleteImageIdsHost"></div>
+
+    <!-- ── Car Details ── -->
+    <div class="ac-card">
+        <div class="ac-card__head">
+            <div class="ac-card__head-left">
+                <div class="ac-card__icon">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/>
+                    </svg>
+                </div>
+                <h3 class="ac-card__title">Car Details</h3>
+            </div>
+        </div>
+        <div class="ac-card__body">
+            <partial name="_CarForm" model="Model" />
+        </div>
+    </div>
+
+    <!-- ── Existing Images ── -->
+    @if (Model.ExistingImages.Count > 0)
+    {
+        <div class="ac-card">
+            <div class="ac-card__head">
+                <div class="ac-card__head-left">
+                    <div class="ac-card__icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                    </div>
+                    <h3 class="ac-card__title">Existing Images</h3>
+                    <span class="img-count-badge">@Model.ExistingImages.Count image@(Model.ExistingImages.Count == 1 ? "" : "s")</span>
+                </div>
+            </div>
+
+            <div class="exist-grid" id="existingImageGrid">
                 @foreach (var image in Model.ExistingImages)
                 {
-                    <article class="car-image-card" data-image-id="@image.Id">
-                        <img src="@image.ImageUrl" alt="Car image" class="car-image-thumb" />
-                        <div class="car-image-meta">
-                            <div class="form-check">
-                                <input class="form-check-input existing-primary-radio"
-                                       type="radio"
-                                       name="SelectedPrimaryImageId"
-                                       value="@image.Id"
-                                       @(Model.SelectedPrimaryImageId == image.Id ? "checked" : string.Empty) />
-                                <label class="form-check-label">Primary Image</label>
-                            </div>
-                            <label class="form-label mt-2 mb-1">Order</label>
-                            <input type="number"
-                                   class="form-control form-control-sm existing-order-input"
-                                   data-image-id="@image.Id"
-                                   min="1"
-                                   value="@image.SortOrder" />
+                    <article class="exist-card@(Model.SelectedPrimaryImageId == image.Id ? " is-primary" : "")" data-image-id="@image.Id">
+                        <span class="exist-cover-badge">Cover</span>
+                        <img src="@image.ImageUrl" alt="Car image" class="exist-thumb" />
+
+                        <div class="exist-primary-row">
+                            <input class="form-check-input existing-primary-radio"
+                                   type="radio"
+                                   name="SelectedPrimaryImageId"
+                                   value="@image.Id"
+                                   id="primary_@image.Id"
+                                   @(Model.SelectedPrimaryImageId == image.Id ? "checked" : string.Empty) />
+                            <label class="exist-primary-label" for="primary_@image.Id">Set as Cover</label>
                         </div>
-                        <div class="car-image-actions">
+
+                        <div class="exist-body">
+                            <div class="exist-order-wrap">
+                                <span class="exist-order-label">Order</span>
+                                <input type="number"
+                                       class="form-control existing-order-input"
+                                       data-image-id="@image.Id"
+                                       min="1"
+                                       value="@image.SortOrder" />
+                            </div>
                             <button type="button"
-                                    class="btn btn-sm btn-outline-danger existing-remove-btn"
+                                    class="exist-remove-btn"
                                     data-image-id="@image.Id">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
                                 Remove
                             </button>
                         </div>
                     </article>
                 }
             </div>
-        }
-
-        <div class="mt-4 d-flex gap-2">
-            <button type="submit" class="btn btn-primary">Update Car</button>
-            <a asp-controller="Admin" asp-action="Cars" class="btn btn-outline-secondary">Back to list</a>
         </div>
-    </form>
-</article>
+    }
 
-    @section Scripts {
+    <!-- ── New Images ── -->
+    <div class="ac-card">
+        <div class="ac-card__head">
+            <div class="ac-card__head-left">
+                <div class="ac-card__icon">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </div>
+                <h3 class="ac-card__title">Add New Images</h3>
+                <span class="img-count-badge" id="imgCount">0 / 10</span>
+            </div>
+            <input type="file" id="imgBulkInput" accept="image/*" multiple style="display:none" />
+            <button type="button" class="img-browse-btn" id="imgBrowseBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                Browse &amp; Add Images
+            </button>
+        </div>
+        <div class="px-4 pt-3">
+            <span asp-validation-for="NewImages" class="text-danger"></span>
+        </div>
+
+        <div id="imgDropzone" class="img-dropzone">
+            <div class="img-dropzone__icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>
+                    <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+                </svg>
+            </div>
+            <div class="img-dropzone__title">Drag &amp; drop new images here</div>
+            <div class="img-dropzone__sub">
+                or click <strong>Browse &amp; Add Images</strong> in the top-right<br>
+                PNG · JPG · WEBP — max 30 MB each — up to 10 new images
+            </div>
+        </div>
+
+        <div class="img-table-head" id="imgTableHead" style="display:none">
+            <span>Preview</span>
+            <span>File name</span>
+            <span style="text-align:center">Order</span>
+            <span>Status</span>
+            <span></span>
+        </div>
+
+        <div class="img-rows" id="imageUploadRows"></div>
+
+        <button type="button" class="img-add-row" id="imgAddRowBtn" style="display:none">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Empty Row
+        </button>
+
+        <div class="img-tip" id="imgTip" style="display:none">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            Set <strong>Order&nbsp;=&nbsp;1</strong> for the cover photo. Click a thumbnail to swap its image.
+        </div>
+    </div>
+
+    <!-- ── Submit ── -->
+    <div class="ac-card">
+        <div class="ac-actions">
+            <button type="submit" class="ac-btn-save">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                    <polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+                </svg>
+                Update Car Listing
+            </button>
+            <a asp-controller="Admin" asp-action="Cars" class="ac-btn-cancel">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Cancel
+            </a>
+        </div>
+    </div>
+</form>
+
+<!-- Row template -->
+<template id="imgRowTpl">
+    <div class="upload-row">
+        <div class="row-thumb empty">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+            </svg>
+            <img alt="preview" />
+            <div class="row-thumb__overlay">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Change
+            </div>
+        </div>
+        <div class="row-info">
+            <span class="row-filename">No file chosen</span>
+            <label class="row-choose">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Choose file
+                <input type="file" name="NewImages" accept="image/*" class="js-image-input" />
+            </label>
+        </div>
+        <div class="row-order-cell" style="display:flex;justify-content:center">
+            <input type="number" class="js-image-order" min="1" max="10" value="1" />
+        </div>
+        <div class="row-status-cell">
+            <span class="row-status s-empty"><span class="s-dot"></span> Empty</span>
+        </div>
+        <button type="button" class="js-remove-row" title="Remove">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+    </div>
+</template>
+
+@section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        (function () {
-            const addRowButton = document.getElementById("addImageRowBtn");
-            const rowsHost = document.getElementById("imageUploadRows");
-            const rowTemplate = document.getElementById("imageUploadRowTemplate");
-            const existingGrid = document.getElementById("existingImageGrid");
-            const deleteHost = document.getElementById("deleteImageIdsHost");
-            const imageOrdersInput = document.getElementById("NewImageOrdersCsv");
-            const existingImageOrdersInput = document.getElementById("ExistingImageOrdersCsv");
-            const form = addRowButton ? addRowButton.closest("form") : null;
+    (function () {
+        /* ── NEW IMAGE MANAGER (identical to AddCar) ── */
+        const MAX         = 10;
+        const bulkInput   = document.getElementById('imgBulkInput');
+        const browseBtn   = document.getElementById('imgBrowseBtn');
+        const rowsHost    = document.getElementById('imageUploadRows');
+        const tpl         = document.getElementById('imgRowTpl');
+        const ordersInput = document.getElementById('NewImageOrdersCsv');
+        const dropzone    = document.getElementById('imgDropzone');
+        const tableHead   = document.getElementById('imgTableHead');
+        const addRowBtn   = document.getElementById('imgAddRowBtn');
+        const countBadge  = document.getElementById('imgCount');
+        const tipEl       = document.getElementById('imgTip');
+        const form        = document.getElementById('acForm');
 
-            if (addRowButton && rowsHost && rowTemplate && imageOrdersInput && form) {
-                const maxRows = 10;
+        function rowCount() { return rowsHost.querySelectorAll('.upload-row').length; }
 
-                addRowButton.addEventListener("click", function () {
-                    addRow();
-                });
+        function syncUI() {
+            const n = rowCount(), full = n >= MAX;
+            countBadge.textContent  = n + ' / ' + MAX;
+            dropzone.style.display  = n === 0 ? 'block' : 'none';
+            tableHead.style.display = n  >  0 ? 'grid'  : 'none';
+            addRowBtn.style.display = n  >  0 ? 'flex'  : 'none';
+            tipEl.style.display     = n  >  0 ? 'flex'  : 'none';
+            browseBtn.disabled      = full;
+            addRowBtn.disabled      = full;
+        }
 
-                rowsHost.addEventListener("change", function (event) {
-                    const input = event.target.closest(".js-image-input");
-                    if (!input) {
-                        return;
-                    }
+        function applyFile(row, file) {
+            const fi = row.querySelector('.js-image-input');
+            try { const dt = new DataTransfer(); dt.items.add(file); fi.files = dt.files; } catch(e){}
+            row.querySelector('.row-filename').textContent = file.name;
+            const thumb = row.querySelector('.row-thumb');
+            const img   = thumb.querySelector('img');
+            img.src = URL.createObjectURL(file);
+            thumb.classList.remove('empty');
+            thumb.classList.add('has-img');
+            const badge = row.querySelector('.row-status');
+            badge.className = 'row-status s-ready';
+            badge.innerHTML = '<span class="s-dot"></span> Ready';
+        }
 
-                    const row = input.closest(".upload-row");
-                    if (!row) {
-                        return;
-                    }
+        function addRow(file) {
+            if (rowCount() >= MAX) return;
+            const node = tpl.content.firstElementChild.cloneNode(true);
+            node.querySelector('.js-image-order').value = rowCount() + 1;
+            rowsHost.appendChild(node);
+            if (file) applyFile(node, file);
+            syncUI();
+        }
 
-                    updateRowPreview(row, input.files && input.files[0] ? input.files[0] : null);
-                });
+        function removeRow(row) {
+            row.classList.add('removing');
+            row.addEventListener('animationend', () => { row.remove(); syncUI(); }, { once: true });
+        }
 
-                rowsHost.addEventListener("click", function (event) {
-                    const removeButton = event.target.closest(".js-remove-row");
-                    if (!removeButton) {
-                        return;
-                    }
-
-                    const row = removeButton.closest(".upload-row");
-                    if (!row) {
-                        return;
-                    }
-
-                    row.remove();
-                    ensureAtLeastOneRow();
-                    syncAddButtonState();
-                });
-
-                function addRow() {
-                    if (rowsHost.querySelectorAll(".upload-row").length >= maxRows) {
-                        return;
-                    }
-
-                    const node = rowTemplate.content.firstElementChild.cloneNode(true);
-                    rowsHost.appendChild(node);
-                    initializeOrderField(node);
-                    syncAddButtonState();
-                }
-
-                function ensureAtLeastOneRow() {
-                    if (rowsHost.querySelectorAll(".upload-row").length === 0) {
-                        addRow();
-                    }
-                }
-
-                function syncAddButtonState() {
-                    addRowButton.disabled = rowsHost.querySelectorAll(".upload-row").length >= maxRows;
-                }
-
-                function initializeOrderField(row) {
-                    const orderInput = row.querySelector(".js-image-order");
-                    if (!orderInput) {
-                        return;
-                    }
-
-                    orderInput.value = String(rowsHost.querySelectorAll(".upload-row").length);
-                }
-
-                function updateRowPreview(row, file) {
-                    const thumb = row.querySelector(".upload-row-thumb");
-                    const name = row.querySelector(".upload-row-file");
-                    if (!thumb || !name) {
-                        return;
-                    }
-
-                    if (!file) {
-                        thumb.classList.add("d-none");
-                        thumb.removeAttribute("src");
-                        name.textContent = "No image selected";
-                        return;
-                    }
-
-                    const objectUrl = URL.createObjectURL(file);
-                    thumb.src = objectUrl;
-                    thumb.classList.remove("d-none");
-                    name.textContent = file.name;
-                }
-
-                function syncImageOrdersForSubmit() {
-                    const rows = rowsHost.querySelectorAll(".upload-row");
-                    const orderValues = [];
-                    for (const row of rows) {
-                        const fileInput = row.querySelector(".js-image-input");
-                        const orderInput = row.querySelector(".js-image-order");
-                        const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
-                        if (!hasFile) {
-                            continue;
-                        }
-
-                        const parsedOrder = Number.parseInt(orderInput?.value ?? "", 10);
-                        orderValues.push(Number.isInteger(parsedOrder) && parsedOrder > 0
-                            ? parsedOrder
-                            : orderValues.length + 1);
-                    }
-
-                    imageOrdersInput.value = orderValues.join(",");
-                }
-
-                form.addEventListener("submit", syncImageOrdersForSubmit);
-
-                ensureAtLeastOneRow();
-                syncAddButtonState();
+        browseBtn.addEventListener('click', () => { if (!browseBtn.disabled) bulkInput.click(); });
+        bulkInput.addEventListener('change', () => {
+            Array.from(bulkInput.files).forEach(f => { if (rowCount() < MAX) addRow(f); });
+            bulkInput.value = '';
+        });
+        addRowBtn.addEventListener('click', () => addRow(null));
+        rowsHost.addEventListener('change', (e) => {
+            const inp = e.target.closest('.js-image-input');
+            if (inp && inp.files.length) applyFile(inp.closest('.upload-row'), inp.files[0]);
+        });
+        rowsHost.addEventListener('click', (e) => {
+            const removeBtn = e.target.closest('.js-remove-row');
+            if (removeBtn) { removeRow(removeBtn.closest('.upload-row')); return; }
+            const thumb = e.target.closest('.row-thumb');
+            if (thumb && thumb.classList.contains('has-img')) {
+                thumb.closest('.upload-row').querySelector('.js-image-input').click();
             }
+        });
+        ['dragenter','dragover'].forEach(ev =>
+            dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.add('drag-over'); })
+        );
+        ['dragleave','drop'].forEach(ev =>
+            dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.remove('drag-over'); })
+        );
+        dropzone.addEventListener('click', () => { if (rowCount() < MAX) bulkInput.click(); });
+        dropzone.addEventListener('drop', e => {
+            Array.from(e.dataTransfer?.files || [])
+                .filter(f => f.type.startsWith('image/'))
+                .forEach(f => { if (rowCount() < MAX) addRow(f); });
+        });
 
-            if (existingGrid && deleteHost && existingImageOrdersInput && form) {
-                const deletedIds = new Set();
+        /* ── EXISTING IMAGE MANAGER ── */
+        const existingGrid          = document.getElementById('existingImageGrid');
+        const deleteHost            = document.getElementById('deleteImageIdsHost');
+        const existingOrdersInput   = document.getElementById('ExistingImageOrdersCsv');
 
-                existingGrid.addEventListener("click", function (event) {
-                    const button = event.target.closest(".existing-remove-btn");
-                    if (!button) {
-                        return;
-                    }
+        if (existingGrid && deleteHost && existingOrdersInput) {
+            const deletedIds = new Set();
 
-                    const imageId = button.getAttribute("data-image-id");
-                    if (!imageId) {
-                        return;
-                    }
+            // Sync cover badge when radio changes
+            existingGrid.addEventListener('change', (e) => {
+                const radio = e.target.closest('.existing-primary-radio');
+                if (!radio) return;
+                existingGrid.querySelectorAll('.exist-card').forEach(c => c.classList.remove('is-primary'));
+                radio.closest('.exist-card').classList.add('is-primary');
+            });
 
-                    const card = existingGrid.querySelector(`.car-image-card[data-image-id="${imageId}"]`);
-                    if (!card) {
-                        return;
-                    }
+            existingGrid.addEventListener('click', (e) => {
+                const btn = e.target.closest('.exist-remove-btn');
+                if (!btn) return;
+                const imageId = btn.getAttribute('data-image-id');
+                const card    = existingGrid.querySelector(`.exist-card[data-image-id="${imageId}"]`);
+                if (!card) return;
 
-                    if (deletedIds.has(imageId)) {
-                        deletedIds.delete(imageId);
-                        card.classList.remove("marked-delete");
-                        button.textContent = "Remove";
-                        button.classList.add("btn-outline-danger");
-                        button.classList.remove("btn-outline-secondary");
-                    } else {
-                        deletedIds.add(imageId);
-                        card.classList.add("marked-delete");
-                        button.textContent = "Undo";
-                        button.classList.remove("btn-outline-danger");
-                        button.classList.add("btn-outline-secondary");
-                    }
-
-                    ensurePrimarySelection();
-                    syncDeleteInputs();
-                    syncExistingImageOrders();
-                });
-
-                existingGrid.addEventListener("input", function (event) {
-                    const orderInput = event.target.closest(".existing-order-input");
-                    if (!orderInput) {
-                        return;
-                    }
-
-                    syncExistingImageOrders();
-                });
-
-                function ensurePrimarySelection() {
-                    const radios = Array.from(existingGrid.querySelectorAll(".existing-primary-radio"));
-                    radios.forEach(radio => {
-                        const card = radio.closest(".car-image-card");
-                        const removed = card && card.classList.contains("marked-delete");
-                        radio.disabled = !!removed;
-                        if (removed) {
-                            radio.checked = false;
-                        }
-                    });
-
-                    const hasSelected = radios.some(r => r.checked && !r.disabled);
-                    if (!hasSelected) {
-                        const firstAvailable = radios.find(r => !r.disabled);
-                        if (firstAvailable) {
-                            firstAvailable.checked = true;
-                        }
-                    }
-                }
-
-                function syncDeleteInputs() {
-                    deleteHost.innerHTML = "";
-                    deletedIds.forEach(id => {
-                        const input = document.createElement("input");
-                        input.type = "hidden";
-                        input.name = "DeleteImageIds";
-                        input.value = id;
-                        deleteHost.appendChild(input);
-                    });
-                }
-
-                function syncExistingImageOrders() {
-                    const values = [];
-                    const orderInputs = existingGrid.querySelectorAll(".existing-order-input");
-                    for (const input of orderInputs) {
-                        const imageId = input.getAttribute("data-image-id");
-                        if (!imageId || deletedIds.has(imageId)) {
-                            continue;
-                        }
-
-                        const parsedOrder = Number.parseInt(input.value ?? "", 10);
-                        const normalizedOrder = Number.isInteger(parsedOrder) && parsedOrder > 0
-                            ? parsedOrder
-                            : 1;
-                        values.push(`${imageId}:${normalizedOrder}`);
-                    }
-
-                    existingImageOrdersInput.value = values.join(",");
+                if (deletedIds.has(imageId)) {
+                    deletedIds.delete(imageId);
+                    card.classList.remove('marked-delete');
+                    btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Remove`;
+                    btn.classList.remove('undo');
+                } else {
+                    deletedIds.add(imageId);
+                    card.classList.add('marked-delete');
+                    btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M9 12l2 2 4-4"/></svg> Undo`;
+                    btn.classList.add('undo');
                 }
 
                 ensurePrimarySelection();
                 syncDeleteInputs();
                 syncExistingImageOrders();
-                form.addEventListener("submit", syncExistingImageOrders);
+            });
+
+            existingGrid.addEventListener('input', (e) => {
+                if (e.target.closest('.existing-order-input')) syncExistingImageOrders();
+            });
+
+            function ensurePrimarySelection() {
+                const radios = Array.from(existingGrid.querySelectorAll('.existing-primary-radio'));
+                radios.forEach(r => {
+                    const removed = r.closest('.exist-card').classList.contains('marked-delete');
+                    r.disabled = removed;
+                    if (removed) r.checked = false;
+                });
+                if (!radios.some(r => r.checked && !r.disabled)) {
+                    const first = radios.find(r => !r.disabled);
+                    if (first) { first.checked = true; first.closest('.exist-card').classList.add('is-primary'); }
+                }
             }
-        })();
+
+            function syncDeleteInputs() {
+                deleteHost.innerHTML = '';
+                deletedIds.forEach(id => {
+                    const inp = document.createElement('input');
+                    inp.type = 'hidden'; inp.name = 'DeleteImageIds'; inp.value = id;
+                    deleteHost.appendChild(inp);
+                });
+            }
+
+            function syncExistingImageOrders() {
+                const values = [];
+                existingGrid.querySelectorAll('.existing-order-input').forEach(inp => {
+                    const id = inp.getAttribute('data-image-id');
+                    if (!id || deletedIds.has(id)) return;
+                    const v = parseInt(inp.value, 10);
+                    values.push(`${id}:${(Number.isInteger(v) && v > 0) ? v : 1}`);
+                });
+                existingOrdersInput.value = values.join(',');
+            }
+
+            ensurePrimarySelection();
+            syncDeleteInputs();
+            syncExistingImageOrders();
+            form.addEventListener('submit', syncExistingImageOrders);
+        }
+
+        /* ── Sync new-image orders on submit ── */
+        form.addEventListener('submit', () => {
+            const orders = [];
+            rowsHost.querySelectorAll('.upload-row').forEach(row => {
+                const inp = row.querySelector('.js-image-input');
+                if (inp && inp.files && inp.files.length) {
+                    const v = parseInt(row.querySelector('.js-image-order').value, 10);
+                    orders.push(isNaN(v) ? orders.length + 1 : v);
+                }
+            });
+            ordersInput.value = orders.join(',');
+        });
+
+        syncUI();
+    })();
+    </script>
+    <script>
+    (function () {
+        const form = document.getElementById('acForm');
+        if (!form) return;
+
+        const saveBtn = form.querySelector('.ac-btn-save');
+        if (!saveBtn) return;
+
+        const originalHtml = saveBtn.innerHTML;
+        let isSubmitting = false;
+
+        function showToast(icon, title) {
+            if (!window.Swal) {
+                alert(title);
+                return;
+            }
+
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon,
+                title,
+                showConfirmButton: false,
+                timer: 2600,
+                timerProgressBar: true,
+                background: '#ffffff',
+                color: '#1e1b4b'
+            });
+        }
+
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            if (isSubmitting) return;
+
+            isSubmitting = true;
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const payload = await response.json().catch(function () {
+                    return { succeeded: false, message: 'Unexpected server response.' };
+                });
+
+                if (!response.ok || !payload.succeeded) {
+                    const message = payload.message || 'Could not update car.';
+                    showToast('error', message);
+                    return;
+                }
+
+                showToast('success', payload.message || 'Car updated successfully.');
+                if (payload.redirectUrl) {
+                    setTimeout(function () {
+                        window.location.href = payload.redirectUrl;
+                    }, 700);
+                }
+            } catch {
+                showToast('error', 'Request failed. Please try again.');
+            } finally {
+                isSubmitting = false;
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalHtml;
+            }
+        });
+    })();
     </script>
 }

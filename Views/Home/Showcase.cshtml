@@ -34,17 +34,13 @@
                     <div class="car-card-body">
                         <div class="car-card-title-row">
                             <h3>@car.Title</h3>
-                            @if (car.IsSold)
+                            @if (car.InStock > 0)
                             {
-                                <span class="car-badge sold">Sold</span>
-                            }
-                            else if (car.IsReturned)
-                            {
-                                <span class="car-badge returned">Returned</span>
+                                <span class="car-badge available">Available</span>
                             }
                             else
                             {
-                                <span class="car-badge available">Available</span>
+                                <span class="car-badge sold">Sold Out</span>
                             }
                         </div>
                         <p class="car-variant">@(string.IsNullOrWhiteSpace(car.Variant) ? "Standard" : car.Variant)</p>
@@ -436,12 +432,10 @@
                 color.textContent = "Color: " + (car.color && car.color.trim().length > 0 ? car.color : "N/A");
                 vin.textContent = "VIN: " + (car.vin && car.vin.trim().length > 0 ? car.vin : "N/A");
 
-                if (car.isSold) {
-                    status.textContent = "Status: Sold";
-                } else if (car.isReturned) {
-                    status.textContent = "Status: Returned";
-                } else {
+                if (car.inStock > 0) {
                     status.textContent = "Status: Available";
+                } else {
+                    status.textContent = "Status: Sold Out";
                 }
 
                 renderThumbnails(activeImages);

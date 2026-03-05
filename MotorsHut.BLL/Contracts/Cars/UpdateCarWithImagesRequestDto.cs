@@ -1,7 +1,8 @@
 namespace MotorsHut.BLL.Contracts.Cars;
 
-public sealed class CreateCarRequestDto
+public sealed class UpdateCarWithImagesRequestDto
 {
+    public Guid Id { get; init; }
     public string Make { get; init; } = string.Empty;
     public string Model { get; init; } = string.Empty;
     public string? Variant { get; init; }
@@ -15,4 +16,8 @@ public sealed class CreateCarRequestDto
     public string? Vin { get; init; }
     public int InStock { get; init; }
     public int TotalSold { get; init; }
+    public IReadOnlyList<Guid> DeleteImageIds { get; init; } = Array.Empty<Guid>();
+    public IReadOnlyList<UpdateCarImageSortOrderRequestDto> ExistingImageOrders { get; init; } = Array.Empty<UpdateCarImageSortOrderRequestDto>();
+    public IReadOnlyList<CreateCarImageRequestDto> NewImages { get; init; } = Array.Empty<CreateCarImageRequestDto>();
+    public Guid? SelectedPrimaryImageId { get; init; }
 }

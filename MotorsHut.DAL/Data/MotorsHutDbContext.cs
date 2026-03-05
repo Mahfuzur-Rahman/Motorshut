@@ -50,6 +50,9 @@ public sealed class MotorsHutDbContext : IdentityDbContext<ApplicationUser, Appl
             entity.Property(c => c.Make).HasMaxLength(100).IsRequired();
             entity.Property(c => c.Model).HasMaxLength(100).IsRequired();
             entity.Property(c => c.Variant).HasMaxLength(100);
+            entity.Property(c => c.FuelType).HasMaxLength(30);
+            entity.Property(c => c.Transmission).HasMaxLength(30);
+            entity.Property(c => c.ShortDescription).HasMaxLength(500);
             entity.Property(c => c.Color).HasMaxLength(50);
             entity.Property(c => c.Vin).HasMaxLength(50);
             entity.Property(c => c.Price).HasPrecision(18, 2);

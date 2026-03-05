@@ -34,6 +34,29 @@
         <span asp-validation-for="MileageKm" class="text-danger"></span>
     </div>
     <div class="col-md-6">
+        <label asp-for="FuelType" class="form-label"></label>
+        <select asp-for="FuelType" class="form-select">
+            <option value="">Select Fuel Type</option>
+            <option value="Petrol">Petrol</option>
+            <option value="Diesel">Diesel</option>
+            <option value="Hybrid">Hybrid</option>
+            <option value="Electric">Electric</option>
+            <option value="CNG">CNG</option>
+        </select>
+        <span asp-validation-for="FuelType" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Transmission" class="form-label"></label>
+        <select asp-for="Transmission" class="form-select">
+            <option value="">Select Transmission</option>
+            <option value="Auto">Auto</option>
+            <option value="Manual">Manual</option>
+            <option value="CVT">CVT</option>
+            <option value="DCT">DCT</option>
+        </select>
+        <span asp-validation-for="Transmission" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
         <label asp-for="Color" class="form-label"></label>
         <input asp-for="Color" class="form-control" />
         <span asp-validation-for="Color" class="text-danger"></span>
@@ -43,45 +66,19 @@
         <input asp-for="Vin" class="form-control" />
         <span asp-validation-for="Vin" class="text-danger"></span>
     </div>
-    <div class="col-md-6">
-        <div class="form-check mt-4">
-            <input asp-for="IsSold" class="form-check-input" />
-            <label asp-for="IsSold" class="form-check-label"></label>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="form-check mt-4">
-            <input asp-for="IsReturned" class="form-check-input" />
-            <label asp-for="IsReturned" class="form-check-label"></label>
-        </div>
-    </div>
     <div class="col-12">
-        <label asp-for="NewImages" class="form-label"></label>
-        <span asp-validation-for="NewImages" class="text-danger"></span>
-        <div class="form-text mb-2">Upload up to 10 images. Max size: 5 MB per image.</div>
-        <input asp-for="NewImageOrdersCsv" type="hidden" />
-
-        <div class="upload-rows-toolbar">
-            <button type="button" id="addImageRowBtn" class="btn btn-sm btn-outline-primary">Add Image</button>
-        </div>
-        <div id="imageUploadRows" class="upload-rows-table mt-2"></div>
-
-        <template id="imageUploadRowTemplate">
-            <div class="upload-row">
-                <div class="upload-row-col upload-row-input">
-                    <input type="file" name="NewImages" class="form-control js-image-input" accept=".jpg,.jpeg,.png,.webp" />
-                </div>
-                <div class="upload-row-col upload-row-preview">
-                    <img class="upload-row-thumb d-none" alt="Selected image preview" />
-                    <span class="upload-row-file text-muted small">No image selected</span>
-                </div>
-                <div class="upload-row-col upload-row-order">
-                    <input type="number" class="form-control js-image-order" min="1" value="1" />
-                </div>
-                <div class="upload-row-col upload-row-actions">
-                    <button type="button" class="btn btn-sm btn-outline-danger js-remove-row">Remove</button>
-                </div>
-            </div>
-        </template>
+        <label asp-for="ShortDescription" class="form-label"></label>
+        <textarea asp-for="ShortDescription" class="form-control" rows="3" placeholder="Write a short card description..."></textarea>
+        <span asp-validation-for="ShortDescription" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="InStock" class="form-label"></label>
+        <input asp-for="InStock" class="form-control" min="0" />
+        <span asp-validation-for="InStock" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="TotalSold" class="form-label"></label>
+        <input asp-for="TotalSold" class="form-control" min="0" />
+        <span asp-validation-for="TotalSold" class="text-danger"></span>
     </div>
 </div>
