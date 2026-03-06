@@ -248,11 +248,12 @@ namespace MotorsHut.DAL.Migrations
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<bool>("IsReturned")
-                        .HasColumnType("tinyint(1)");
+                    b.Property<string>("FuelType")
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
 
-                    b.Property<bool>("IsSold")
-                        .HasColumnType("tinyint(1)");
+                    b.Property<int>("InStock")
+                        .HasColumnType("int");
 
                     b.Property<string>("Make")
                         .IsRequired()
@@ -270,6 +271,17 @@ namespace MotorsHut.DAL.Migrations
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ShortDescription")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int>("TotalSold")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Transmission")
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
 
                     b.Property<DateTime>("UpdatedAtUtc")
                         .HasColumnType("datetime(6)");
